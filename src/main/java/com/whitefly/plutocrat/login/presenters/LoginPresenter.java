@@ -1,0 +1,225 @@
+package com.whitefly.plutocrat.login.presenters;
+
+import android.content.Context;
+import android.os.AsyncTask;
+
+import com.google.gson.Gson;
+import com.squareup.otto.Subscribe;
+import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.helpers.AppPreference;
+import com.whitefly.plutocrat.helpers.HttpClient;
+import com.whitefly.plutocrat.models.MetaModel;
+import com.whitefly.plutocrat.models.UserModel;
+import com.whitefly.plutocrat.login.events.BackToLoginEvent;
+import com.whitefly.plutocrat.login.events.ForgotPasswordEvent;
+import com.whitefly.plutocrat.login.events.RegisterEvent;
+import com.whitefly.plutocrat.login.events.RequestResetTokenEvent;
+import com.whitefly.plutocrat.login.events.SignInEvent;
+import com.whitefly.plutocrat.login.models.LoginRequestModel;
+import com.whitefly.plutocrat.login.models.RegisterRequestModel;
+import com.whitefly.plutocrat.login.views.ILoginMainView;
+import com.whitefly.plutocrat.login.views.ILoginView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+/**
+ * Created by Satjapot on 5/5/16 AD.
+ */
+public class LoginPresenter {
+
+    // Attributes
+    private Context mContext;
+    private HttpClient mHttp;
+
+    private ILoginMainView mLoginMainView;
+    private ILoginView mLoginView;
+
+    // Constructor
+    public LoginPresenter(Context context, ILoginMainView vLoginMain, ILoginView vLogin) {
+        mContext = context;
+        mHttp = new HttpClient(context);
+        mLoginMainView = vLoginMain;
+        mLoginView = vLogin;
+    }
+
+    // Event Handler
+    @Subscribe
+    public void onRegisterClicked(RegisterEvent event) {
+        // Create request model
+        RegisterRequestModel model = event.getRequestModel();
+        new RegisterCallBack().execute(model);
+    }
+
+    @Subscribe
+    public void onSignInClicked(SignInEvent event) {
+        // Create requset model
+        mLoginView.toast("Signing in...");
+
+        LoginRequestModel model = event.getRequestModel();
+        new LoginCallBack().execute(model);
+    }
+
+    @Subscribe
+    public void onForgetPasswordClicked(ForgotPasswordEvent event) {
+        mLoginMainView.goToResetPassword1();
+    }
+
+    @Subscribe
+    public void onRequestResetClicked(RequestResetTokenEvent event) {
+        mLoginMainView.gotoResetPassword2();
+    }
+
+    @Subscribe
+    public void onBackToLogin(BackToLoginEvent event) {
+        mLoginView.changeState(event.getState());
+        mLoginMainView.backToLogin();
+    }
+
+    /*
+    Request Callback
+     */
+    private class RegisterCallBack extends AsyncTask<RegisterRequestModel, Void, JSONObject> {
+        private String error;
+        private RegisterRequestModel modelRequest;
+
+        @Override
+        protected void onPreExecute() {
+            // Call loading dialog
+            mLoginView.toast("Registering...");
+        }
+
+        @Override
+        protected JSONObject doInBackground(RegisterRequestModel... params) {
+            // Request api
+            Gson gson = new Gson();
+            JSONObject body = null;
+
+            modelRequest = params[0];
+            try {
+                String strBody = mHttp.request(gson.toJson(modelRequest))
+                        .post(R.string.api_register);
+
+                body = new JSONObject(strBody);
+            } catch (IOException e) {
+                e.printStackTrace();
+                error = e.getMessage();
+            } catch (JSONException e) {
+                e.printStackTrace();
+                error = e.getMessage();
+            }
+            return body;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject body) {
+            // Validation
+            if(body == null) {
+                mLoginView.toast(String.format("Error: %s", error));
+                return;
+            }
+
+            Gson gson = new Gson();
+
+            // Deserialize JSON
+            try {
+                // Check for error
+                if(! body.isNull("meta")) {
+                    JSONObject meta = body.getJSONObject("meta");
+
+                    // Get meta
+                    MetaModel modMeta = new MetaModel(meta);
+                    mLoginView.toast(String.format("Error: %s", modMeta.getErrors()));
+                    return;
+                }
+
+                UserModel user = gson.fromJson(body.getJSONObject("user").toString(), UserModel.class);
+
+                // Call login api to go home page
+                new LoginCallBack().execute(new LoginRequestModel(modelRequest.email, modelRequest.password));
+            } catch (JSONException e) {
+                e.printStackTrace();
+                mLoginView.toast(e.getMessage());
+            }
+        }
+    }
+
+    private class LoginCallBack extends AsyncTask<LoginRequestModel, Void, JSONObject> {
+        private String error;
+        private  Gson gson;
+
+        // Constructor
+        public LoginCallBack() {
+            gson = new Gson();
+        }
+
+        // Methods
+        @Override
+        protected void onPreExecute() {
+            // Call loading dialog
+        }
+
+        @Override
+        protected JSONObject doInBackground(LoginRequestModel... params) {
+            // Request api
+            JSONObject body = null;
+
+            LoginRequestModel model = params[0];
+            try {
+                String strBody = mHttp.request(gson.toJson(model))
+                        .post(R.string.api_signin);
+
+                // Get content
+                body = new JSONObject(strBody);
+
+                // Check error before keep header
+                if(body.isNull("meta")) {
+                    // Collect headers and etc.
+                    UserModel modUser = gson.fromJson(body.getString("user"), UserModel.class);
+                    AppPreference.getInstance().getSession()
+                            .save(mHttp.getResponse().headers(), modUser.id);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                error = e.getMessage();
+            } catch (JSONException e) {
+                e.printStackTrace();
+                error = e.getMessage();
+            }
+            return body;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject body) {
+            if(body == null) {
+                mLoginView.toast(String.format("Error: %s", error));
+                return;
+            }
+            // Deserialize JSON
+            try {
+                // Check for error
+                if(body.isNull("meta")) {
+                    // Save updated user data to session
+                    UserModel modUser = gson.fromJson(body.getString("user"), UserModel.class);
+                    AppPreference.getInstance().getSession().updateActiveUser(modUser);
+                } else {
+                    // Error occurs
+                    JSONObject meta = body.getJSONObject("meta");
+
+                    // Get meta
+                    MetaModel modMeta = new MetaModel(meta);
+                    mLoginView.toast(String.format("Error: %s", modMeta.getErrors()));
+                    return;
+                }
+
+                mLoginView.toast("Sign in complete");
+                mLoginMainView.goToMainMenu();
+            } catch (JSONException e) {
+                e.printStackTrace();
+                mLoginView.toast(e.getMessage());
+            }
+        }
+    }
+}
