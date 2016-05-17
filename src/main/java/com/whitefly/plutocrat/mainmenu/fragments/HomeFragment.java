@@ -7,7 +7,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +20,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.AppPreference;
+import com.whitefly.plutocrat.helpers.EventBus;
+import com.whitefly.plutocrat.login.events.RequestResetTokenEvent;
 import com.whitefly.plutocrat.mainmenu.views.ITabView;
 
 /**
@@ -35,6 +43,8 @@ public class HomeFragment extends Fragment implements ITabView {
     private String mHeaderDefault, mHeaderThreat, mHeaderSuspend;
     private String mNoteSuspend, mNoteDefault;
     private Drawable mDefaultBG, mThreatBG, mTopLineBG, mBottomLineBG;
+    private ClickableSpan mClickToPermission, mClickToBuyouts;
+    private StyleSpan mStyleLink;
 
     // Views
     private LinearLayout mLloThreat, mLloOwner, mLloNote, mLloHeader;
@@ -63,7 +73,27 @@ public class HomeFragment extends Fragment implements ITabView {
                 mLloNote.setVisibility(View.VISIBLE);
 
                 // Set value
-                mTvNote.setText(Html.fromHtml(String.format(mNoteDefault, 4)));
+                Spanned spannedText = Html.fromHtml(String.format(mNoteDefault, 4));
+                Spannable spanningText = SpannableString.valueOf(spannedText);
+                ClickableSpan[] clickSpans = spanningText.getSpans(0, spannedText.length(), ClickableSpan.class);
+
+                // Define new span tags
+                int startTag;
+                int endTag;
+                startTag = spannedText.getSpanStart(clickSpans[0]);
+                endTag = spannedText.getSpanEnd(clickSpans[0]);
+                spanningText.removeSpan(clickSpans[0]);
+                spanningText.setSpan(mClickToPermission, startTag, endTag, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                spanningText.setSpan(mStyleLink, startTag, endTag, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+                startTag = spannedText.getSpanStart(clickSpans[1]);
+                endTag = spannedText.getSpanEnd(clickSpans[1]);
+                spanningText.removeSpan(clickSpans[1]);
+                spanningText.setSpan(mClickToBuyouts, startTag, endTag, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                spanningText.setSpan(mStyleLink, startTag, endTag, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+                mTvNote.setText(spanningText);
+                mTvNote.setMovementMethod(LinkMovementMethod.getInstance());
                 break;
             case Threat:
                 // Change header
@@ -130,6 +160,33 @@ public class HomeFragment extends Fragment implements ITabView {
         mThreatBG       = ContextCompat.getDrawable(getActivity(), R.drawable.header_bg_under_threat);
         mTopLineBG      = ContextCompat.getDrawable(getActivity(), R.drawable.bg_line_top);
         mBottomLineBG   = ContextCompat.getDrawable(getActivity(), R.drawable.bg_line_bottom);
+
+        // Initiate
+        mClickToPermission = new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                Toast.makeText(getActivity(), "Tab here click", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                super.updateDrawState(ds);
+                ds.setUnderlineText(false);
+            }
+        };
+        mClickToBuyouts = new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                Toast.makeText(getActivity(), "Another click", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                super.updateDrawState(ds);
+                ds.setUnderlineText(false);
+            }
+        };
+        mStyleLink = new StyleSpan(R.style.LinkText);
     }
 
     @Nullable
@@ -160,7 +217,6 @@ public class HomeFragment extends Fragment implements ITabView {
         mTvThreatNote.setText(Html.fromHtml(getString(R.string.home_threat_content)));
 
         // Force to render correctly
-//        changeState(State.Threat);
         changeState(State.Default);
 
         // Debug
