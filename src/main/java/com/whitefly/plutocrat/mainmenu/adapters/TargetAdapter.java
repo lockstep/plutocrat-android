@@ -100,7 +100,7 @@ public class TargetAdapter extends RecyclerView.Adapter<TargetAdapter.ViewHolder
             holder.tvThreat.setText(String.format(mThreatFormat, model.numThreats));
             holder.tvSurvived.setText(String.format(mDaySurvivedFormat, model.daySurvived));
 
-            if(model.picProfile == 0) {
+            if(model.picProfile == TargetModel.DEBUG_NO_PROFILE_PICTURE) {
                 holder.tvProfile.setVisibility(View.VISIBLE);
                 holder.imvProfile.setVisibility(View.GONE);
             } else {

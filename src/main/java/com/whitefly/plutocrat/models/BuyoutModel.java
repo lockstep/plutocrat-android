@@ -3,21 +3,24 @@ package com.whitefly.plutocrat.models;
 /**
  * Created by Satjapot on 5/17/16 AD.
  */
-public class TargetModel {
+public class BuyoutModel {
     public static final int DEBUG_NO_PROFILE_PICTURE = 0;
 
-    public enum TargetStatus {
-        Normal, UnderThreat
+    public enum BuyoutStatus {
+        Initiate, Threat
+    }
+
+    public enum GameStatus {
+        Playing, Win, Lose
     }
 
     // Attributes
     public String name;
-    public int numBuyouts;
-    public int numThreats;
-    public int daySurvived;
-    public TargetStatus status;
+    public int shares;
+    public int hours;
+    public BuyoutStatus status;
+    public GameStatus gameStatus;
     public int picProfile = DEBUG_NO_PROFILE_PICTURE;
-    public boolean isPlutocrat = false;
 
     // Methods
     public String getPicName() {
@@ -40,5 +43,10 @@ public class TargetModel {
         }
 
         return result;
+    }
+
+    public String getPeriod() {
+        // For debug
+        return String.format("%d hours", hours);
     }
 }

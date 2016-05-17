@@ -30,6 +30,7 @@ import com.whitefly.plutocrat.mainmenu.fragments.HomeFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.ShareFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.TargetFragment;
 import com.whitefly.plutocrat.mainmenu.presenters.MainMenuPresenter;
+import com.whitefly.plutocrat.mainmenu.views.IBuyoutView;
 import com.whitefly.plutocrat.mainmenu.views.IMainMenuView;
 import com.whitefly.plutocrat.mainmenu.views.ITabView;
 import com.whitefly.plutocrat.mainmenu.views.ITargetView;
@@ -38,6 +39,11 @@ import java.util.ArrayList;
 
 public class MainMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, IMainMenuView {
+    private static final int FRAGMENT_HOME_INDEX = 0;
+    private static final int FRAGMENT_TARGETS_INDEX = 1;
+    private static final int FRAGMENT_BUYOUTS_INDEX = 2;
+    private static final int FRAGMENT_SHARES_INDEX = 3;
+    private static final int FRAGMENT_ABOUT_INDEX = 4;
 
     // Attributes
     private MenuPagerAdapter mAdapter;
@@ -72,7 +78,9 @@ public class MainMenuActivity extends AppCompatActivity
             mAdapter = new MenuPagerAdapter(getSupportFragmentManager());
         }
         if(presenter == null) {
-            presenter = new MainMenuPresenter(this, this, (ITargetView) mAdapter.getItem(1));
+            presenter = new MainMenuPresenter(this, this,
+                    (ITargetView) mAdapter.getItem(FRAGMENT_TARGETS_INDEX),
+                    (IBuyoutView) mAdapter.getItem(FRAGMENT_BUYOUTS_INDEX));
         }
         mMainPager.setAdapter(mAdapter);
         mTabLayout.setupWithViewPager(mMainPager);
@@ -80,15 +88,6 @@ public class MainMenuActivity extends AppCompatActivity
         for(int i=0, n=mAdapter.getCount(); i<n; i++) {
             ITabView view = (ITabView) mAdapter.getItem(i);
             TabLayout.Tab tab = mTabLayout.getTabAt(i);
-
-//            Drawable drawable;
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                drawable = getResources().getDrawable(R.drawable.icon_menu_default, getTheme());
-//            } else {
-//                drawable = getResources().getDrawable(R.drawable.icon_menu_default);
-//            }
-//            tab.setText(view.getTitle());
-//            tab.setIcon(drawable);
 
             View root = getLayoutInflater().inflate(R.layout.menu_custom, null);
             // Get views
@@ -103,8 +102,8 @@ public class MainMenuActivity extends AppCompatActivity
             tab.setCustomView(root);
         }
         // Force to select first item
-        mTabLayout.getTabAt(1).select();
-        mTabLayout.getTabAt(0).select();
+        mTabLayout.getTabAt(FRAGMENT_TARGETS_INDEX).select();
+        mTabLayout.getTabAt(FRAGMENT_HOME_INDEX).select();
     }
 
     @Override
