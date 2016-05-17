@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:openDrawer="start">
+    tools:openDrawer="start"
+    app:theme="@style/NavDrawer">
 
     <include
         layout="@layout/app_bar_main_menu"
@@ -18,6 +19,8 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:paddingStart="@dimen/activity_horizontal_margin"
+        android:paddingEnd="@dimen/activity_horizontal_margin"
         android:fitsSystemWindows="true"
         android:background="@android:color/black"
         app:headerLayout="@layout/nav_header_main_menu"

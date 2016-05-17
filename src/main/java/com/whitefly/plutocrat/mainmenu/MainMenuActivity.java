@@ -151,8 +151,8 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     /*
-            Pager Adapter
-             */
+    Pager Adapter
+     */
     private class MenuPagerAdapter extends FragmentStatePagerAdapter {
         private ArrayList<Fragment> mFragments;
 

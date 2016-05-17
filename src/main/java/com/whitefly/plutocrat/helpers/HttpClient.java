@@ -149,7 +149,7 @@ public class HttpClient {
 
                     // If try to to Request more than this times, error should occurs
                     if(requestTime <= 0) {
-                        throw new SocketTimeoutException("Connection time exceed.");
+                        throw new SocketTimeoutException(mResponse.message());
                     }
                 }
             } catch (SocketTimeoutException e) {

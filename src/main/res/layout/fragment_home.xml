@@ -6,23 +6,22 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:id="@+id/linearLayout4">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="140dp"
+            android:id="@+id/llo_home_header"
             android:orientation="vertical"
             android:background="@drawable/header_bg_default"
-            android:gravity="center"
-            android:textSize="50sp">
+            android:gravity="center">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="@string/caption_survival_time"
-                android:id="@+id/textView"
+                android:id="@+id/tv_home_title"
                 style="@style/HeaderBigText" />
 
             <TextView
@@ -30,18 +29,14 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="3 d 14 h 35 s"
-                android:id="@+id/textView3"
+                android:id="@+id/tv_home_time"
                 style="@style/HeaderMediumText" />
         </LinearLayout>
-
-
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/linearLayout4"
-            android:layout_alignParentStart="true"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin">
 
@@ -49,32 +44,26 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/linearLayout5"
-                android:layout_alignParentStart="true">
-
+                android:id="@+id/llo_home_threat"
+                android:layout_marginTop="@dimen/padding_home_vertical"
+                android:background="@drawable/bg_line_bottom"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/linearLayout8"
-                    android:layout_alignParentStart="true"
-                    android:background="@drawable/bg_header"
-                    android:layout_marginTop="@dimen/margin_home_vertical"
-                    android:paddingBottom="@dimen/padding_home_vertical">
+                    android:layout_height="wrap_content">
 
                     <ImageView
-                        android:layout_width="120dp"
-                        android:layout_height="120dp"
-                        android:id="@+id/imageView"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:id="@+id/imv_home_threat_pic"
                         android:src="@android:drawable/sym_def_app_icon" />
 
                     <LinearLayout
                         android:orientation="vertical"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_below="@+id/linearLayout8"
-                        android:layout_alignParentStart="true"
                         android:gravity="center_vertical"
                         android:layout_marginLeft="@dimen/activity_default_margin">
 
@@ -83,7 +72,89 @@
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceLarge"
                             android:text="Satjapot Iamopas"
-                            android:id="@+id/textView4"
+                            android:id="@+id/tv_home_threat_name"
+                            android:textSize="@dimen/font_medium"
+                            android:textColor="@color/colorGrey" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Shares to match: 23"
+                            android:id="@+id/tv_home_threat_match"
+                            style="@style/RedText"/>
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:text="@string/home_threat_content"
+                    style="@style/NoteText"
+                    android:paddingBottom="@dimen/padding_home_vertical"
+                    android:id="@+id/tv_home_threat_note"
+                    android:textSize="@dimen/font_small_x"/>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/caption_accept_defeat"
+                        android:id="@+id/button"
+                        style="@style/RedButton"/>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/caption_match_shares"
+                        android:id="@+id/button2"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentEnd="true"
+                        style="@style/PurpleButton" />
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/llo_home_owner"
+                android:background="@drawable/bg_line_bottom">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/padding_home_vertical"
+                    android:paddingBottom="@dimen/padding_home_vertical">
+
+                    <ImageView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:id="@+id/imv_home_owner_pic"
+                        android:src="@android:drawable/sym_def_app_icon" />
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_marginStart="@dimen/activity_default_margin">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceLarge"
+                            android:text="Satjapot Iamopas"
+                            android:id="@+id/tv_home_owner_name"
                             android:textSize="@dimen/font_medium"
                             android:textColor="@color/colorGrey" />
 
@@ -92,7 +163,7 @@
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:text="satjapot@tripler.co.th"
-                            android:id="@+id/textView5"
+                            android:id="@+id/tv_home_owner_email"
                             android:textSize="@dimen/font_small" />
 
                         <TextView
@@ -100,125 +171,118 @@
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:text="Managing Account"
-                            android:id="@+id/textView6"
+                            android:id="@+id/tv_home_owner_position"
                             android:textSize="@dimen/font_small"
                             android:textColor="@color/colorPurpleLink" />
 
-
                     </LinearLayout>
-
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <LinearLayout
-                android:orientation="vertical"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/linearLayout6"
-                android:layout_alignParentStart="true"
-                android:background="@drawable/bg_header"
-                android:layout_marginTop="@dimen/margin_home_vertical"
-                android:paddingBottom="@dimen/padding_home_vertical">
+                android:id="@+id/llo_home_shares"
+                android:background="@drawable/bg_line_bottom"
+                android:layout_marginTop="@dimen/padding_home_vertical">
 
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:paddingBottom="@dimen/padding_home_vertical">
 
-                <RelativeLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <LinearLayout
-                        android:orientation="vertical"
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true">
+                        android:text="12"
+                        android:id="@+id/tv_home_success_value"
+                        style="@style/BigNumberText"/>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="12"
-                            android:id="@+id/textView7"
-                            style="@style/BigNumberText"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:text="@string/caption_success_buyout"
-                            android:id="@+id/textView8"
-                            android:gravity="center" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:orientation="vertical"
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_centerHorizontal="true">
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="@string/caption_success_buyout"
+                        android:id="@+id/tv_home_success"
+                        android:gravity="center" />
+                </LinearLayout>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="5"
-                            android:id="@+id/textView9"
-                            style="@style/BigNumberText" />
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:paddingBottom="@dimen/padding_home_vertical">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:text="@string/caption_failed_buyout"
-                            android:id="@+id/textView10"
-                            android:gravity="center" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:orientation="vertical"
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true">
+                        android:text="5"
+                        android:id="@+id/tv_home_failed_value"
+                        style="@style/BigNumberText" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="17"
-                            android:id="@+id/textView11"
-                            style="@style/BigNumberText" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="@string/caption_failed_buyout"
+                        android:id="@+id/tv_home_failed"
+                        android:gravity="center" />
+                </LinearLayout>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:text="@string/caption_defeat_threat"
-                            android:id="@+id/textView12"
-                            android:gravity="center" />
-                    </LinearLayout>
-                </RelativeLayout>
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:paddingBottom="@dimen/padding_home_vertical">
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="17"
+                        android:id="@+id/tv_home_defeat_value"
+                        style="@style/BigNumberText" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="@string/caption_defeat_threat"
+                        android:id="@+id/tv_home_defeat"
+                        android:gravity="center" />
+                </LinearLayout>
+
+            </RelativeLayout>
 
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/linearLayout7"
-                android:layout_alignParentStart="true"
+                android:id="@+id/llo_home_note"
                 android:gravity="center">
-
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:id="@+id/tv_home_note"
                     android:gravity="center"
                     android:text="@string/home_default_content"
                     style="@style/NoteText"
-                    android:layout_marginTop="@dimen/margin_home_vertical"
-                    android:paddingBottom="@dimen/padding_home_vertical"/>
+                    android:layout_marginTop="@dimen/padding_home_vertical"
+                    android:paddingBottom="@dimen/padding_home_vertical"
+                    android:textSize="@dimen/font_small_x"/>
 
             </LinearLayout>
 
         </LinearLayout>
+
     </LinearLayout>
+
 
 </com.nirhart.parallaxscroll.views.ParallaxScrollView>

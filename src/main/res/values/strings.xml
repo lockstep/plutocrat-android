@@ -41,10 +41,17 @@
     <string name="caption_resettoken">Reset Token</string>
     <string name="caption_newpw">New Password</string>
     <string name="caption_reset">Reset</string>
-    <string name="home_default_content">Tap here to enable push notifications on buyout events.<br /><br />your need <strong>%1$d more buyouts</strong> to become the Plutocrat.<br /><br />Swipe right for more controls</string>
+    <string name="home_default_content"><![CDATA[Tap here to enable push notifications on buyout events.<br /><br />you need <strong>%1$d more buyouts</strong> to become the Plutocrat.<br /><br />Swipe right for more controls]]></string>
+    <string name="home_threat_content"><![CDATA[<strong>WARNING:</strong> Your response to this buyout threat is not reversible. You must match the buyout shares to maintain your account.<br /><br />Failure to match the buyout will result in permanent account suspension. Any shares remaining in your account will transfer to the victor.]]></string>
+    <string name="home_suspend_content"><![CDATA[You were bought out by <i>%1$s</i> for<br />%2$d shares %3$d days ago.<br />Your account is now inactive.]]></string>
     <string name="caption_success_buyout">Successful\nBuyouts</string>
     <string name="caption_failed_buyout">Failed\nBuyouts</string>
     <string name="caption_defeat_threat">Defeated\nThreats</string>
+    <string name="caption_survival_time">Survival Time</string>
+    <string name="caption_active_threat">Active Buyout Threat</string>
+    <string name="caption_you_survived">You Survived</string>
+    <string name="caption_accept_defeat">ACCEPT DEFEAT</string>
+    <string name="caption_match_shares">MATCH SHARES</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -61,5 +68,4 @@
     <string name="api_signin">/api/v1/users/sign_in</string>
     <string name="api_signout">/api/v1/users/sign_out</string>
     <string name="api_profile">/api/v1/users/%1$d</string>
-    <string name="caption_survival_time">Survival Time</string>
 </resources>
