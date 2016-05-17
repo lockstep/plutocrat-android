@@ -11,6 +11,11 @@
     <color name="colorMenuSelected">#696969</color>
     <color name="colorMenuUnSelected">#a0a0a0</color>
     <color name="colorMenuText">#696969</color>
+    <color name="colorLine">#cecece</color>
+
+    <!-- Image Profile -->
+    <color name="colorProfileStart">#c2c2c2</color>
+    <color name="colorProfileEnd">#e7e7e7</color>
 
     <!-- Button -->
     <color name="colorButton">#696969</color>
