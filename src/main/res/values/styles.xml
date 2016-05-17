@@ -52,7 +52,7 @@
 
     <style name="BigNumberText" parent="TextAppearance.AppCompat.Large">
         <item name="android:layout_gravity">center_horizontal</item>
-        <item name="android:textSize">@dimen/font_big_x</item>
+        <item name="android:textSize">@dimen/font_big_xx</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/colorGrey</item>
     </style>
@@ -71,9 +71,21 @@
         <item name="android:fontFamily">sans-serif-thin</item>
     </style>
 
+    <style name="HeaderMediumLittleText" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textSize">@dimen/font_medium_x</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
     <style name="HeaderSmallText" parent="TextAppearance.AppCompat.Small">
         <item name="android:textSize">@dimen/font_small</item>
         <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="ProfileText" parent="TextAppearance.AppCompat.Large">
+        <item name="android:background">@drawable/bg_profile_picture</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/font_big_x</item>
+        <item name="android:textColor">@color/colorPurpleLink</item>
     </style>
 
     <style name="EditTextSingleLine" parent="Widget.AppCompat.EditText">
@@ -98,12 +110,25 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
+    <style name="DefaultButtonThin" parent="DefaultButton">
+        <item name="android:fontFamily">sans-serif-thin</item>
+    </style>
+
     <style name="RedButton" parent="DefaultButton">
         <item name="android:background">@drawable/bg_button_red</item>
     </style>
 
     <style name="PurpleButton" parent="DefaultButton">
         <item name="android:background">@drawable/bg_button_purple</item>
+    </style>
+
+    <style name="WhiteButton" parent="DefaultButton">
+        <item name="android:background">@drawable/bg_button_white</item>
+        <item name="android:textColor">@color/colorButtonPurple</item>
+    </style>
+
+    <style name="WhiteButtonThin" parent="WhiteButton">
+        <item name="android:fontFamily">sans-serif-thin</item>
     </style>
 
     <style name="TabMainMenuTextAppearance" parent="TextAppearance.Design.Tab">
