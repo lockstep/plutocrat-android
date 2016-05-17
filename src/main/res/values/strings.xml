@@ -41,8 +41,8 @@
     <string name="caption_resettoken">Reset Token</string>
     <string name="caption_newpw">New Password</string>
     <string name="caption_reset">Reset</string>
-    <string name="home_default_content"><![CDATA[Tap here to enable push notifications on buyout events.<br /><br />you need <strong>%1$d more buyouts</strong> to become the Plutocrat.<br /><br />Swipe right for more controls]]></string>
-    <string name="home_threat_content"><![CDATA[<strong>WARNING:</strong> Your response to this buyout threat is not reversible. You must match the buyout shares to maintain your account.<br /><br />Failure to match the buyout will result in permanent account suspension. Any shares remaining in your account will transfer to the victor.]]></string>
+    <string name="home_default_content"><![CDATA[<a href="">Tap here</a> to enable push notifications on buyout events.<br /><br />you need <a href="">%1$d more buyouts</a> to become the Plutocrat.<br /><br />Swipe right for more controls]]></string>
+    <string name="home_threat_content"><![CDATA[WARNING: Your response to this buyout threat is not reversible. You must match the buyout shares to maintain your account.<br /><br />Failure to match the buyout will result in permanent account suspension. Any shares remaining in your account will transfer to the victor.]]></string>
     <string name="home_suspend_content"><![CDATA[You were bought out by <i>%1$s</i> for<br />%2$d shares %3$d days ago.<br />Your account is now inactive.]]></string>
     <string name="caption_success_buyout">Successful\nBuyouts</string>
     <string name="caption_failed_buyout">Failed\nBuyouts</string>
