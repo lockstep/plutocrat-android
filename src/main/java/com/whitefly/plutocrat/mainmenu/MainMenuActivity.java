@@ -30,8 +30,10 @@ import com.whitefly.plutocrat.mainmenu.fragments.HomeFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.ShareFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.TargetFragment;
 import com.whitefly.plutocrat.mainmenu.presenters.MainMenuPresenter;
+import com.whitefly.plutocrat.mainmenu.views.IBuyoutView;
 import com.whitefly.plutocrat.mainmenu.views.IMainMenuView;
 import com.whitefly.plutocrat.mainmenu.views.ITabView;
+import com.whitefly.plutocrat.mainmenu.views.ITargetView;
 
 import java.util.ArrayList;
 
@@ -71,7 +73,8 @@ public class MainMenuActivity extends AppCompatActivity
             mAdapter = new MenuPagerAdapter(getSupportFragmentManager());
         }
         if(presenter == null) {
-            presenter = new MainMenuPresenter(this, this);
+            presenter = new MainMenuPresenter(this, this,
+                    (ITargetView) mAdapter.getItem(1), (IBuyoutView) mAdapter.getItem(2));
         }
         mMainPager.setAdapter(mAdapter);
         mTabLayout.setupWithViewPager(mMainPager);
