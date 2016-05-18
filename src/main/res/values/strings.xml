@@ -52,6 +52,12 @@
     <string name="caption_you_survived">You Survived</string>
     <string name="caption_accept_defeat">ACCEPT DEFEAT</string>
     <string name="caption_match_shares">MATCH SHARES</string>
+    <string name="caption_engage">ENGAGE</string>
+    <string name="caption_no_plutocrat">No Reigning Plutocrat</string>
+    <string name="caption_plutocrat">The Plutocrat</string>
+    <string name="value_buyouts">Buyouts: %1$d</string>
+    <string name="value_threats">Threats: %1$d</string>
+    <string name="value_daysurvived">Day survived: %1$d</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
