@@ -11,7 +11,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.mainmenu.adapters.listeners.OnLoadmoreListener;
+import com.whitefly.plutocrat.mainmenu.events.EngageClickEvent;
 import com.whitefly.plutocrat.models.TargetModel;
 
 import java.util.ArrayList;
@@ -28,6 +30,7 @@ public class TargetAdapter extends RecyclerView.Adapter<TargetAdapter.ViewHolder
     private ArrayList<TargetModel> mDataSet;
     private String mBuyoutFormat, mThreatFormat, mDaySurvivedFormat;
     private OnLoadmoreListener mLoadMoreListener;
+    private View.OnClickListener mEngageClick;
 
     // Getter Methods
     public ArrayList<TargetModel> getDataSet() {
@@ -47,6 +50,13 @@ public class TargetAdapter extends RecyclerView.Adapter<TargetAdapter.ViewHolder
         mBuyoutFormat = mContext.getString(R.string.value_buyouts);
         mThreatFormat = mContext.getString(R.string.value_threats);
         mDaySurvivedFormat = mContext.getString(R.string.value_daysurvived);
+
+        mEngageClick = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventBus.getInstance().post(new EngageClickEvent((TargetModel) v.getTag()));
+            }
+        };
     }
 
     // Methods
@@ -80,6 +90,8 @@ public class TargetAdapter extends RecyclerView.Adapter<TargetAdapter.ViewHolder
             vh.tvSurvived = (TextView) root.findViewById(R.id.tv_player_daysurvived);
             vh.btnEngage = (Button) root.findViewById(R.id.btn_player_engage);
             vh.tvGameStatus = (TextView) root.findViewById(R.id.tv_player_game_status);
+
+            vh.btnEngage.setOnClickListener(mEngageClick);
         } else {
             View root = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_loadmore, parent, false);
             vh = new ViewHolder(root);
@@ -94,7 +106,7 @@ public class TargetAdapter extends RecyclerView.Adapter<TargetAdapter.ViewHolder
         TargetModel model = mDataSet.get(position);
 
         if(model != null) {
-            holder.tvProfile.setText(model.getPicName());
+            holder.tvProfile.setText(model.getNickName());
             holder.tvName.setText(model.name);
             holder.tvBuyout.setText(String.format(mBuyoutFormat, model.numBuyouts));
             holder.tvThreat.setText(String.format(mThreatFormat, model.numThreats));
@@ -116,6 +128,8 @@ public class TargetAdapter extends RecyclerView.Adapter<TargetAdapter.ViewHolder
                 holder.btnEngage.setVisibility(View.GONE);
                 holder.tvGameStatus.setVisibility(View.VISIBLE);
             }
+
+            holder.btnEngage.setTag(model);
         } else {
             // Loading here
             if(mLoadMoreListener != null) {

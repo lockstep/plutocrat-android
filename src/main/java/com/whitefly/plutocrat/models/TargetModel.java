@@ -18,7 +18,7 @@ public class TargetModel {
     public boolean isPlutocrat = false;
 
     // Methods
-    public String getPicName() {
+    public String getNickName() {
         String result;
         if(name == null) {
             result = "";

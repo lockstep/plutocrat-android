@@ -12,7 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.mainmenu.adapters.listeners.OnLoadmoreListener;
+import com.whitefly.plutocrat.mainmenu.events.EngageClickEvent;
 import com.whitefly.plutocrat.models.BuyoutModel;
 import com.whitefly.plutocrat.models.TargetModel;
 
@@ -33,6 +35,7 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
     private String mAttackingCaption, mEliminatedCaption;
     private int mGreyColor, mRedColor, mGreenColor;
     private OnLoadmoreListener mLoadMoreListener;
+    private View.OnClickListener mEngageClick;
 
     // Getter Methods
     public ArrayList<BuyoutModel> getDataSet() {
@@ -61,6 +64,13 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
         mGreyColor = ContextCompat.getColor(mContext, R.color.colorGrey);
         mRedColor = ContextCompat.getColor(mContext, R.color.colorRed);
         mGreenColor = ContextCompat.getColor(mContext, R.color.colorGreen);
+
+        mEngageClick = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventBus.getInstance().post(new EngageClickEvent((BuyoutModel) v.getTag()));
+            }
+        };
     }
 
     // Methods
@@ -94,6 +104,8 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
             vh.tvStatus = (TextView) root.findViewById(R.id.tv_player_daysurvived);
             vh.btnEngage = (Button) root.findViewById(R.id.btn_player_engage);
             vh.tvGameStatus = (TextView) root.findViewById(R.id.tv_player_game_status);
+
+            vh.btnEngage.setOnClickListener(mEngageClick);
         } else {
             View root = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_loadmore, parent, false);
             vh = new ViewHolder(root);
@@ -155,6 +167,8 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
                     holder.tvGameStatus.setVisibility(View.GONE);
                 }
             }
+
+            holder.btnEngage.setTag(model);
         } else {
             // Loading here
             if(mLoadMoreListener != null) {

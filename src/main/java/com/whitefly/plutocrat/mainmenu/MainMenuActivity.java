@@ -1,5 +1,6 @@
 package com.whitefly.plutocrat.mainmenu;
 
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import com.whitefly.plutocrat.mainmenu.events.SignOutEvent;
 import com.whitefly.plutocrat.mainmenu.fragments.AboutFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.BuyoutFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.HomeFragment;
+import com.whitefly.plutocrat.mainmenu.fragments.InitiateFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.ShareFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.TargetFragment;
 import com.whitefly.plutocrat.mainmenu.presenters.MainMenuPresenter;
@@ -34,11 +36,13 @@ import com.whitefly.plutocrat.mainmenu.views.IBuyoutView;
 import com.whitefly.plutocrat.mainmenu.views.IMainMenuView;
 import com.whitefly.plutocrat.mainmenu.views.ITabView;
 import com.whitefly.plutocrat.mainmenu.views.ITargetView;
+import com.whitefly.plutocrat.models.TargetModel;
 
 import java.util.ArrayList;
 
 public class MainMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, IMainMenuView {
+    private static final String FRAGMENT_INITIATE = "frg_initiate";
 
     // Attributes
     private MenuPagerAdapter mAdapter;
@@ -196,5 +200,20 @@ public class MainMenuActivity extends AppCompatActivity
     @Override
     public void toast(String text) {
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void callInitiateDialog(TargetModel model) {
+        android.app.FragmentTransaction t = getFragmentManager().beginTransaction()
+                .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
+
+        InitiateFragment.newInstance(model).show(t, FRAGMENT_INITIATE);
+    }
+
+    @Override
+    public void goToShareFromInitiate() {
+        ((DialogFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INITIATE)).dismiss();
+
+        mTabLayout.getTabAt(3).select();
     }
 }

@@ -59,6 +59,7 @@
     <string name="caption_action_threat">Threated you with</string>
     <string name="caption_attacking">Attacking You</string>
     <string name="caption_eliminated">Eliminated</string>
+    <string name="value_plutocrat_buyouts">%1$d Buyouts</string>
     <string name="value_buyouts">Buyouts: %1$d</string>
     <string name="value_threats">Threats: %1$d</string>
     <string name="value_daysurvived">Day survived: %1$d</string>
@@ -66,6 +67,14 @@
     <string name="status_pending">Outcome Pending</string>
     <string name="status_succeed">Buyout Succeeded</string>
     <string name="status_failed">Buyout Failed</string>
+    <string name="initiate_content"><![CDATA[Buyout attempts are not reversible. Your shares will be debited regardless of the outcome.<br /><br />Minimum share requirements apply to repeat buyout attempts. Each subsequent attempt against the same target requires at least twice the previous number of shares.]]></string>
+    <string name="caption_available_shares">Available Shares: %1$d</string>
+    <string name="caption_minimum_buyout">Minimum Buyout: %1$d</string>
+    <string name="caption_initiate_with">Initiate Buyout With</string>
+    <string name="caption_shares">Shares</string>
+    <string name="caption_abort">ABORT</string>
+    <string name="caption_execute">EXECUTE</string>
+    <string name="caption_moreshares">More Shares...</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

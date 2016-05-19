@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -16,6 +17,7 @@ import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.mainmenu.adapters.TargetAdapter;
 import com.whitefly.plutocrat.mainmenu.adapters.listeners.OnLoadmoreListener;
+import com.whitefly.plutocrat.mainmenu.events.EngageClickEvent;
 import com.whitefly.plutocrat.mainmenu.events.LoadTargetsEvent;
 import com.whitefly.plutocrat.mainmenu.views.ITabView;
 import com.whitefly.plutocrat.mainmenu.views.ITargetView;
@@ -43,6 +45,7 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
     private RecyclerView mRvMain;
     private SwipeRefreshLayout mSRLMain;
     private LinearLayout mLloPlutocrat, mLloNoPlutocrat;
+    private Button mBtnEngage;
 
     /**
      * Use this factory method to create a new instance of
@@ -80,6 +83,7 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
         mSRLMain = (SwipeRefreshLayout) root.findViewById(R.id.srl_players);
         mLloPlutocrat = (LinearLayout) root.findViewById(R.id.llo_targets_plutocrat);
         mLloNoPlutocrat = (LinearLayout) root.findViewById(R.id.llo_targets_noplutocrat);
+        mBtnEngage = (Button) root.findViewById(R.id.btn_player_engage);
 
         // Initiate
         ArrayList<TargetModel> dataset = new ArrayList<>();
@@ -123,6 +127,21 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
             @Override
             public void onClick(View v) {
                 changeState(HeaderState.Plutocrat);
+            }
+        });
+        mBtnEngage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TargetModel model = new TargetModel();
+                model.name = "Aaron Pinchai";
+                model.numBuyouts = 35;
+                model.numThreats = 7;
+                model.daySurvived = 119;
+                model.status = TargetModel.TargetStatus.Normal;
+                model.isPlutocrat = true;
+                model.picProfile = 0;
+
+                EventBus.getInstance().post(new EngageClickEvent(model));
             }
         });
 
