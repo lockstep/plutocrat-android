@@ -20,7 +20,7 @@ public class TargetModel {
     public boolean isPlutocrat = false;
 
     // Methods
-    public String getPicName() {
+    public String getNickName() {
         String result;
         char firstCh, secondCh;
 
