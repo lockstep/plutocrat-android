@@ -14,11 +14,15 @@
     <dimen name="height_reset_note">80dp</dimen>
     <dimen name="margin_home_vertical">24dp</dimen>
     <dimen name="padding_home_vertical">16dp</dimen>
+    <dimen name="player_img_size">80dp</dimen>
+    <dimen name="header_height">140dp</dimen>
 
     <!-- Utils -->
     <dimen name="font_small_x">11sp</dimen>
     <dimen name="font_small">14sp</dimen>
+    <dimen name="font_medium_x">17sp</dimen>
     <dimen name="font_medium">24sp</dimen>
     <dimen name="font_big">32sp</dimen>
-    <dimen name="font_big_x">48sp</dimen>
+    <dimen name="font_big_x">38sp</dimen>
+    <dimen name="font_big_xx">56sp</dimen>
 </resources>

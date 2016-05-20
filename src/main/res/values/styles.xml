@@ -9,6 +9,14 @@
         <item name="android:textViewStyle">@style/DefaultTextViewStyle</item>
     </style>
 
+    <style name="DialogTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorPurpleLink</item>
+        <item name="android:textViewStyle">@style/DefaultTextViewStyle</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
@@ -52,7 +60,7 @@
 
     <style name="BigNumberText" parent="TextAppearance.AppCompat.Large">
         <item name="android:layout_gravity">center_horizontal</item>
-        <item name="android:textSize">@dimen/font_big_x</item>
+        <item name="android:textSize">@dimen/font_big_xx</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/colorGrey</item>
     </style>
@@ -71,9 +79,21 @@
         <item name="android:fontFamily">sans-serif-thin</item>
     </style>
 
+    <style name="HeaderMediumLittleText" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textSize">@dimen/font_medium_x</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
     <style name="HeaderSmallText" parent="TextAppearance.AppCompat.Small">
         <item name="android:textSize">@dimen/font_small</item>
         <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="ProfileText" parent="TextAppearance.AppCompat.Large">
+        <item name="android:background">@drawable/bg_profile_picture</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/font_big_x</item>
+        <item name="android:textColor">@color/colorPurpleLink</item>
     </style>
 
     <style name="EditTextSingleLine" parent="Widget.AppCompat.EditText">
@@ -98,12 +118,25 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
+    <style name="DefaultButtonThin" parent="DefaultButton">
+        <item name="android:fontFamily">sans-serif-thin</item>
+    </style>
+
     <style name="RedButton" parent="DefaultButton">
         <item name="android:background">@drawable/bg_button_red</item>
     </style>
 
     <style name="PurpleButton" parent="DefaultButton">
         <item name="android:background">@drawable/bg_button_purple</item>
+    </style>
+
+    <style name="WhiteButton" parent="DefaultButton">
+        <item name="android:background">@drawable/bg_button_white</item>
+        <item name="android:textColor">@color/colorButtonPurple</item>
+    </style>
+
+    <style name="WhiteButtonThin" parent="WhiteButton">
+        <item name="android:fontFamily">sans-serif-thin</item>
     </style>
 
     <style name="TabMainMenuTextAppearance" parent="TextAppearance.Design.Tab">
@@ -122,6 +155,10 @@
 
     <style name="NavDrawer">
         <item name="android:padding">0dp</item>
+    </style>
+
+    <style name="NumberPicker">
+        <item name="android:textSize">@dimen/font_big</item>
     </style>
 
 </resources>
