@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.nirhart.parallaxscroll.views.ParallaxScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -10,7 +10,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="140dp"
+            android:layout_height="@dimen/header_height"
             android:id="@+id/llo_home_header"
             android:orientation="vertical"
             android:background="@drawable/header_bg_default"
@@ -19,7 +19,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="@string/caption_survival_time"
                 android:id="@+id/tv_home_title"
                 style="@style/HeaderBigText" />
@@ -27,7 +26,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="3 d 14 h 35 s"
                 android:id="@+id/tv_home_time"
                 style="@style/HeaderMediumText" />
@@ -79,7 +77,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAppearance="?android:attr/textAppearanceSmall"
                             android:text="Shares to match: 23"
                             android:id="@+id/tv_home_threat_match"
                             style="@style/RedText"/>
@@ -285,4 +282,4 @@
     </LinearLayout>
 
 
-</com.nirhart.parallaxscroll.views.ParallaxScrollView>
+</ScrollView>
