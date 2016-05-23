@@ -1,0 +1,85 @@
+<resources>
+    <string name="app_name">Plutocrat</string>
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="welcom_title">Welcome to Plutocrat</string>
+    <string name="welcome_content"><![CDATA[Use Shares to buy out other players.<br /> The player with the most buyouts is the Plutocrat.<br /> Match buyout offers to stay in the game.<br /> <br /> Failing to match a buyout within 48 hours results in <strong>permanent account suspension</strong>. Your remaining shares go to victor.]]></string>
+    <string name="register_title">Register</string>
+    <string name="register_touchid">Enable Touch ID</string>
+
+    <string name="caption_enter">Enter</string>
+    <string name="caption_login">Login</string>
+    <string name="caption_login_link"><![CDATA[<u>Login</u>]]></string>
+    <string name="caption_displayname">Display Name</string>
+    <string name="caption_email">E-mail</string>
+    <string name="cation_password">Password</string>
+    <string name="caption_forgotpw">Forgot Password</string>
+    <string name="caption_register">Register</string>
+    <string name="caption_forgotpw_link"><![CDATA[<u>Forgot Password</u>]]></string>
+    <string name="caption_register_link"><![CDATA[<u>Register</u>]]></string>
+    <string name="caption_pwreset1">Password Reset: Step 1</string>
+    <string name="pwreset_content">Request a password reset token with the form below. You will receive your token via email if an account with the provided email address exists.</string>
+    <string name="caption_requestrstoken">Request Reset Token</string>
+    <string name="signin_title">Sign in</string>
+    <string name="caption_submit">Submit</string>
+    <string name="havetoken_content">Tab here if you already have a password reset token. Note: Tokens expire after a few hours.</string>
+    <string name="caption_pwreset2">Password Reset: Step 2</string>
+    <string name="pwreset2_content">Copy and paste the password reset token form your email into the form below and enter a new password.</string>
+    <string name="caption_resetpw">Reset Password</string>
+    <string name="caption_resettoken">Reset Token</string>
+    <string name="caption_newpw">New Password</string>
+    <string name="caption_reset">Reset</string>
+    <string name="home_default_content"><![CDATA[<a href="">Tap here</a> to enable push notifications on buyout events.<br /><br />you need <a href="">%1$d more buyouts</a> to become the Plutocrat.<br /><br />Swipe right for more controls]]></string>
+    <string name="home_threat_content"><![CDATA[WARNING: Your response to this buyout threat is not reversible. You must match the buyout shares to maintain your account.<br /><br />Failure to match the buyout will result in permanent account suspension. Any shares remaining in your account will transfer to the victor.]]></string>
+    <string name="home_suspend_content"><![CDATA[You were bought out by <i>%1$s</i> for<br />%2$d shares %3$d days ago.<br />Your account is now inactive.]]></string>
+    <string name="caption_success_buyout">Successful\nBuyouts</string>
+    <string name="caption_failed_buyout">Failed\nBuyouts</string>
+    <string name="caption_defeat_threat">Defeated\nThreats</string>
+    <string name="caption_survival_time">Survival Time</string>
+    <string name="caption_active_threat">Active Buyout Threat</string>
+    <string name="caption_you_survived">You Survived</string>
+    <string name="caption_accept_defeat">ACCEPT DEFEAT</string>
+    <string name="caption_match_shares">MATCH SHARES</string>
+    <string name="caption_engage">ENGAGE</string>
+    <string name="caption_no_plutocrat">No Reigning Plutocrat</string>
+    <string name="caption_plutocrat">The Plutocrat</string>
+    <string name="caption_action_initiate">You initiated with</string>
+    <string name="caption_action_threat">Threated you with</string>
+    <string name="caption_attacking">Attacking You</string>
+    <string name="caption_eliminated">Eliminated</string>
+    <string name="value_buyouts">Buyouts: %1$d</string>
+    <string name="value_threats">Threats: %1$d</string>
+    <string name="value_daysurvived">Day survived: %1$d</string>
+    <string name="value_period">%1$d shares %2$s ago</string>
+    <string name="status_pending">Outcome Pending</string>
+    <string name="status_succeed">Buyout Succeeded</string>
+    <string name="status_failed">Buyout Failed</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_main_menu">MainMenuActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!-- Server API -->
+    <string name="api_host">http://plutocracy-staging.herokuapp.com</string>
+    <string name="api_register">/api/v1/users</string>
+    <string name="api_signin">/api/v1/users/sign_in</string>
+    <string name="api_signout">/api/v1/users/sign_out</string>
+    <string name="api_profile">/api/v1/users/%1$d</string>
+</resources>

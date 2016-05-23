@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color> <!-- #3F51B5 -->
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="colorRed">#b00000</color>
+    <color name="colorGrey">#828282</color>
+    <color name="colorGreen">#048610</color>
+    <color name="colorPurpleLink">#360053</color>
+    <color name="colorMenuBarBg">#f7f7f7</color>
+    <color name="colorMenuSelected">#696969</color>
+    <color name="colorMenuUnSelected">#a0a0a0</color>
+    <color name="colorMenuText">#696969</color>
+    <color name="colorLine">#cecece</color>
+
+    <!-- Image Profile -->
+    <color name="colorProfileStart">#c2c2c2</color>
+    <color name="colorProfileEnd">#e7e7e7</color>
+
+    <!-- Button -->
+    <color name="colorButton">#696969</color>
+    <color name="colorButtonPressed">#363636</color>
+    <color name="colorButtonPurple">#360053</color>
+    <color name="colorButtonPurplePressed">#150020</color>
+    <color name="colorButtonRed">#b00000</color>
+    <color name="colorButtonRedPressed">#6b0000</color>
+</resources>
