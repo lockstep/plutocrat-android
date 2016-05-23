@@ -55,9 +55,17 @@
     <string name="caption_engage">ENGAGE</string>
     <string name="caption_no_plutocrat">No Reigning Plutocrat</string>
     <string name="caption_plutocrat">The Plutocrat</string>
+    <string name="caption_action_initiate">You initiated with</string>
+    <string name="caption_action_threat">Threated you with</string>
+    <string name="caption_attacking">Attacking You</string>
+    <string name="caption_eliminated">Eliminated</string>
     <string name="value_buyouts">Buyouts: %1$d</string>
     <string name="value_threats">Threats: %1$d</string>
     <string name="value_daysurvived">Day survived: %1$d</string>
+    <string name="value_period">%1$d shares %2$s ago</string>
+    <string name="status_pending">Outcome Pending</string>
+    <string name="status_succeed">Buyout Succeeded</string>
+    <string name="status_failed">Buyout Failed</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

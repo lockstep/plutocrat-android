@@ -28,7 +28,8 @@ import java.util.ArrayList;
  */
 public class TargetFragment extends Fragment implements ITabView, ITargetView {
     public static final String TITLE = "Targets";
-    public static final int TARGET_USERS_PER_PAGE = 4;
+    private static final int FIRST_PAGE = 1;
+    private static final int TARGET_USERS_PER_PAGE = 4;
 
     public enum HeaderState {
         Plutocrat, NoPlutocrat
@@ -94,7 +95,7 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
         changeState(HeaderState.Plutocrat);
 
         // Get Adapter
-        cpage = 1;
+        cpage = FIRST_PAGE;
         EventBus.getInstance().post(new LoadTargetsEvent(cpage, TARGET_USERS_PER_PAGE));
 
         // Event Handler
@@ -102,7 +103,7 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
             @Override
             public void onRefresh() {
                 // Loading new list
-                cpage = 1;
+                cpage = FIRST_PAGE;
                 EventBus.getInstance().post(new LoadTargetsEvent(cpage, TARGET_USERS_PER_PAGE));
             }
         });
@@ -141,7 +142,7 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
 
     @Override
     public void setTargetList(ArrayList<TargetModel> items) {
-        if(cpage == 1) {
+        if(cpage == FIRST_PAGE) {
             mAdapter.getDataSet().clear();
         }
         mAdapter.addItems(items);
