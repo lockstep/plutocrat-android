@@ -1,14 +1,356 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Share"
-        android:id="@+id/textView2"
-        android:layout_gravity="center_horizontal"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/header_height"
+        android:id="@+id/llo_title_header"
+        android:orientation="horizontal"
+        android:background="@drawable/header_bg_default"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/llo_targets_noplutocrat"
+            android:gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title_unused_shares"
+                style="@style/HeaderBigText"
+                android:id="@+id/tv_title_shares" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/llo_title_header">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingStart="@dimen/activity_horizontal_margin"
+        android:paddingEnd="@dimen/activity_horizontal_margin"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:gravity="center"
+            android:background="@drawable/bg_line_bottom">
+
+            <RelativeLayout
+                android:layout_width="@dimen/share_img_size"
+                android:layout_height="@dimen/share_img_size"
+                android:background="@drawable/single_share">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:id="@+id/tv_share_1"
+                    android:text="Share"
+                    android:textColor="@android:color/white"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="-4dp"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@android:color/white"
+                    android:text="1"
+                    android:layout_above="@+id/tv_share_1"
+                    android:layout_centerHorizontal="true"
+                    android:textSize="@dimen/font_big"/>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:paddingStart="@dimen/activity_default_margin"
+                android:paddingEnd="@dimen/activity_default_margin">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:ems="10"
+                        android:id="@+id/edt_share_1"
+                        android:hint="Enter Quantity"
+                        android:gravity="right"
+                        android:textSize="@dimen/font_small"
+                        android:layout_gravity="right|center_vertical"
+                        style="@style/EditTextSingleLine.WithoutLine"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Quantity:"
+                        android:layout_gravity="left|center_vertical"
+                        android:textSize="@dimen/font_small"/>
+                </FrameLayout>
+
+                <ImageView style="@style/LineDivider"/>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Per Share:"
+                        android:textSize="@dimen/font_small" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="$25"
+                        android:textSize="@dimen/font_small" />
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ACQUIRE"
+                android:id="@+id/btn_acquire_1"
+                style="@style/DefaultButton"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:gravity="center"
+            android:background="@drawable/bg_line_bottom">
+
+            <RelativeLayout
+                android:layout_width="@dimen/share_img_size"
+                android:layout_height="@dimen/share_img_size"
+                android:background="@drawable/small_batch_share">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:id="@+id/tv_share_50"
+                    android:text="Shares"
+                    android:textColor="@android:color/white"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="-4dp"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@android:color/white"
+                    android:text="50"
+                    android:layout_above="@+id/tv_share_50"
+                    android:layout_centerHorizontal="true"
+                    android:textSize="@dimen/font_big"/>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:paddingStart="@dimen/activity_default_margin"
+                android:paddingEnd="@dimen/activity_default_margin">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:ems="10"
+                        android:id="@+id/edt_share_50"
+                        android:hint="Enter Quantity"
+                        android:gravity="right"
+                        android:textSize="@dimen/font_small"
+                        android:layout_gravity="right|center_vertical"
+                        style="@style/EditTextSingleLine.WithoutLine"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Quantity:"
+                        android:layout_gravity="left|center_vertical"
+                        android:textSize="@dimen/font_small"/>
+                </FrameLayout>
+
+                <ImageView style="@style/LineDivider"/>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Per Share:"
+                        android:textSize="@dimen/font_small" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="$20"
+                        android:textSize="@dimen/font_small" />
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ACQUIRE"
+                android:id="@+id/btn_acquire_50"
+                style="@style/DefaultButton"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:gravity="center">
+
+            <RelativeLayout
+                android:layout_width="@dimen/share_img_size"
+                android:layout_height="@dimen/share_img_size"
+                android:background="@drawable/large_batch_share">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:id="@+id/tv_share_100"
+                    android:text="Shares"
+                    android:textColor="@android:color/white"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="-4dp"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@android:color/white"
+                    android:text="100"
+                    android:layout_above="@+id/tv_share_100"
+                    android:layout_centerHorizontal="true"
+                    android:textSize="@dimen/font_big"/>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:paddingStart="@dimen/activity_default_margin"
+                android:paddingEnd="@dimen/activity_default_margin">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:ems="10"
+                        android:id="@+id/edt_share_100"
+                        android:hint="Enter Quantity"
+                        android:gravity="right"
+                        android:textSize="@dimen/font_small"
+                        android:layout_gravity="right|center_vertical"
+                        style="@style/EditTextSingleLine.WithoutLine"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Quantity:"
+                        android:layout_gravity="left|center_vertical"
+                        android:textSize="@dimen/font_small"/>
+                </FrameLayout>
+
+                <ImageView style="@style/LineDivider"/>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Per Share:"
+                        android:textSize="@dimen/font_small" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="$15"
+                        android:textSize="@dimen/font_small" />
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ACQUIRE"
+                android:id="@+id/btn_acquire_100"
+                style="@style/DefaultButton"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    </ScrollView>
+
 </RelativeLayout>

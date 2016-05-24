@@ -7,6 +7,7 @@ import com.squareup.otto.Subscribe;
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.HttpClient;
+import com.whitefly.plutocrat.mainmenu.events.BuySharesEvent;
 import com.whitefly.plutocrat.mainmenu.events.EngageClickEvent;
 import com.whitefly.plutocrat.mainmenu.events.LoadBuyoutsEvent;
 import com.whitefly.plutocrat.mainmenu.events.LoadTargetsEvent;
@@ -69,6 +70,11 @@ public class MainMenuPresenter {
     @Subscribe
     public void onMoreShareClick(MoreShareClickEvent event) {
         mMainMenuView.goToShareFromInitiate();
+    }
+
+    @Subscribe
+    public void onBuyShares(BuySharesEvent event) {
+        mMainMenuView.toast(String.format("You are buying %d shares of %d each", event.getQty(), event.getPrice()));
     }
 
     /*
