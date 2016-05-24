@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#3F51B5</color> <!-- #3F51B5 -->
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimaryDark">#565656</color><!-- #303F9F -->
     <color name="colorAccent">#FF4081</color>
 
     <color name="colorRed">#b00000</color>
@@ -14,6 +14,7 @@
     <color name="colorMenuUnSelected">#a0a0a0</color>
     <color name="colorMenuText">#696969</color>
     <color name="colorLine">#cecece</color>
+    <color name="colorTitleBar">#565656</color>
 
     <!-- Image Profile -->
     <color name="colorProfileStart">#c2c2c2</color>
