@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.EventBus;
@@ -28,6 +29,7 @@ public class BuyoutFragment extends Fragment implements ITabView, IBuyoutView {
     public static final String TITLE = "Buyouts";
     private static final int FIRST_PAGE = 1;
     private static final int BUYOUT_USERS_PER_PAGE = 4;
+    private static final int DEBUG_SUCCESSFUL_BUYOUTS = 32;
 
     // Attributes
     private BuyoutAdapter mAdapter;
@@ -36,6 +38,7 @@ public class BuyoutFragment extends Fragment implements ITabView, IBuyoutView {
     // Views
     private RecyclerView mRvMain;
     private SwipeRefreshLayout mSRLMain;
+    private TextView mTitle;
 
     /**
      * Use this factory method to create a new instance of
@@ -56,7 +59,11 @@ public class BuyoutFragment extends Fragment implements ITabView, IBuyoutView {
         // Get Views
         mRvMain = (RecyclerView) root.findViewById(R.id.rv_players);
         mSRLMain = (SwipeRefreshLayout) root.findViewById(R.id.srl_players);
+        mTitle = (TextView) root.findViewById(R.id.tv_title_buyout);
+
         // Initiate
+        mTitle.setText(String.format(getActivity().getString(R.string.title_success_buyout), DEBUG_SUCCESSFUL_BUYOUTS));
+
         ArrayList<BuyoutModel> dataset = new ArrayList<>();
         dataset.add(null);
 

@@ -75,6 +75,10 @@
     <string name="caption_abort">ABORT</string>
     <string name="caption_execute">EXECUTE</string>
     <string name="caption_moreshares">BUY MORE SHARES...</string>
+    <string name="title_unused_shares">%1$d Unused Shares</string>
+    <string name="title_success_buyout">%1$d Successful Buyouts</string>
+
+    <string name="err_input_shares_number">Please input number of shares</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

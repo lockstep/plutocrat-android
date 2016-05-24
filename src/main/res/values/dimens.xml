@@ -15,6 +15,7 @@
     <dimen name="margin_home_vertical">24dp</dimen>
     <dimen name="padding_home_vertical">16dp</dimen>
     <dimen name="player_img_size">80dp</dimen>
+    <dimen name="share_img_size">80dp</dimen>
     <dimen name="header_height">140dp</dimen>
 
     <!-- Utils -->
