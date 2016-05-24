@@ -9,6 +9,14 @@
         <item name="android:textViewStyle">@style/DefaultTextViewStyle</item>
     </style>
 
+    <style name="DialogTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorPurpleLink</item>
+        <item name="android:textViewStyle">@style/DefaultTextViewStyle</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
@@ -96,6 +104,12 @@
         <item name="android:imeOptions">actionNext</item>
     </style>
 
+    <style name="EditTextSingleLine.WithoutLine" parent="EditTextSingleLine">
+        <item name="android:textColor">@color/colorPurpleLink</item>
+        <item name="android:textColorHint">@color/colorPurpleLink</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
     <style name="Checkbox" parent="Widget.AppCompat.CompoundButton.CheckBox">
         <item name="android:textSize">@dimen/font_small</item>
         <item name="android:textColor">@color/colorGrey</item>
@@ -145,8 +159,20 @@
         <item name="textAllCaps">false</item>
     </style>
 
+    <style name="LineDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">2dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:src">@drawable/numberpicker_line</item>
+    </style>
+
     <style name="NavDrawer">
         <item name="android:padding">0dp</item>
+    </style>
+
+    <style name="NumberPicker">
+        <item name="android:textSize">@dimen/font_big</item>
     </style>
 
 </resources>
