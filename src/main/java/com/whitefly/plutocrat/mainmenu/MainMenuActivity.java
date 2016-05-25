@@ -26,6 +26,7 @@ import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.login.LoginActivity;
 import com.whitefly.plutocrat.mainmenu.events.SignOutEvent;
 import com.whitefly.plutocrat.mainmenu.fragments.AboutFragment;
+import com.whitefly.plutocrat.mainmenu.fragments.AccountSettingFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.BuyoutFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.FAQFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.HomeFragment;
@@ -51,6 +52,7 @@ public class MainMenuActivity extends AppCompatActivity
 
     private static final String FRAGMENT_INITIATE = "frg_initiate";
     private static final String FRAGMENT_FAQ = "frg_faq";
+    private static final String FRAGMENT_ACCOUNT_SETTINGS = "frg_account_settings";
 
     // Attributes
     private MenuPagerAdapter mAdapter;
@@ -130,8 +132,9 @@ public class MainMenuActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_profile) {
-            // Handle the camera action
-            Toast.makeText(this, "Manage Account", Toast.LENGTH_SHORT).show();
+            android.app.FragmentTransaction t = getFragmentManager().beginTransaction();
+
+            AccountSettingFragment.newInstance().show(t, FRAGMENT_ACCOUNT_SETTINGS);
         } else if (id == R.id.nav_faq) {
             android.app.FragmentTransaction t = getFragmentManager().beginTransaction();
 
@@ -159,9 +162,19 @@ public class MainMenuActivity extends AppCompatActivity
         EventBus.getInstance().unregister(presenter);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        android.app.Fragment accountSettingFragment = getFragmentManager().findFragmentByTag(FRAGMENT_ACCOUNT_SETTINGS);
+        if(accountSettingFragment != null) {
+            accountSettingFragment.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
     /*
-    Pager Adapter
-     */
+        Pager Adapter
+         */
     private class MenuPagerAdapter extends FragmentStatePagerAdapter {
         private ArrayList<Fragment> mFragments;
 

@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
                 android:id="@+id/edt_reset2_newpw"
-                android:hint="@string/caption_newpw"
+                android:hint="@string/caption_new_password"
                 android:layout_gravity="center_horizontal"
                 android:textSize="@dimen/font_small" />
 

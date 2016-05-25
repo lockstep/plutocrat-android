@@ -21,6 +21,9 @@
 
     <string name="caption_enter">Enter</string>
     <string name="caption_login">Login</string>
+    <string name="caption_back">Back</string>
+    <string name="caption_save">Save</string>
+    <string name="caption_acquire">ACQUIRE</string>
     <string name="caption_login_link"><![CDATA[<u>Login</u>]]></string>
     <string name="caption_displayname">Display Name</string>
     <string name="caption_email">E-mail</string>
@@ -39,7 +42,7 @@
     <string name="pwreset2_content">Copy and paste the password reset token form your email into the form below and enter a new password.</string>
     <string name="caption_resetpw">Reset Password</string>
     <string name="caption_resettoken">Reset Token</string>
-    <string name="caption_newpw">New Password</string>
+    <string name="caption_new_password">New Password</string>
     <string name="caption_reset">Reset</string>
     <string name="home_default_content"><![CDATA[<a href="">Tap here</a> to enable push notifications on buyout events.<br /><br />you need <a href="">%1$d more buyouts</a> to become the Plutocrat.<br /><br />Swipe right for more controls]]></string>
     <string name="home_threat_content"><![CDATA[WARNING: Your response to this buyout threat is not reversible. You must match the buyout shares to maintain your account.<br /><br />Failure to match the buyout will result in permanent account suspension. Any shares remaining in your account will transfer to the victor.]]></string>
@@ -71,18 +74,34 @@
     <string name="caption_available_shares">Available Shares: %1$d</string>
     <string name="caption_minimum_buyout">Minimum Buyout: %1$d</string>
     <string name="caption_initiate_with">Initiate Buyout With</string>
+    <string name="caption_share">Share</string>
     <string name="caption_shares">Shares</string>
     <string name="caption_abort">ABORT</string>
     <string name="caption_execute">EXECUTE</string>
     <string name="caption_moreshares">BUY MORE SHARES...</string>
     <string name="title_unused_shares">%1$d Unused Shares</string>
     <string name="title_success_buyout">%1$d Successful Buyouts</string>
+    <string name="caption_quantity">Quantity:</string>
+    <string name="caption_per_share">Per Share:</string>
+    <string name="caption_enter_quantity">Enter Quantity</string>
+    <string name="title_faq">FAQ</string>
     <string name="header_faq_plutocrat">Plutocrat</string>
     <string name="note_faq_plutocrat"><![CDATA[Use Shares to buy out other players. The player with the most buyouts is the Plutocrat. Match buyout offers to stay in the game.<br /><br />Failing to match a buyout within 48 hours results in <b>permanent account suspension</b>. Your remaining shares go to the victor.]]></string>
     <string name="header_faq_whatshare">What is share?</string>
     <string name="note_faq_whatshare">Shares are your primary means of attacking and defending in Plutocrat. You can buy other players out of the game by challenging them to match your buyout offer (some number of shares).\n\nIf someone else attempts to buy you out, you have to match their buyout offer with an equal number of shares in order to stay in the game.</string>
     <string name="header_faq_moreshare">What if I don\'t have enough shares to match a buyout?</string>
     <string name="note_faq_moreshare">Everyone starts with 1 share. If you need more, navigate to the Shares view via the bottom navigation bar to purchase more.</string>
+    <string name="title_account_settings">ACCOUNT</string>
+    <string name="note_account_settings_change_profile">tap to change</string>
+    <string name="note_account_settings_enable_notification">Enable email notification on Plutocrat events (buyout outcomes, new threats, etc).</string>
+    <string name="note_account_settings_enable_updates">Enable emails with general Plutocrat updates.</string>
+    <string name="caption_confirm_password">Confirm Password</string>
+    <string name="caption_current_password">Current Password</string>
+    <string name="note_account_setting_current_password">Your current password is required for all account updates.</string>
+
+    <string name="caption_select_image">Select image</string>
+    <string name="caption_take_from_camera">Take from camera</string>
+    <string name="caption_take_from_gallery">Take from gallery</string>
 
     <string name="err_input_shares_number">Please input number of shares</string>
 

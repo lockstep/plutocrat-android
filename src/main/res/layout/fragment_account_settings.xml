@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:paddingStart="@dimen/activity_horizontal_margin"
+        android:paddingEnd="@dimen/activity_horizontal_margin"
+        android:background="@color/colorTitleBar"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        android:id="@+id/relativeLayout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/title_account_settings"
+            android:textSize="@dimen/font_medium_x"
+            android:textColor="@android:color/white"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:id="@+id/btn_back"
+            android:gravity="center"
+            android:clickable="true">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:src="@drawable/back_chevron"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/activity_default_margin"
+                android:text="@string/caption_back"
+                android:textSize="@dimen/font_medium_x"
+                android:textColor="@android:color/white"
+                android:textStyle="normal"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="false"
+        android:layout_below="@+id/relativeLayout">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/activity_horizontal_margin">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/player_img_size"
+                    android:layout_height="@dimen/player_img_size"
+                    android:id="@+id/imv_profile_picture"
+                    android:visibility="gone"
+                    android:src="@android:drawable/sym_def_app_icon"
+                    android:clickable="true"
+                    android:scaleType="fitXY"/>
+
+                <TextView
+                    android:layout_width="@dimen/player_img_size"
+                    android:layout_height="@dimen/player_img_size"
+                    android:id="@+id/tv_profile_picture"
+                    android:text="AP"
+                    android:visibility="visible"
+                    android:clickable="true"
+                    style="@style/ProfileText"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/note_account_settings_change_profile"
+                    style="@style/NoteText"
+                    android:textStyle="italic"/>
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:background="@drawable/bg_line_top">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|center_vertical"
+                    android:ems="10"
+                    android:id="@+id/edt_display_name"
+                    android:gravity="end"
+                    android:text="Danielle Steele"
+                    style="@style/EditTextSingleLine.WithoutLine"
+                    android:textSize="@dimen/font_small"
+                    android:textColor="@color/colorGrey"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="@string/caption_displayname"
+                    android:layout_gravity="start|center_vertical"
+                    android:textSize="@dimen/font_small"/>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:background="@drawable/bg_line_top">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|center_vertical"
+                    android:inputType="textEmailAddress"
+                    android:ems="10"
+                    android:id="@+id/edt_email"
+                    android:gravity="end"
+                    android:text="danielle@watershedcapital.com"
+                    style="@style/EditTextSingleLine.WithoutLine"
+                    android:textSize="@dimen/font_small"
+                    android:textColor="@color/colorGrey"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="@string/caption_email"
+                    android:layout_gravity="start|center_vertical"
+                    android:textSize="@dimen/font_small"/>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:background="@drawable/bg_line_top">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|center_vertical"
+                    android:inputType="textPassword"
+                    android:ems="10"
+                    android:gravity="end"
+                    android:id="@+id/edt_new_password"
+                    style="@style/EditTextSingleLine.WithoutLine"
+                    android:textSize="@dimen/font_small"
+                    android:textColor="@color/colorGrey"
+                    android:textColorHint="@color/colorGrey" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="@string/caption_new_password"
+                    android:layout_gravity="start|center_vertical"
+                    android:textSize="@dimen/font_small"/>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:background="@drawable/bg_line_top">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|center_vertical"
+                    android:inputType="textPassword"
+                    android:ems="10"
+                    android:gravity="end"
+                    android:id="@+id/edt_confirm_password"
+                    style="@style/EditTextSingleLine.WithoutLine"
+                    android:textSize="@dimen/font_small"
+                    android:textColor="@color/colorGrey"
+                    android:textColorHint="@color/colorGrey" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="@string/caption_confirm_password"
+                    android:layout_gravity="start|center_vertical"
+                    android:textSize="@dimen/font_small"/>
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:background="@drawable/bg_line_top">
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/activity_vertical_margin"
+                    android:text="@string/note_account_settings_enable_notification"
+                    android:id="@+id/chk_enable_notification"
+                    android:checked="true"
+                    style="@style/Checkbox"
+                    android:gravity="top"/>
+
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/note_account_settings_enable_updates"
+                    android:id="@+id/chk_enable_updates"
+                    android:checked="false"
+                    style="@style/Checkbox" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:background="@drawable/bg_line_top">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|center_vertical"
+                    android:inputType="textPassword"
+                    android:ems="10"
+                    android:id="@+id/edt_current_password"
+                    android:gravity="end"
+                    style="@style/EditTextSingleLine.WithoutLine"
+                    android:textSize="@dimen/font_small"
+                    android:textColor="@color/colorGrey"
+                    android:textColorHint="@color/colorGrey"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="@string/caption_current_password"
+                    android:layout_gravity="start|center_vertical"
+                    android:textSize="@dimen/font_small"/>
+
+            </FrameLayout>
+
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:background="@drawable/bg_line_top">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/note_account_setting_current_password"
+                    style="@style/NoteText"
+                    android:textStyle="italic"/>
+
+            </FrameLayout>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btn_save_settings"
+                android:text="@string/caption_save"
+                style="@style/DefaultButton"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

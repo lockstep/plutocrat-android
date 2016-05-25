@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="FAQ"
+            android:text="@string/title_faq"
             android:textSize="@dimen/font_medium_x"
             android:textColor="@android:color/white"/>
 
@@ -38,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/activity_default_margin"
-                android:text="Back"
+                android:text="@string/caption_back"
                 android:textSize="@dimen/font_medium_x"
                 android:textColor="@android:color/white"
                 android:textStyle="normal"/>

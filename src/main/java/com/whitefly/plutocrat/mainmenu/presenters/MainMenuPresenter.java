@@ -12,6 +12,7 @@ import com.whitefly.plutocrat.mainmenu.events.EngageClickEvent;
 import com.whitefly.plutocrat.mainmenu.events.LoadBuyoutsEvent;
 import com.whitefly.plutocrat.mainmenu.events.LoadTargetsEvent;
 import com.whitefly.plutocrat.mainmenu.events.MoreShareClickEvent;
+import com.whitefly.plutocrat.mainmenu.events.SaveAccountSettingsEvent;
 import com.whitefly.plutocrat.mainmenu.events.SignOutEvent;
 import com.whitefly.plutocrat.mainmenu.views.IBuyoutView;
 import com.whitefly.plutocrat.mainmenu.views.IMainMenuView;
@@ -75,6 +76,11 @@ public class MainMenuPresenter {
     @Subscribe
     public void onBuyShares(BuySharesEvent event) {
         mMainMenuView.toast(String.format("You are buying %d shares of %d each", event.getQty(), event.getPrice()));
+    }
+
+    @Subscribe
+    public void onSaveAccountSettings(SaveAccountSettingsEvent event) {
+        mMainMenuView.toast("Save complete");
     }
 
     /*

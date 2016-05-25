@@ -60,7 +60,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
                         android:id="@+id/tv_share_small"
-                        android:text="Share"
+                        android:text="@string/caption_share"
                         android:textColor="@android:color/white"
                         android:layout_alignParentBottom="true"
                         android:layout_centerHorizontal="true"/>
@@ -96,18 +96,18 @@
                             android:inputType="number"
                             android:ems="10"
                             android:id="@+id/edt_share_small"
-                            android:hint="Enter Quantity"
-                            android:gravity="right"
+                            android:hint="@string/caption_enter_quantity"
+                            android:gravity="end"
                             android:textSize="@dimen/font_small"
-                            android:layout_gravity="right|center_vertical"
+                            android:layout_gravity="end|center_vertical"
                             style="@style/ShareQtyEditText"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:text="Quantity:"
-                            android:layout_gravity="left|center_vertical"
+                            android:text="@string/caption_quantity"
+                            android:layout_gravity="start|center_vertical"
                             android:textSize="@dimen/font_small"/>
                     </FrameLayout>
 
@@ -121,7 +121,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:text="Per Share:"
+                            android:text="@string/caption_per_share"
                             android:textSize="@dimen/font_small" />
 
                         <TextView
@@ -139,7 +139,7 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="ACQUIRE"
+                    android:text="@string/caption_acquire"
                     android:id="@+id/btn_acquire_small"
                     style="@style/DefaultButton"/>
 
@@ -164,7 +164,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
                         android:id="@+id/tv_share_medium"
-                        android:text="Shares"
+                        android:text="@string/caption_shares"
                         android:textColor="@android:color/white"
                         android:layout_alignParentBottom="true"
                         android:layout_centerHorizontal="true"/>
@@ -200,18 +200,18 @@
                             android:inputType="number"
                             android:ems="10"
                             android:id="@+id/edt_share_medium"
-                            android:hint="Enter Quantity"
-                            android:gravity="right"
+                            android:hint="@string/caption_enter_quantity"
+                            android:gravity="end"
                             android:textSize="@dimen/font_small"
-                            android:layout_gravity="right|center_vertical"
+                            android:layout_gravity="end|center_vertical"
                             style="@style/ShareQtyEditText"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:text="Quantity:"
-                            android:layout_gravity="left|center_vertical"
+                            android:text="@string/caption_quantity"
+                            android:layout_gravity="start|center_vertical"
                             android:textSize="@dimen/font_small"/>
                     </FrameLayout>
 
@@ -243,7 +243,7 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="ACQUIRE"
+                    android:text="@string/caption_acquire"
                     android:id="@+id/btn_acquire_medium"
                     style="@style/DefaultButton"/>
 
@@ -267,7 +267,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
                         android:id="@+id/tv_share_large"
-                        android:text="Shares"
+                        android:text="@string/caption_shares"
                         android:textColor="@android:color/white"
                         android:layout_alignParentBottom="true"
                         android:layout_centerHorizontal="true"/>
@@ -303,18 +303,18 @@
                             android:inputType="number"
                             android:ems="10"
                             android:id="@+id/edt_share_large"
-                            android:hint="Enter Quantity"
-                            android:gravity="right"
+                            android:hint="@string/caption_enter_quantity"
+                            android:gravity="end"
                             android:textSize="@dimen/font_small"
-                            android:layout_gravity="right|center_vertical"
+                            android:layout_gravity="end|center_vertical"
                             style="@style/ShareQtyEditText"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:text="Quantity:"
-                            android:layout_gravity="left|center_vertical"
+                            android:text="@string/caption_quantity"
+                            android:layout_gravity="start|center_vertical"
                             android:textSize="@dimen/font_small"/>
                     </FrameLayout>
 
@@ -328,7 +328,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:text="Per Share:"
+                            android:text="@string/caption_per_share"
                             android:textSize="@dimen/font_small" />
 
                         <TextView
@@ -346,7 +346,7 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="ACQUIRE"
+                    android:text="@string/caption_acquire"
                     android:id="@+id/btn_acquire_large"
                     style="@style/DefaultButton"/>
 
