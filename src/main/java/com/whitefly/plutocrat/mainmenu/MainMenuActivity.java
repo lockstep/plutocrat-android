@@ -27,6 +27,7 @@ import com.whitefly.plutocrat.login.LoginActivity;
 import com.whitefly.plutocrat.mainmenu.events.SignOutEvent;
 import com.whitefly.plutocrat.mainmenu.fragments.AboutFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.BuyoutFragment;
+import com.whitefly.plutocrat.mainmenu.fragments.FAQFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.HomeFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.InitiateFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.ShareFragment;
@@ -47,7 +48,9 @@ public class MainMenuActivity extends AppCompatActivity
     private static final int FRAGMENT_BUYOUTS_INDEX = 2;
     private static final int FRAGMENT_SHARES_INDEX = 3;
     private static final int FRAGMENT_ABOUT_INDEX = 4;
+
     private static final String FRAGMENT_INITIATE = "frg_initiate";
+    private static final String FRAGMENT_FAQ = "frg_faq";
 
     // Attributes
     private MenuPagerAdapter mAdapter;
@@ -130,7 +133,9 @@ public class MainMenuActivity extends AppCompatActivity
             // Handle the camera action
             Toast.makeText(this, "Manage Account", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_faq) {
-            Toast.makeText(this, "FAQ", Toast.LENGTH_SHORT).show();
+            android.app.FragmentTransaction t = getFragmentManager().beginTransaction();
+
+            FAQFragment.newInstance().show(t, FRAGMENT_FAQ);
         } else if (id == R.id.nav_signout) {
             EventBus.getInstance().post(new SignOutEvent());
         }

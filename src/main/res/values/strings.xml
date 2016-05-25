@@ -14,7 +14,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="welcom_title">Welcome to Plutocrat</string>
+    <string name="welcome_title">Welcome to Plutocrat</string>
     <string name="welcome_content"><![CDATA[Use Shares to buy out other players.<br /> The player with the most buyouts is the Plutocrat.<br /> Match buyout offers to stay in the game.<br /> <br /> Failing to match a buyout within 48 hours results in <strong>permanent account suspension</strong>. Your remaining shares go to victor.]]></string>
     <string name="register_title">Register</string>
     <string name="register_touchid">Enable Touch ID</string>
@@ -77,6 +77,12 @@
     <string name="caption_moreshares">BUY MORE SHARES...</string>
     <string name="title_unused_shares">%1$d Unused Shares</string>
     <string name="title_success_buyout">%1$d Successful Buyouts</string>
+    <string name="header_faq_plutocrat">Plutocrat</string>
+    <string name="note_faq_plutocrat"><![CDATA[Use Shares to buy out other players. The player with the most buyouts is the Plutocrat. Match buyout offers to stay in the game.<br /><br />Failing to match a buyout within 48 hours results in <b>permanent account suspension</b>. Your remaining shares go to the victor.]]></string>
+    <string name="header_faq_whatshare">What is share?</string>
+    <string name="note_faq_whatshare">Shares are your primary means of attacking and defending in Plutocrat. You can buy other players out of the game by challenging them to match your buyout offer (some number of shares).\n\nIf someone else attempts to buy you out, you have to match their buyout offer with an equal number of shares in order to stay in the game.</string>
+    <string name="header_faq_moreshare">What if I don\'t have enough shares to match a buyout?</string>
+    <string name="note_faq_moreshare">Everyone starts with 1 share. If you need more, navigate to the Shares view via the bottom navigation bar to purchase more.</string>
 
     <string name="err_input_shares_number">Please input number of shares</string>
 
