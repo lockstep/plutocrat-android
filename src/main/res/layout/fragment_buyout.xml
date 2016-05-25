@@ -12,7 +12,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/header_height"
-            android:id="@+id/llo_home_header"
+            android:id="@+id/llo_buyout_header"
             android:orientation="horizontal"
             android:background="@drawable/header_bg_default"
             android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -26,8 +26,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="32 Successful Buyouts"
-                    style="@style/HeaderBigText" />
+                    android:text="@string/title_success_buyout"
+                    style="@style/HeaderBigText"
+                    android:id="@+id/tv_title_buyout" />
             </LinearLayout>
         </LinearLayout>
 
