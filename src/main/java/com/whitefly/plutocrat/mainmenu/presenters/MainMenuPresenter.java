@@ -7,8 +7,10 @@ import com.squareup.otto.Subscribe;
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.HttpClient;
+import com.whitefly.plutocrat.mainmenu.events.EngageClickEvent;
 import com.whitefly.plutocrat.mainmenu.events.LoadBuyoutsEvent;
 import com.whitefly.plutocrat.mainmenu.events.LoadTargetsEvent;
+import com.whitefly.plutocrat.mainmenu.events.MoreShareClickEvent;
 import com.whitefly.plutocrat.mainmenu.events.SignOutEvent;
 import com.whitefly.plutocrat.mainmenu.views.IBuyoutView;
 import com.whitefly.plutocrat.mainmenu.views.IMainMenuView;
@@ -57,6 +59,16 @@ public class MainMenuPresenter {
     @Subscribe
     public void onLoadBuyouts(LoadBuyoutsEvent event) {
         new LoadDummyBuyoutCallback().execute(event);
+    }
+
+    @Subscribe
+    public void onEngageClick(EngageClickEvent event) {
+        mMainMenuView.callInitiateDialog(event.getTargetModel());
+    }
+
+    @Subscribe
+    public void onMoreShareClick(MoreShareClickEvent event) {
+        mMainMenuView.goToShareFromInitiate();
     }
 
     /*
