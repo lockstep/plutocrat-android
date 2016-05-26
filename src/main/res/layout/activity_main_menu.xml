@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:openDrawer="start"
-    app:theme="@style/NavDrawer">
+    android:theme="@style/NavDrawer">
 
     <include
         layout="@layout/app_bar_main_menu"
@@ -31,7 +31,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:text="By Whitefly Ventures, Inc."
             android:textAppearance="@style/NavDrawerTextAppearance"/>
     </android.support.design.widget.NavigationView>

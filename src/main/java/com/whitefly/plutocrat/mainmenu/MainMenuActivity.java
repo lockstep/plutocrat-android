@@ -9,7 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
+import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,12 +17,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.ViewConfiguration;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.EventBus;
+import com.whitefly.plutocrat.helpers.view.CustomViewPager;
 import com.whitefly.plutocrat.login.LoginActivity;
 import com.whitefly.plutocrat.mainmenu.events.SignOutEvent;
 import com.whitefly.plutocrat.mainmenu.fragments.AboutFragment;
@@ -58,9 +60,28 @@ public class MainMenuActivity extends AppCompatActivity
     private MenuPagerAdapter mAdapter;
     private MainMenuPresenter presenter;
 
+    private float mTouchXDown, mTouchXUp;
+    private int mTouchSlop;
+
     // Views
-    private ViewPager mMainPager;
+    private CustomViewPager mMainPager;
     private TabLayout mTabLayout;
+
+    public void suspendMenu() {
+        mMainPager.setPagingEnabled(false);
+        mTabLayout.getTabAt(FRAGMENT_TARGETS_INDEX).getCustomView().setVisibility(View.GONE);
+        mTabLayout.getTabAt(FRAGMENT_BUYOUTS_INDEX).getCustomView().setVisibility(View.GONE);
+        mTabLayout.getTabAt(FRAGMENT_SHARES_INDEX).getCustomView().setVisibility(View.GONE);
+        mTabLayout.getTabAt(FRAGMENT_ABOUT_INDEX).getCustomView().setVisibility(View.GONE);
+    }
+
+    public void activateMenu() {
+        mMainPager.setPagingEnabled(true);
+        mTabLayout.getTabAt(FRAGMENT_TARGETS_INDEX).getCustomView().setVisibility(View.VISIBLE);
+        mTabLayout.getTabAt(FRAGMENT_BUYOUTS_INDEX).getCustomView().setVisibility(View.VISIBLE);
+        mTabLayout.getTabAt(FRAGMENT_SHARES_INDEX).getCustomView().setVisibility(View.VISIBLE);
+        mTabLayout.getTabAt(FRAGMENT_ABOUT_INDEX).getCustomView().setVisibility(View.VISIBLE);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,10 +100,12 @@ public class MainMenuActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         // Get Views
-        mMainPager = (ViewPager) findViewById(R.id.vpg_main);
+        mMainPager = (CustomViewPager) findViewById(R.id.vpg_main);
         mTabLayout = (TabLayout) findViewById(R.id.tabbar);
 
         // Initialize
+        mTouchSlop = ViewConfiguration.get(this).getScaledTouchSlop();
+
         if(mAdapter == null) {
             mAdapter = new MenuPagerAdapter(getSupportFragmentManager());
         }
@@ -113,6 +136,50 @@ public class MainMenuActivity extends AppCompatActivity
         // Force to select first item
         mTabLayout.getTabAt(FRAGMENT_TARGETS_INDEX).select();
         mTabLayout.getTabAt(FRAGMENT_HOME_INDEX).select();
+
+        // Event Handler
+        mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if(tab.getCustomView().getVisibility() == View.GONE) {
+                    mTabLayout.getTabAt(FRAGMENT_HOME_INDEX).select();
+                } else {
+                    mMainPager.setCurrentItem(tab.getPosition());
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        switch (ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mTouchXDown = ev.getX();
+                break;
+            case MotionEvent.ACTION_UP:
+                mTouchXUp = ev.getX();
+                float deltaX = mTouchXUp - mTouchXDown;
+                if(Math.abs(deltaX) > mTouchSlop) {
+                    if(mTouchXUp > mTouchXDown) {
+                        if(mMainPager.getCurrentItem() == FRAGMENT_HOME_INDEX) {
+                            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                            drawer.openDrawer(GravityCompat.START);
+                        }
+                    }
+                }
+                break;
+        }
+        return super.dispatchTouchEvent(ev);
     }
 
     @Override
@@ -141,10 +208,10 @@ public class MainMenuActivity extends AppCompatActivity
             FAQFragment.newInstance().show(t, FRAGMENT_FAQ);
         } else if (id == R.id.nav_signout) {
             EventBus.getInstance().post(new SignOutEvent());
-        }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+        }
         return true;
     }
 

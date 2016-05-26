@@ -23,9 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.whitefly.plutocrat.R;
-import com.whitefly.plutocrat.helpers.AppPreference;
-import com.whitefly.plutocrat.helpers.EventBus;
-import com.whitefly.plutocrat.login.events.RequestResetTokenEvent;
+import com.whitefly.plutocrat.mainmenu.MainMenuActivity;
 import com.whitefly.plutocrat.mainmenu.views.ITabView;
 
 /**
@@ -94,6 +92,8 @@ public class HomeFragment extends Fragment implements ITabView {
 
                 mTvNote.setText(spanningText);
                 mTvNote.setMovementMethod(LinkMovementMethod.getInstance());
+
+                ((MainMenuActivity) getActivity()).activateMenu();
                 break;
             case Threat:
                 // Change header
@@ -111,6 +111,8 @@ public class HomeFragment extends Fragment implements ITabView {
                 mLloOwner.setBackground(null);
                 mLloShares.setBackground(null);
                 mLloNote.setBackground(null);
+
+                ((MainMenuActivity) getActivity()).activateMenu();
                 break;
             case Suspend:
                 // Change header
@@ -131,6 +133,8 @@ public class HomeFragment extends Fragment implements ITabView {
 
                 // Set value
                 mTvNote.setText(Html.fromHtml(String.format(mNoteSuspend, "amy", 32, 4)));
+
+                ((MainMenuActivity) getActivity()).suspendMenu();
                 break;
         }
     }
