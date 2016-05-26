@@ -102,6 +102,7 @@
         <item name="android:maxLines">1</item>
         <item name="android:inputType">textImeMultiLine</item>
         <item name="android:imeOptions">actionNext</item>
+        <item name="android:fontFamily">sans-serif</item>
     </style>
 
     <style name="EditTextSingleLine.WithoutLine" parent="EditTextSingleLine">
