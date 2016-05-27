@@ -9,12 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.EventBus;
+import com.whitefly.plutocrat.login.LoginActivity;
 import com.whitefly.plutocrat.login.events.ForgotPasswordEvent;
 import com.whitefly.plutocrat.login.events.RegisterEvent;
 import com.whitefly.plutocrat.login.events.SignInEvent;
@@ -26,6 +28,7 @@ import com.whitefly.plutocrat.login.views.ILoginView;
  * create an instance of this fragment.
  */
 public class LoginFragment extends Fragment implements ILoginView {
+
     // Attributes
     private ILoginView.ViewState mCurrentState;
 
@@ -33,6 +36,7 @@ public class LoginFragment extends Fragment implements ILoginView {
     private TextView mTvWelcomeContent;
     private TextView mTvLoginLink, mTvRegisterLink, mTvForgotPwLink;
     private RelativeLayout mRloRegister, mRloSignin;
+    private LinearLayout mLloSignInButtonGroup;
     private Button mBtnRegister, mBtnSigin;
     private EditText mEdtRegDisplayName, mEdtRegEmail, mEdtRegPassword;
     private EditText mEdtSignInEmail, mEdtSignInPassword;
@@ -47,15 +51,17 @@ public class LoginFragment extends Fragment implements ILoginView {
      *
      * @return A new instance of fragment LoginFragment.
      */
-    public static LoginFragment newInstance() {
+    public static LoginFragment newInstance(ILoginView.ViewState initiateState) {
         LoginFragment fragment = new LoginFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(LoginActivity.BUNDLE_INITIATE_LOGIN_STATE, initiateState);
+        fragment.setArguments(bundle);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mCurrentState = ViewState.Register;
     }
 
     @Override
@@ -77,9 +83,19 @@ public class LoginFragment extends Fragment implements ILoginView {
         mEdtRegPassword     = (EditText) root.findViewById(R.id.edt_reg_pw);
         mEdtSignInEmail     = (EditText) root.findViewById(R.id.edt_signin_email);
         mEdtSignInPassword  = (EditText) root.findViewById(R.id.edt_signin_pw);
+        mLloSignInButtonGroup = (LinearLayout) root.findViewById(R.id.llo_sign_in_button_group);
 
         // Initialize
         mTvWelcomeContent.setText(Html.fromHtml(getString(R.string.welcome_content)));
+        if(mCurrentState == null) {
+            ILoginView.ViewState loginState =
+                    (ILoginView.ViewState) getArguments().getSerializable(LoginActivity.BUNDLE_INITIATE_LOGIN_STATE);
+            if (loginState == null) {
+                mCurrentState = ViewState.Register;
+            } else {
+                changeState(loginState);
+            }
+        }
 
         // Event Handler
         mTvLoginLink.setOnClickListener(new View.OnClickListener() {
@@ -149,10 +165,14 @@ public class LoginFragment extends Fragment implements ILoginView {
     public void changeState(ViewState state) {
         if(state == ViewState.Login) {
             mRloRegister.setVisibility(View.GONE);
+            mTvLoginLink.setVisibility(View.GONE);
             mRloSignin.setVisibility(View.VISIBLE);
+            mLloSignInButtonGroup.setVisibility(View.VISIBLE);
         } else {
             mRloRegister.setVisibility(View.VISIBLE);
+            mTvLoginLink.setVisibility(View.VISIBLE);
             mRloSignin.setVisibility(View.GONE);
+            mLloSignInButtonGroup.setVisibility(View.GONE);
         }
         mCurrentState = state;
     }

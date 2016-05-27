@@ -25,7 +25,10 @@ public class MainActivity extends AppCompatActivity implements ISplashView {
 
         // Initialize
         AppPreference.createInstance(this);
-        presenter = new SplashPresenter(this, this);
+        if(presenter == null) {
+            presenter = new SplashPresenter(this, this);
+            EventBus.getInstance().register(presenter);
+        }
 
         // Go to next page for a period
         new Handler().postDelayed(new Runnable() {
@@ -39,12 +42,11 @@ public class MainActivity extends AppCompatActivity implements ISplashView {
     @Override
     protected void onResume() {
         super.onResume();
-        EventBus.getInstance().register(presenter);
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onDestroy() {
+        super.onDestroy();
         EventBus.getInstance().unregister(presenter);
     }
 

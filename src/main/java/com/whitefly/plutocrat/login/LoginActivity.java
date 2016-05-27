@@ -17,6 +17,7 @@ import com.whitefly.plutocrat.login.views.ILoginMainView;
 import com.whitefly.plutocrat.login.views.ILoginView;
 
 public class LoginActivity extends AppCompatActivity implements ILoginMainView {
+    public static final String BUNDLE_INITIATE_LOGIN_STATE = "com.whitefly.plutocrat.bundle.initiateLogin";
 
     // Attributes
     private LoginPresenter presenter;
@@ -30,8 +31,14 @@ public class LoginActivity extends AppCompatActivity implements ILoginMainView {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        ILoginView.ViewState loginState =
+                (ILoginView.ViewState) getIntent().getSerializableExtra(BUNDLE_INITIATE_LOGIN_STATE);
+        if(loginState == null) {
+            loginState = ILoginView.ViewState.Register;
+        }
+
         // Create Fragments
-        mLoginFragment = LoginFragment.newInstance();
+        mLoginFragment = LoginFragment.newInstance(loginState);
         mReset1Fragment = ResetPassword1Fragment.newInstance();
         mReset2Fragment = ResetPassword2Fragment.newInstance();
 

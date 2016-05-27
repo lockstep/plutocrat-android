@@ -26,6 +26,7 @@ import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.helpers.view.CustomViewPager;
 import com.whitefly.plutocrat.login.LoginActivity;
+import com.whitefly.plutocrat.login.views.ILoginView;
 import com.whitefly.plutocrat.mainmenu.events.SignOutEvent;
 import com.whitefly.plutocrat.mainmenu.fragments.AboutFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.AccountSettingFragment;
@@ -274,6 +275,7 @@ public class MainMenuActivity extends AppCompatActivity
     @Override
     public void goToLogin() {
         Intent intent = new Intent(this, LoginActivity.class);
+        intent.putExtra(LoginActivity.BUNDLE_INITIATE_LOGIN_STATE, ILoginView.ViewState.Login);
         startActivity(intent);
 
         finish();

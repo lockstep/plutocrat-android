@@ -115,6 +115,16 @@
         <item name="android:textStyle">italic</item>
     </style>
 
+    <style name="LoginEditText" parent="EditTextSingleLine.WithoutLine">
+        <item name="android:layout_marginStart">@dimen/edt_horizontal_spacing</item>
+        <item name="android:layout_marginEnd">@dimen/edt_horizontal_spacing</item>
+        <item name="android:paddingBottom">@dimen/edt_vertical_spacing</item>
+        <item name="android:paddingTop">@dimen/edt_vertical_spacing</item>
+        <item name="android:background">@drawable/bg_line_bottom</item>
+        <item name="android:textColor">@color/colorGrey</item>
+        <item name="android:textColorHint">@color/colorGrey</item>
+    </style>
+
     <style name="Checkbox" parent="Widget.AppCompat.CompoundButton.CheckBox">
         <item name="android:textSize">@dimen/font_small</item>
         <item name="android:textColor">@color/colorGrey</item>
