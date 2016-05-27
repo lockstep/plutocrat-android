@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,8 +7,14 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:fillViewport="true"
+    android:scrollbars="none"
     tools:context="com.whitefly.plutocrat.login.LoginActivity">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/login_height">
 
     <LinearLayout
         android:orientation="vertical"
@@ -40,10 +46,9 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible"
+        android:visibility="gone"
         android:id="@+id/rlo_register"
-        android:layout_below="@+id/linearLayout"
-        android:layout_alignParentBottom="true">
+        android:layout_below="@+id/linearLayout">
 
         <LinearLayout
             android:orientation="vertical"
@@ -66,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/edt_reg_displayname"
                 android:hint="@string/caption_displayname"
-                style="@style/EditTextSingleLine"/>
+                style="@style/LoginEditText"/>
 
             <EditText
                 android:layout_width="match_parent"
@@ -75,7 +80,7 @@
                 android:ems="10"
                 android:id="@+id/edt_reg_email"
                 android:hint="@string/caption_email"
-                android:textSize="@dimen/font_small" />
+                style="@style/LoginEditText" />
 
             <EditText
                 android:layout_width="match_parent"
@@ -84,11 +89,12 @@
                 android:ems="10"
                 android:id="@+id/edt_reg_pw"
                 android:hint="@string/cation_password"
-                android:textSize="@dimen/font_small" />
+                style="@style/LoginEditText" />
 
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:text="@string/register_touchid"
                 android:id="@+id/chk_reg_touch"
                 android:checked="false"
@@ -101,27 +107,15 @@
                 android:id="@+id/btn_register"
                 style="@style/DefaultButton"/>
         </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/caption_login"
-            android:id="@+id/tv_login_link"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            style="@style/LinkText"
-            />
     </RelativeLayout>
 
     <RelativeLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
+        android:visibility="visible"
         android:id="@+id/rlo_signin"
-        android:layout_below="@+id/linearLayout"
-        android:layout_alignParentBottom="true">
+        android:layout_below="@+id/linearLayout">
 
         <LinearLayout
             android:orientation="vertical"
@@ -146,7 +140,7 @@
                 android:ems="10"
                 android:id="@+id/edt_signin_email"
                 android:hint="@string/caption_email"
-                android:textSize="@dimen/font_small"/>
+                style="@style/LoginEditText"/>
 
             <EditText
                 android:layout_width="match_parent"
@@ -155,11 +149,12 @@
                 android:ems="10"
                 android:id="@+id/edt_signin_pw"
                 android:hint="@string/cation_password"
-                android:textSize="@dimen/font_small" />
+                style="@style/LoginEditText" />
 
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:text="@string/register_touchid"
                 android:id="@+id/chk_signin_touch"
                 android:checked="false"
@@ -173,25 +168,40 @@
                 style="@style/DefaultButton"/>
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/caption_forgotpw"
-            android:id="@+id/tv_forgotpw_link"
-            android:layout_above="@+id/tv_register_link"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            style="@style/LinkText" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/caption_register"
-            android:id="@+id/tv_register_link"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            style="@style/LinkText" />
     </RelativeLayout>
 
-</RelativeLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/caption_login"
+            android:id="@+id/tv_login_link"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            style="@style/LinkText"
+            />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/llo_sign_in_button_group">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/caption_forgotpw"
+                android:id="@+id/tv_forgotpw_link"
+                style="@style/LinkText" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/caption_register"
+                android:id="@+id/tv_register_link"
+                style="@style/LinkText" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</ScrollView>
