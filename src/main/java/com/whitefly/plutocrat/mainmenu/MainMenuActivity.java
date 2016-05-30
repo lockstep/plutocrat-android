@@ -2,6 +2,9 @@ package com.whitefly.plutocrat.mainmenu;
 
 import android.app.DialogFragment;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -9,6 +12,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.TypefaceSpan;
+import android.util.TypedValue;
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -23,7 +31,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
+import com.whitefly.plutocrat.helpers.text.CustomTypefaceSpan;
 import com.whitefly.plutocrat.helpers.view.CustomViewPager;
 import com.whitefly.plutocrat.login.LoginActivity;
 import com.whitefly.plutocrat.login.views.ILoginView;
@@ -52,6 +62,7 @@ public class MainMenuActivity extends AppCompatActivity
     private static final int FRAGMENT_BUYOUTS_INDEX = 2;
     private static final int FRAGMENT_SHARES_INDEX = 3;
     private static final int FRAGMENT_ABOUT_INDEX = 4;
+    private static final int SLOP_PERIOD = 180;
 
     private static final String FRAGMENT_INITIATE = "frg_initiate";
     private static final String FRAGMENT_FAQ = "frg_faq";
@@ -60,6 +71,8 @@ public class MainMenuActivity extends AppCompatActivity
     // Attributes
     private MenuPagerAdapter mAdapter;
     private MainMenuPresenter presenter;
+
+    private DialogFragment mFrgAccountSetting;
 
     private float mTouchXDown, mTouchXUp;
     private int mTouchSlop;
@@ -84,12 +97,14 @@ public class MainMenuActivity extends AppCompatActivity
         mTabLayout.getTabAt(FRAGMENT_ABOUT_INDEX).getCustomView().setVisibility(View.VISIBLE);
     }
 
+    public void showAccountSettingFragment() {
+        mFrgAccountSetting.show(getFragmentManager(), FRAGMENT_ACCOUNT_SETTINGS);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -104,8 +119,23 @@ public class MainMenuActivity extends AppCompatActivity
         mMainPager = (CustomViewPager) findViewById(R.id.vpg_main);
         mTabLayout = (TabLayout) findViewById(R.id.tabbar);
 
+        mFrgAccountSetting = AccountSettingFragment.newInstance();
+
         // Initialize
-        mTouchSlop = ViewConfiguration.get(this).getScaledTouchSlop();
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
+                (TextView) navigationView.findViewById(R.id.tv_nav_license));
+
+        CustomTypefaceSpan fontSpan =
+                new CustomTypefaceSpan("", AppPreference.getInstance().getFont(AppPreference.FontType.Regular));
+        Menu menu = navigationView.getMenu();
+        for (int i=0, n=menu.size(); i<n; i++) {
+            MenuItem menuItem = menu.getItem(i);
+
+            SpannableString text = new SpannableString(menuItem.getTitle());
+            text.setSpan(fontSpan, 0, text.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        }
+
+        mTouchSlop = SLOP_PERIOD;
 
         if(mAdapter == null) {
             mAdapter = new MenuPagerAdapter(getSupportFragmentManager());
@@ -118,6 +148,7 @@ public class MainMenuActivity extends AppCompatActivity
         mMainPager.setAdapter(mAdapter);
         mTabLayout.setupWithViewPager(mMainPager);
         // Add title & icon
+        ColorStateList tabColorList = ContextCompat.getColorStateList(this, R.color.tab_item);
         for(int i=0, n=mAdapter.getCount(); i<n; i++) {
             ITabView view = (ITabView) mAdapter.getItem(i);
             TabLayout.Tab tab = mTabLayout.getTabAt(i);
@@ -128,9 +159,12 @@ public class MainMenuActivity extends AppCompatActivity
             ImageView imvIcon = (ImageView) root.findViewById(R.id.imv_icon);
 
             // Initiate
+            tvTitle.setTextColor(tabColorList);
             Drawable drawable = ContextCompat.getDrawable(this, view.getIcon());
             imvIcon.setImageDrawable(drawable);
             tvTitle.setText(view.getTitle());
+
+            AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular, tvTitle);
 
             tab.setCustomView(root);
         }
@@ -202,7 +236,7 @@ public class MainMenuActivity extends AppCompatActivity
         if (id == R.id.nav_profile) {
             android.app.FragmentTransaction t = getFragmentManager().beginTransaction();
 
-            AccountSettingFragment.newInstance().show(t, FRAGMENT_ACCOUNT_SETTINGS);
+            mFrgAccountSetting.show(t, FRAGMENT_ACCOUNT_SETTINGS);
         } else if (id == R.id.nav_faq) {
             android.app.FragmentTransaction t = getFragmentManager().beginTransaction();
 

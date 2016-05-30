@@ -7,9 +7,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.login.events.BackToLoginEvent;
 import com.whitefly.plutocrat.login.views.ILoginView;
@@ -20,7 +23,9 @@ import com.whitefly.plutocrat.login.views.ILoginView;
 public class ResetPassword2Fragment extends Fragment {
 
     // Attributes
-    private TextView mTvLoginLink, mTvRegisterLink;
+    private TextView mTvTitle, mTvContent, mTvResetCaption;
+    private EditText mEdtEmail, mEdtResetToken, mEdtNewPassword, mEdtConfirmPassword;
+    private Button mBtnReset, mBtnLoginLink, mBtnRegisterLink;
 
     /**
      * Use this factory method to create a new instance of
@@ -47,17 +52,30 @@ public class ResetPassword2Fragment extends Fragment {
                              Bundle savedInstanceState) {
         // Get Views
         View root = inflater.inflate(R.layout.fragment_resetpw2, container, false);
-        mTvLoginLink = (TextView) root.findViewById(R.id.tv_reset2_login_link);
-        mTvRegisterLink = (TextView) root.findViewById(R.id.tv_reset2_register_link);
+        mTvTitle        = (TextView) root.findViewById(R.id.tv_reset2_title);
+        mTvContent      = (TextView) root.findViewById(R.id.tv_reset2_content);
+        mTvResetCaption = (TextView) root.findViewById(R.id.tv_reset2_caption);
+        mBtnLoginLink   = (Button) root.findViewById(R.id.btn_reset2_login_link);
+        mBtnRegisterLink = (Button) root.findViewById(R.id.btn_reset2_register_link);
+        mEdtEmail       = (EditText) root.findViewById(R.id.edt_reset2_email);
+        mEdtResetToken  = (EditText) root.findViewById(R.id.edt_reset2_token);
+        mEdtNewPassword = (EditText) root.findViewById(R.id.edt_reset2_newpw);
+        mEdtConfirmPassword = (EditText) root.findViewById(R.id.edt_reset2_confirmpw);
+        mBtnReset       = (Button) root.findViewById(R.id.btn_reset2_reset);
+
+        // Initiate
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
+                mTvTitle, mTvContent, mTvResetCaption, mBtnLoginLink, mBtnRegisterLink,
+                mEdtEmail, mEdtResetToken, mEdtNewPassword, mEdtConfirmPassword, mBtnReset);
 
         // Event Handler
-        mTvLoginLink.setOnClickListener(new View.OnClickListener() {
+        mBtnLoginLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EventBus.getInstance().post(new BackToLoginEvent(ILoginView.ViewState.Login));
             }
         });
-        mTvRegisterLink.setOnClickListener(new View.OnClickListener() {
+        mBtnRegisterLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EventBus.getInstance().post(new BackToLoginEvent(ILoginView.ViewState.Register));

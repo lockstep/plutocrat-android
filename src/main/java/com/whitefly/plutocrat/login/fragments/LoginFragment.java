@@ -1,12 +1,16 @@
 package com.whitefly.plutocrat.login.fragments;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -15,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.login.LoginActivity;
 import com.whitefly.plutocrat.login.events.ForgotPasswordEvent;
@@ -27,19 +32,22 @@ import com.whitefly.plutocrat.login.views.ILoginView;
  * Use the {@link LoginFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LoginFragment extends Fragment implements ILoginView {
+public class LoginFragment extends Fragment implements ILoginView, View.OnClickListener {
+    private static final String FRAGMENT_WEB_VIEW = "frg_web_view";
 
     // Attributes
     private ILoginView.ViewState mCurrentState;
 
     // Views
-    private TextView mTvWelcomeContent;
-    private TextView mTvLoginLink, mTvRegisterLink, mTvForgotPwLink;
-    private RelativeLayout mRloRegister, mRloSignin;
+    private TextView mTvWelcomeTitle, mTvWelcomeContent, mTvSignInTitle, mTvRegisterTitile;
+    private Button mBtnLoginLink, mBtnRegisterLink, mBtnForgotPwLink, mBtnEula, mBtnPrivacy;
+    private RelativeLayout mRloRegister, mRloSignin, mRloRegisterButtonGroup;
     private LinearLayout mLloSignInButtonGroup;
     private Button mBtnRegister, mBtnSigin;
     private EditText mEdtRegDisplayName, mEdtRegEmail, mEdtRegPassword;
     private EditText mEdtSignInEmail, mEdtSignInPassword;
+
+    private WebViewFragment mFrgWebView;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -70,10 +78,13 @@ public class LoginFragment extends Fragment implements ILoginView {
         View root = inflater.inflate(R.layout.fragment_login, container, false);
 
         // Get views
+        mTvWelcomeTitle     = (TextView) root.findViewById(R.id.tv_welcome_title);
+        mTvSignInTitle      = (TextView) root.findViewById(R.id.tv_signin_title);
+        mTvRegisterTitile   = (TextView) root.findViewById(R.id.tv_register_title);
         mTvWelcomeContent   = (TextView) root.findViewById(R.id.tv_welcome_content);
-        mTvLoginLink        = (TextView) root.findViewById(R.id.tv_login_link);
-        mTvRegisterLink     = (TextView) root.findViewById(R.id.tv_register_link);
-        mTvForgotPwLink     = (TextView) root.findViewById(R.id.tv_forgotpw_link);
+        mBtnLoginLink       = (Button) root.findViewById(R.id.btn_login_link);
+        mBtnRegisterLink    = (Button) root.findViewById(R.id.btn_register_link);
+        mBtnForgotPwLink    = (Button) root.findViewById(R.id.btn_forgotpw_link);
         mRloRegister        = (RelativeLayout) root.findViewById(R.id.rlo_register);
         mRloSignin          = (RelativeLayout) root.findViewById(R.id.rlo_signin);
         mBtnRegister        = (Button) root.findViewById(R.id.btn_register);
@@ -84,8 +95,17 @@ public class LoginFragment extends Fragment implements ILoginView {
         mEdtSignInEmail     = (EditText) root.findViewById(R.id.edt_signin_email);
         mEdtSignInPassword  = (EditText) root.findViewById(R.id.edt_signin_pw);
         mLloSignInButtonGroup = (LinearLayout) root.findViewById(R.id.llo_sign_in_button_group);
+        mBtnEula            = (Button) root.findViewById(R.id.btn_eula);
+        mBtnPrivacy         = (Button) root.findViewById(R.id.btn_privacy);
+        mRloRegisterButtonGroup = (RelativeLayout) root.findViewById(R.id.rlo_register_button_group);
 
         // Initialize
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
+                mTvWelcomeTitle, mTvWelcomeContent, mBtnLoginLink, mBtnRegisterLink,
+                mBtnForgotPwLink, mBtnRegister, mBtnSigin, mEdtRegDisplayName,
+                mEdtRegEmail, mEdtRegPassword, mEdtSignInEmail, mEdtSignInPassword,
+                mTvSignInTitle, mTvRegisterTitile, mBtnEula, mBtnPrivacy);
+
         mTvWelcomeContent.setText(Html.fromHtml(getString(R.string.welcome_content)));
         if(mCurrentState == null) {
             ILoginView.ViewState loginState =
@@ -97,22 +117,24 @@ public class LoginFragment extends Fragment implements ILoginView {
             }
         }
 
+        mFrgWebView = WebViewFragment.newInstance();
+
         // Event Handler
-        mTvLoginLink.setOnClickListener(new View.OnClickListener() {
+        mBtnLoginLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Just show another view
                 changeState(ViewState.Login);
             }
         });
-        mTvRegisterLink.setOnClickListener(new View.OnClickListener() {
+        mBtnRegisterLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Just show another view;
                 changeState(ViewState.Register);
             }
         });
-        mTvForgotPwLink.setOnClickListener(new View.OnClickListener() {
+        mBtnForgotPwLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Send event
@@ -138,6 +160,8 @@ public class LoginFragment extends Fragment implements ILoginView {
                 EventBus.getInstance().post(new SignInEvent(email, password));
             }
         });
+        mBtnPrivacy.setOnClickListener(this);
+        mBtnEula.setOnClickListener(this);
 
         return root;
     }
@@ -158,19 +182,38 @@ public class LoginFragment extends Fragment implements ILoginView {
         super.onDetach();
     }
 
+    @Override
+    public void onClick(View v) {
+        String url = null;
+        String title = null;
+        if(v == mBtnEula) {
+            url = getString(R.string.eula_url);
+            title = getString(R.string.caption_eula);
+        } else if(v == mBtnPrivacy) {
+            url = getString(R.string.privacy_url);
+            title = getString(R.string.caption_privacy);
+        }
+
+        if(url != null) {
+            mFrgWebView.setTitle(title);
+            mFrgWebView.loadUrl(url);
+            mFrgWebView.show(getActivity().getFragmentManager(), FRAGMENT_WEB_VIEW);
+        }
+    }
+
     /*
-    Implement ILoginView
-     */
+        Implement ILoginView
+         */
     @Override
     public void changeState(ViewState state) {
         if(state == ViewState.Login) {
             mRloRegister.setVisibility(View.GONE);
-            mTvLoginLink.setVisibility(View.GONE);
+            mRloRegisterButtonGroup.setVisibility(View.GONE);
             mRloSignin.setVisibility(View.VISIBLE);
             mLloSignInButtonGroup.setVisibility(View.VISIBLE);
         } else {
             mRloRegister.setVisibility(View.VISIBLE);
-            mTvLoginLink.setVisibility(View.VISIBLE);
+            mRloRegisterButtonGroup.setVisibility(View.VISIBLE);
             mRloSignin.setVisibility(View.GONE);
             mLloSignInButtonGroup.setVisibility(View.GONE);
         }

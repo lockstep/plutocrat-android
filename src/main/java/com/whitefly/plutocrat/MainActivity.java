@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
 
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
@@ -14,6 +16,7 @@ import com.whitefly.plutocrat.splash.presenters.SplashPresenter;
 import com.whitefly.plutocrat.splash.views.ISplashView;
 
 public class MainActivity extends AppCompatActivity implements ISplashView {
+    private static final int TIME_SHOW_SPLASH_SCREEN = 2000;
 
     // Attributes
     private SplashPresenter presenter;
@@ -25,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements ISplashView {
 
         // Initialize
         AppPreference.createInstance(this);
+        AppPreference.getInstance().loadFonts(this);
         if(presenter == null) {
             presenter = new SplashPresenter(this, this);
             EventBus.getInstance().register(presenter);
@@ -36,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements ISplashView {
             public void run() {
                 EventBus.getInstance().post(new LoadUserDataEvent());
             }
-        }, 3000);
+        }, TIME_SHOW_SPLASH_SCREEN);
     }
 
     @Override

@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.mainmenu.adapters.listeners.OnLoadmoreListener;
 import com.whitefly.plutocrat.mainmenu.events.EngageClickEvent;
@@ -90,6 +91,11 @@ public class TargetAdapter extends RecyclerView.Adapter<TargetAdapter.ViewHolder
             vh.tvSurvived = (TextView) root.findViewById(R.id.tv_player_daysurvived);
             vh.btnEngage = (Button) root.findViewById(R.id.btn_player_engage);
             vh.tvGameStatus = (TextView) root.findViewById(R.id.tv_player_game_status);
+
+            AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
+                    vh.tvProfile, vh.tvName, vh.tvBuyout, vh.tvThreat, vh.tvSurvived, vh.btnEngage, vh.tvGameStatus);
+
+            AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Italic, vh.tvGameStatus);
 
             vh.btnEngage.setOnClickListener(mEngageClick);
         } else {

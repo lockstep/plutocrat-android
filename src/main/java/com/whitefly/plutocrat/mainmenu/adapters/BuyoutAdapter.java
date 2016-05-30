@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.mainmenu.adapters.listeners.OnLoadmoreListener;
 import com.whitefly.plutocrat.mainmenu.events.EngageClickEvent;
@@ -104,6 +105,13 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
             vh.tvStatus = (TextView) root.findViewById(R.id.tv_player_daysurvived);
             vh.btnEngage = (Button) root.findViewById(R.id.btn_player_engage);
             vh.tvGameStatus = (TextView) root.findViewById(R.id.tv_player_game_status);
+
+            AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
+                    vh.tvProfile, vh.tvName, vh.tvAction, vh.tvPeroid, vh.btnEngage);
+
+            AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Italic, vh.tvGameStatus);
+
+            AppPreference.getInstance().setFontsToViews(AppPreference.FontType.BoldItalic, vh.tvStatus);
 
             vh.btnEngage.setOnClickListener(mEngageClick);
         } else {

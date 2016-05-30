@@ -9,6 +9,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:fillViewport="true"
     android:scrollbars="none"
+    android:background="@android:color/white"
     tools:context="com.whitefly.plutocrat.login.LoginActivity">
 
     <RelativeLayout
@@ -88,6 +89,16 @@
                 android:layout_gravity="center_horizontal"
                 style="@style/LoginEditText" />
 
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:id="@+id/edt_reset2_confirmpw"
+                android:hint="@string/caption_confirm_password"
+                android:layout_gravity="center_horizontal"
+                android:visibility="gone"
+                style="@style/LoginEditText" />
+
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -99,25 +110,26 @@
     </RelativeLayout>
 
         <LinearLayout
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true">
 
-        <TextView
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/activity_default_margin"
             android:text="@string/caption_login"
-            android:id="@+id/tv_reset2_login_link"
-            style="@style/LinkText"/>
+            android:id="@+id/btn_reset2_login_link"
+            style="@style/WhiteButton"/>
 
-        <TextView
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/caption_register"
-            android:id="@+id/tv_reset2_register_link"
-            style="@style/LinkText" />
+            android:id="@+id/btn_reset2_register_link"
+            style="@style/WhiteButton" />
 
         </LinearLayout>
 

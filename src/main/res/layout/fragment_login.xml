@@ -9,6 +9,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:fillViewport="true"
     android:scrollbars="none"
+    android:background="@android:color/white"
     tools:context="com.whitefly.plutocrat.login.LoginActivity">
 
     <RelativeLayout
@@ -16,190 +17,198 @@
         android:layout_height="wrap_content"
         android:minHeight="@dimen/login_height">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/linearLayout"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="@dimen/margin_login">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/welcome_title"
-            android:id="@+id/tv_welcome_title"
-            style="@style/HeaderText"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/tv_welcome_content"
-            android:text="@string/welcome_content"
-            style="@style/NoteText"
-
-            />
-    </LinearLayout>
-
-    <RelativeLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        android:id="@+id/rlo_register"
-        android:layout_below="@+id/linearLayout">
-
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/linearLayout2"
-            android:layout_alignParentTop="true"
+            android:id="@+id/linearLayout"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true">
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="@dimen/margin_login">
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/register_title"
-                android:id="@+id/tv_register_title"
-                style="@style/HeaderTextWithLine"/>
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/edt_reg_displayname"
-                android:hint="@string/caption_displayname"
-                style="@style/LoginEditText"/>
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:ems="10"
-                android:id="@+id/edt_reg_email"
-                android:hint="@string/caption_email"
-                style="@style/LoginEditText" />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:ems="10"
-                android:id="@+id/edt_reg_pw"
-                android:hint="@string/cation_password"
-                style="@style/LoginEditText" />
-
-            <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@string/register_touchid"
-                android:id="@+id/chk_reg_touch"
-                android:checked="false"
-                style="@style/Checkbox" />
+                android:text="@string/welcome_title"
+                android:id="@+id/tv_welcome_title"
+                style="@style/HeaderText"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_welcome_content"
+                android:text="@string/welcome_content"
+                style="@style/NoteText"/>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:id="@+id/rlo_register"
+            android:layout_below="@+id/linearLayout">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/linearLayout2"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/register_title"
+                    android:id="@+id/tv_register_title"
+                    style="@style/HeaderTextWithLine"/>
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/edt_reg_displayname"
+                    android:hint="@string/caption_displayname"
+                    style="@style/LoginEditText"/>
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:ems="10"
+                    android:id="@+id/edt_reg_email"
+                    android:hint="@string/caption_email"
+                    style="@style/LoginEditText" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:ems="10"
+                    android:id="@+id/edt_reg_pw"
+                    android:hint="@string/cation_password"
+                    style="@style/LoginEditText" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/caption_enter"
+                    android:id="@+id/btn_register"
+                    style="@style/DefaultButton"/>
+            </LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible"
+            android:id="@+id/rlo_signin"
+            android:layout_below="@+id/linearLayout">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/linearLayout3"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/signin_title"
+                    android:id="@+id/tv_signin_title"
+                    style="@style/HeaderTextWithLine"/>
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:ems="10"
+                    android:id="@+id/edt_signin_email"
+                    android:hint="@string/caption_email"
+                    style="@style/LoginEditText"/>
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:ems="10"
+                    android:id="@+id/edt_signin_pw"
+                    android:hint="@string/cation_password"
+                    style="@style/LoginEditText" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/caption_enter"
+                    android:id="@+id/btn_signin"
+                    style="@style/DefaultButton"/>
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/rlo_register_button_group">
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/caption_enter"
-                android:id="@+id/btn_register"
-                style="@style/DefaultButton"/>
-        </LinearLayout>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="visible"
-        android:id="@+id/rlo_signin"
-        android:layout_below="@+id/linearLayout">
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/linearLayout3"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/signin_title"
-                android:id="@+id/tv_signin_title"
-                style="@style/HeaderTextWithLine"/>
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:ems="10"
-                android:id="@+id/edt_signin_email"
-                android:hint="@string/caption_email"
-                style="@style/LoginEditText"/>
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:ems="10"
-                android:id="@+id/edt_signin_pw"
-                android:hint="@string/cation_password"
-                style="@style/LoginEditText" />
-
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@string/register_touchid"
-                android:id="@+id/chk_signin_touch"
-                android:checked="false"
-                style="@style/Checkbox" />
+                android:text="@string/caption_login"
+                android:id="@+id/btn_login_link"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                style="@style/WhiteButton" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/caption_enter"
-                android:id="@+id/btn_signin"
-                style="@style/DefaultButton"/>
-        </LinearLayout>
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:id="@+id/btn_privacy"
+                android:text="@string/caption_privacy"
+                style="@style/WhiteButton"/>
 
-    </RelativeLayout>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_toLeftOf="@+id/btn_privacy"
+                android:layout_marginEnd="@dimen/activity_default_margin"
+                android:id="@+id/btn_eula"
+                android:text="@string/caption_eula"
+                style="@style/WhiteButton"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/caption_login"
-            android:id="@+id/tv_login_link"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            style="@style/LinkText"
-            />
+        </RelativeLayout>
 
         <LinearLayout
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true"
-            android:id="@+id/llo_sign_in_button_group">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/caption_forgotpw"
-                android:id="@+id/tv_forgotpw_link"
-                style="@style/LinkText" />
+            android:id="@+id/llo_sign_in_button_group"
+            android:visibility="gone">
 
-            <TextView
+            <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/activity_default_margin"
                 android:text="@string/caption_register"
-                android:id="@+id/tv_register_link"
-                style="@style/LinkText" />
+                android:id="@+id/btn_register_link"
+                style="@style/WhiteButton" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/caption_resetpw"
+                android:id="@+id/btn_forgotpw_link"
+                style="@style/WhiteButton" />
         </LinearLayout>
 
     </RelativeLayout>

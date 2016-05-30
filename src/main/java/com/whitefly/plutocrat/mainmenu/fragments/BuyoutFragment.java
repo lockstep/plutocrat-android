@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.mainmenu.adapters.BuyoutAdapter;
 import com.whitefly.plutocrat.mainmenu.adapters.listeners.OnLoadmoreListener;
@@ -62,6 +63,7 @@ public class BuyoutFragment extends Fragment implements ITabView, IBuyoutView {
         mTitle = (TextView) root.findViewById(R.id.tv_title_buyout);
 
         // Initiate
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Light, mTitle);
         mTitle.setText(String.format(getActivity().getString(R.string.title_success_buyout), DEBUG_SUCCESSFUL_BUYOUTS));
 
         ArrayList<BuyoutModel> dataset = new ArrayList<>();
@@ -98,7 +100,7 @@ public class BuyoutFragment extends Fragment implements ITabView, IBuyoutView {
 
     @Override
     public int getIcon() {
-        return R.drawable.icon_menu_default;
+        return R.drawable.icon_menu_buyouts;
     }
 
     @Override

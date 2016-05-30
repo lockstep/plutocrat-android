@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.helpers.AppPreference;
 
 /**
  * Created by satjapotiamopas on 5/24/16 AD.
@@ -55,6 +56,16 @@ public class FAQFragment extends DialogFragment {
         mTvNotePlutocrat = (TextView) root. findViewById(R.id.tv_faq_note_plutocrat) ;
 
         // Initialize
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
+                (TextView) root.findViewById(R.id.tv_faq_header_text),
+                (TextView) root.findViewById(R.id.tv_btn_back),
+                (TextView) root.findViewById(R.id.tv_faq_title_1),
+                (TextView) root.findViewById(R.id.tv_faq_title_2),
+                (TextView) root.findViewById(R.id.tv_faq_title_3),
+                (TextView) root.findViewById(R.id.tv_faq_note_2),
+                (TextView) root.findViewById(R.id.tv_faq_note_3),
+                mTvNotePlutocrat);
+
         mTvNotePlutocrat.setText(Html.fromHtml(getActivity().getString(R.string.note_faq_plutocrat)));
 
         // Event handler

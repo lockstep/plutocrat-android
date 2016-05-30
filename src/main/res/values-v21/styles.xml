@@ -9,4 +9,14 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowTranslucentStatus">true</item>
     </style>
+
+    <style name="DefaultButton" parent="Widget.AppCompat.Button">
+        <item name="android:layout_marginTop">14dp</item>
+        <item name="android:layout_marginBottom">14dp</item>
+        <item name="android:minWidth">80dp</item>
+        <item name="android:minHeight">30dp</item>
+        <item name="android:background">@drawable/bg_button_line</item>
+        <item name="android:textColor">@color/colorPurpleLink</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
 </resources>

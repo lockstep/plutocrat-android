@@ -31,6 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
+            android:id="@+id/tv_nav_license"
             android:text="By Whitefly Ventures, Inc."
             android:textAppearance="@style/NavDrawerTextAppearance"/>
     </android.support.design.widget.NavigationView>

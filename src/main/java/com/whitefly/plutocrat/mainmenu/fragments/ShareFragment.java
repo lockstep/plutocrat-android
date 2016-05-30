@@ -3,6 +3,8 @@ package com.whitefly.plutocrat.mainmenu.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,19 +14,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
+import com.whitefly.plutocrat.mainmenu.adapters.ShareAdapter;
 import com.whitefly.plutocrat.mainmenu.events.BuySharesEvent;
 import com.whitefly.plutocrat.mainmenu.views.ITabView;
+import com.whitefly.plutocrat.models.ShareBundleModel;
+
+import java.util.ArrayList;
 
 /**
  * Created by Satjapot on 5/10/16 AD.
  */
-public class ShareFragment extends Fragment implements ITabView, View.OnClickListener {
+public class ShareFragment extends Fragment implements ITabView {
     public static final String TITLE = "Shares";
     public static final String CURRENCY_FORMAT = "$%d";
-    private static final int PRICE_PER_SHARE_FOR_BUNDLE_SMALL = 25;
-    private static final int PRICE_PER_SHARE_FOR_BUNDLE_MEDIUM = 20;
-    private static final int PRICE_PER_SHARE_FOR_BUNDLE_LARGE = 15;
 
     private static final int DEBUG_UNUSED_SHARES = 12;
 
@@ -32,9 +36,7 @@ public class ShareFragment extends Fragment implements ITabView, View.OnClickLis
 
     // View
     private TextView mTvTitle;
-    private TextView mTvPriceBundleSmall, mTvPriceBundleMedium, mTvPriceBundleLarge;
-    private EditText mEdtQuantityBundleSmall, mEdtQuantityBundleMedium, mEdtQuantityLarge;
-    private Button mBtnAcquireBundleSmall, mBtnAcquireBundleMedium, mBtnAcquireBundleLarge;
+    private RecyclerView mRvMain;
 
     // Methods
     /**
@@ -54,63 +56,33 @@ public class ShareFragment extends Fragment implements ITabView, View.OnClickLis
         View root = inflater.inflate(R.layout.fragment_share, container, false);
 
         mTvTitle = (TextView) root.findViewById(R.id.tv_title_shares);
-        mEdtQuantityBundleSmall = (EditText) root.findViewById(R.id.edt_share_small);
-        mEdtQuantityBundleMedium = (EditText) root.findViewById(R.id.edt_share_medium);
-        mEdtQuantityLarge = (EditText) root.findViewById(R.id.edt_share_large);
-        mBtnAcquireBundleSmall = (Button) root.findViewById(R.id.btn_acquire_small);
-        mBtnAcquireBundleMedium = (Button) root.findViewById(R.id.btn_acquire_medium);
-        mBtnAcquireBundleLarge = (Button) root.findViewById(R.id.btn_acquire_large);
-        mTvPriceBundleSmall = (TextView) root.findViewById(R.id.tv_price_small);
-        mTvPriceBundleMedium = (TextView) root.findViewById(R.id.tv_price_medium);
-        mTvPriceBundleLarge = (TextView) root.findViewById(R.id.tv_price_large);
+        mRvMain = (RecyclerView) root.findViewById(R.id.rv_share_bundles);
 
         // Initialize
-        mTvTitle.setText(String.format(getActivity().getString(R.string.title_unused_shares), DEBUG_UNUSED_SHARES));
-        mTvPriceBundleSmall.setText(String.format(CURRENCY_FORMAT, PRICE_PER_SHARE_FOR_BUNDLE_SMALL));
-        mTvPriceBundleMedium.setText(String.format(CURRENCY_FORMAT, PRICE_PER_SHARE_FOR_BUNDLE_MEDIUM));
-        mTvPriceBundleLarge.setText(String.format(CURRENCY_FORMAT, PRICE_PER_SHARE_FOR_BUNDLE_LARGE));
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Light, mTvTitle);
 
-        // Event handler
-        mBtnAcquireBundleSmall.setOnClickListener(this);
-        mBtnAcquireBundleMedium.setOnClickListener(this);
-        mBtnAcquireBundleLarge.setOnClickListener(this);
+        mTvTitle.setText(String.format(getString(R.string.title_unused_shares), 32));
+
+        mRvMain.setHasFixedSize(true);
+        mRvMain.setLayoutManager(new LinearLayoutManager(getContext()));
+        ArrayList<ShareBundleModel> list = new ArrayList<>();
+        list.add(new ShareBundleModel(1, 25));
+        list.add(new ShareBundleModel(5, 25));
+        list.add(new ShareBundleModel(10, 20));
+        list.add(new ShareBundleModel(50, 15));
+        ShareAdapter adapter = new ShareAdapter(getActivity(), list);
+        mRvMain.setAdapter(adapter);
 
         return root;
     }
 
     @Override
     public int getIcon() {
-        return R.drawable.icon_menu_default;
+        return R.drawable.icon_menu_shares;
     }
 
     @Override
     public String getTitle() {
         return TITLE;
-    }
-
-    @Override
-    public void onClick(View v) {
-        int price;
-        int qty;
-        String strQty;
-
-        if(v == mBtnAcquireBundleLarge) {
-            price = PRICE_PER_SHARE_FOR_BUNDLE_LARGE;
-            strQty = mEdtQuantityLarge.getText().toString();
-        } else if(v == mBtnAcquireBundleMedium) {
-            price = PRICE_PER_SHARE_FOR_BUNDLE_MEDIUM;
-            strQty = mEdtQuantityBundleMedium.getText().toString();
-        } else {
-            price = PRICE_PER_SHARE_FOR_BUNDLE_SMALL;
-            strQty = mEdtQuantityBundleSmall.getText().toString();
-        }
-
-        try{
-            qty = Integer.parseInt(strQty);
-            EventBus.getInstance().post(new BuySharesEvent(qty, price));
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            Toast.makeText(getActivity(), R.string.err_input_shares_number, Toast.LENGTH_SHORT).show();
-        }
     }
 }
