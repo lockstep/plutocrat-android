@@ -55,7 +55,7 @@ public class ShareAdapter extends RecyclerView.Adapter<ShareAdapter.ViewHolder> 
             @Override
             public void onClick(View v) {
                 ShareBundleModel model = (ShareBundleModel) v.getTag();
-                EventBus.getInstance().post(new BuySharesEvent(model.qty, model.price));
+                EventBus.getInstance().post(new BuySharesEvent(model));
             }
         };
     }

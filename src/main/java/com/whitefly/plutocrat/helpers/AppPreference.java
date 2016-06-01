@@ -17,7 +17,7 @@ import java.util.EnumMap;
 public class AppPreference {
     public static final String DEBUG_APP = "Plutocrat";
 
-    private static final String PREF_NAME = "com.whitefly.plutocat.prefs";
+    public static final String PREF_NAME = "com.whitefly.plutocat.prefs";
 
     public enum FontType {
         Regular, Bold, Italic, BoldItalic, Light, LightItalic

@@ -1,12 +1,14 @@
 package com.whitefly.plutocrat.mainmenu;
 
 import android.app.DialogFragment;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,8 +16,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.style.TypefaceSpan;
-import android.util.TypedValue;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,14 +26,17 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.view.ViewConfiguration;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.vending.billing.IInAppBillingService;
+import com.google.gson.Gson;
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.exception.IAPException;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
+import com.whitefly.plutocrat.helpers.IAPHelper;
 import com.whitefly.plutocrat.helpers.text.CustomTypefaceSpan;
 import com.whitefly.plutocrat.helpers.view.CustomViewPager;
 import com.whitefly.plutocrat.login.LoginActivity;
@@ -48,20 +52,24 @@ import com.whitefly.plutocrat.mainmenu.fragments.ShareFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.TargetFragment;
 import com.whitefly.plutocrat.mainmenu.presenters.MainMenuPresenter;
 import com.whitefly.plutocrat.mainmenu.views.IBuyoutView;
+import com.whitefly.plutocrat.mainmenu.views.IHomeView;
 import com.whitefly.plutocrat.mainmenu.views.IMainMenuView;
 import com.whitefly.plutocrat.mainmenu.views.ITabView;
 import com.whitefly.plutocrat.mainmenu.views.ITargetView;
+import com.whitefly.plutocrat.models.IAPPurchaseModel;
 import com.whitefly.plutocrat.models.TargetModel;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class MainMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, IMainMenuView {
-    private static final int FRAGMENT_HOME_INDEX = 0;
-    private static final int FRAGMENT_TARGETS_INDEX = 1;
-    private static final int FRAGMENT_BUYOUTS_INDEX = 2;
-    private static final int FRAGMENT_SHARES_INDEX = 3;
-    private static final int FRAGMENT_ABOUT_INDEX = 4;
+    public static final int FRAGMENT_HOME_INDEX = 0;
+    public static final int FRAGMENT_TARGETS_INDEX = 1;
+    public static final int FRAGMENT_BUYOUTS_INDEX = 2;
+    public static final int FRAGMENT_SHARES_INDEX = 3;
+    public static final int FRAGMENT_ABOUT_INDEX = 4;
+
     private static final int SLOP_PERIOD = 180;
 
     private static final String FRAGMENT_INITIATE = "frg_initiate";
@@ -73,6 +81,7 @@ public class MainMenuActivity extends AppCompatActivity
     private MainMenuPresenter presenter;
 
     private DialogFragment mFrgAccountSetting;
+    private IAPHelper mIAPHelper;
 
     private float mTouchXDown, mTouchXUp;
     private int mTouchSlop;
@@ -99,6 +108,14 @@ public class MainMenuActivity extends AppCompatActivity
 
     public void showAccountSettingFragment() {
         mFrgAccountSetting.show(getFragmentManager(), FRAGMENT_ACCOUNT_SETTINGS);
+    }
+
+    public IAPHelper getIAPHelper() {
+        return mIAPHelper;
+    }
+
+    public void goToTab(int index) {
+        mTabLayout.getTabAt(index).select();
     }
 
     @Override
@@ -136,12 +153,14 @@ public class MainMenuActivity extends AppCompatActivity
         }
 
         mTouchSlop = SLOP_PERIOD;
+        mIAPHelper = new IAPHelper(this);
 
         if(mAdapter == null) {
             mAdapter = new MenuPagerAdapter(getSupportFragmentManager());
         }
         if(presenter == null) {
             presenter = new MainMenuPresenter(this, this,
+                    (IHomeView) mAdapter.getItem(FRAGMENT_HOME_INDEX),
                     (ITargetView) mAdapter.getItem(FRAGMENT_TARGETS_INDEX),
                     (IBuyoutView) mAdapter.getItem(FRAGMENT_BUYOUTS_INDEX));
         }
@@ -172,6 +191,7 @@ public class MainMenuActivity extends AppCompatActivity
         mTabLayout.getTabAt(FRAGMENT_TARGETS_INDEX).select();
         mTabLayout.getTabAt(FRAGMENT_HOME_INDEX).select();
 
+
         // Event Handler
         mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -190,6 +210,18 @@ public class MainMenuActivity extends AppCompatActivity
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+        mIAPHelper.setIAPProcessListener(new IAPHelper.IAPProcessListener() {
+            @Override
+            public void onBuySuccess(int resultCode, IAPPurchaseModel model) {
+                // TODO: Delete Debug
+                mIAPHelper.consume(model.purchaseToken);
+            }
+
+            @Override
+            public void onBuyFailed(int resultCode) {
 
             }
         });
@@ -268,15 +300,24 @@ public class MainMenuActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        mIAPHelper.onActivityResult(requestCode, resultCode, data);
+
         android.app.Fragment accountSettingFragment = getFragmentManager().findFragmentByTag(FRAGMENT_ACCOUNT_SETTINGS);
-        if(accountSettingFragment != null) {
+        if (accountSettingFragment != null) {
             accountSettingFragment.onActivityResult(requestCode, resultCode, data);
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        mIAPHelper.onDestroy();
+    }
+
     /*
-        Pager Adapter
-         */
+    Pager Adapter
+     */
     private class MenuPagerAdapter extends FragmentStatePagerAdapter {
         private ArrayList<Fragment> mFragments;
 
@@ -333,5 +374,14 @@ public class MainMenuActivity extends AppCompatActivity
         ((DialogFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INITIATE)).dismiss();
 
         mTabLayout.getTabAt(FRAGMENT_SHARES_INDEX).select();
+    }
+
+    @Override
+    public void buyIAP(String sku, String payload) {
+        try {
+            mIAPHelper.buy(sku, payload);
+        } catch (IAPException e) {
+            toast(e.getMessage());
+        }
     }
 }

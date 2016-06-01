@@ -8,17 +8,24 @@ import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.HttpClient;
 import com.whitefly.plutocrat.mainmenu.events.BuySharesEvent;
+import com.whitefly.plutocrat.mainmenu.events.CheckNotificationEnableEvent;
 import com.whitefly.plutocrat.mainmenu.events.EngageClickEvent;
 import com.whitefly.plutocrat.mainmenu.events.LoadBuyoutsEvent;
 import com.whitefly.plutocrat.mainmenu.events.LoadTargetsEvent;
 import com.whitefly.plutocrat.mainmenu.events.MoreShareClickEvent;
 import com.whitefly.plutocrat.mainmenu.events.SaveAccountSettingsEvent;
+import com.whitefly.plutocrat.mainmenu.events.SetHomeStateEvent;
 import com.whitefly.plutocrat.mainmenu.events.SignOutEvent;
+import com.whitefly.plutocrat.mainmenu.events.UpdateUserNoticeIdEvent;
+import com.whitefly.plutocrat.mainmenu.fragments.HomeFragment;
 import com.whitefly.plutocrat.mainmenu.views.IBuyoutView;
+import com.whitefly.plutocrat.mainmenu.views.IHomeView;
 import com.whitefly.plutocrat.mainmenu.views.IMainMenuView;
 import com.whitefly.plutocrat.mainmenu.views.ITargetView;
 import com.whitefly.plutocrat.models.BuyoutModel;
+import com.whitefly.plutocrat.models.ShareBundleModel;
 import com.whitefly.plutocrat.models.TargetModel;
+import com.whitefly.plutocrat.models.UserModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,25 +36,63 @@ import okhttp3.Headers;
  * Created by Satjapot on 5/12/16 AD.
  */
 public class MainMenuPresenter {
+
     // Attributes
     private Context mContext;
     private HttpClient mHttp;
 
     // Views
     private IMainMenuView mMainMenuView;
+    private IHomeView mHomeView;
     private ITargetView mTargetView;
     private IBuyoutView mBuyoutView;
 
     // Constructor
-    public MainMenuPresenter(Context context, IMainMenuView mmView, ITargetView targetView, IBuyoutView buyoutView) {
+    public MainMenuPresenter(Context context, IMainMenuView mmView, IHomeView homeView, ITargetView targetView, IBuyoutView buyoutView) {
         mContext = context;
         mHttp = new HttpClient(context);
         mMainMenuView = mmView;
+        mHomeView = homeView;
         mTargetView = targetView;
         mBuyoutView = buyoutView;
     }
 
     // Methods
+    @Subscribe
+    public void onSetHomeState(SetHomeStateEvent event) {
+        HomeFragment.State state = HomeFragment.State.Default;
+        UserModel userModel = AppPreference.getInstance().getSession().getActiveUser();
+
+        if (userModel.defeated_at != null) {
+            state = HomeFragment.State.Suspend;
+        } else if (userModel.under_buyout_threat) {
+            state = HomeFragment.State.Threat;
+        }
+
+        mHomeView.changeState(state, userModel.user_notice_id);
+    }
+
+    @Subscribe
+    public void onUpdateUserNoticeId(UpdateUserNoticeIdEvent event) {
+        HomeFragment.State state = HomeFragment.State.Default;
+        UserModel userModel = AppPreference.getInstance().getSession().getActiveUser();
+        userModel.user_notice_id = event.getNextNoticeId();
+
+        if (userModel.defeated_at != null) {
+            state = HomeFragment.State.Suspend;
+        } else if (userModel.attacking_current_user) {
+            state = HomeFragment.State.Threat;
+        }
+
+        mHomeView.changeState(state, userModel.user_notice_id);
+    }
+
+    @Subscribe
+    public void onCheckNotificationEnable(CheckNotificationEnableEvent event) {
+        UserModel model = AppPreference.getInstance().getSession().getActiveUser();
+        mHomeView.handleNotificationEnable(model.is_enable_notification);
+    }
+
     @Subscribe
     public void onSiginOut(SignOutEvent event) {
         new SignOutCallback().execute();
@@ -75,7 +120,12 @@ public class MainMenuPresenter {
 
     @Subscribe
     public void onBuyShares(BuySharesEvent event) {
-        mMainMenuView.toast(String.format("You are buying %d shares of %d each", event.getQty(), event.getPrice()));
+        ShareBundleModel model = event.getBundleDetail();
+        String payload = null; // TODO: connect to server for get developerPayload
+
+        mMainMenuView.toast(
+                String.format("You are buying %d shares of %d each", model.qty, model.price));
+        mMainMenuView.buyIAP(model.sku, payload);
     }
 
     @Subscribe

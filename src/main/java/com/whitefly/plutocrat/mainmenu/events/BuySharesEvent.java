@@ -1,22 +1,18 @@
 package com.whitefly.plutocrat.mainmenu.events;
 
+import com.whitefly.plutocrat.models.ShareBundleModel;
+
 /**
  * Created by satjapotiamopas on 5/24/16 AD.
  */
 public class BuySharesEvent {
-    private int mPrice;
-    private int mQty;
+    private ShareBundleModel mModel;
 
-    public int getPrice() {
-        return mPrice;
+    public ShareBundleModel getBundleDetail() {
+        return mModel;
     }
 
-    public int getQty() {
-        return mQty;
-    }
-
-    public BuySharesEvent(int qty, int price) {
-        mPrice = price;
-        mQty = qty;
+    public BuySharesEvent(ShareBundleModel model) {
+        mModel = model;
     }
 }
