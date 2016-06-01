@@ -11,9 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.mainmenu.adapters.TargetAdapter;
 import com.whitefly.plutocrat.mainmenu.adapters.listeners.OnLoadmoreListener;
@@ -47,6 +49,7 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
     private SwipeRefreshLayout mSRLMain;
     private LinearLayout mLloPlutocrat, mLloNoPlutocrat;
     private Button mBtnEngage;
+    private TextView mTvPlutocratNickname, mTvPlutocratName, mTvPlutocratBuyouts;
 
     /**
      * Use this factory method to create a new instance of
@@ -84,9 +87,17 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
         mSRLMain = (SwipeRefreshLayout) root.findViewById(R.id.srl_players);
         mLloPlutocrat = (LinearLayout) root.findViewById(R.id.llo_targets_plutocrat);
         mLloNoPlutocrat = (LinearLayout) root.findViewById(R.id.llo_targets_noplutocrat);
+        mTvPlutocratNickname = (TextView) root.findViewById(R.id.tv_plutocrat_profile_nickname);
+        mTvPlutocratName = (TextView) root.findViewById(R.id.tv_plutocrat_name);
+        mTvPlutocratBuyouts = (TextView) root.findViewById(R.id.tv_plutocrat_buyouts);
         mBtnEngage = (Button) root.findViewById(R.id.btn_player_engage);
 
         // Initiate
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
+                mTvPlutocratNickname, mTvPlutocratName, mTvPlutocratBuyouts, mBtnEngage,
+                (TextView) root.findViewById(R.id.tv_plutocrat_caption),
+                (TextView) root.findViewById(R.id.tv_no_plutocrat));
+
         ArrayList<TargetModel> dataset = new ArrayList<>();
         dataset.add(null);
 
@@ -151,7 +162,7 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
 
     @Override
     public int getIcon() {
-        return R.drawable.icon_menu_default;
+        return R.drawable.icon_menu_targets;
     }
 
     @Override

@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.login.events.BackToLoginEvent;
 import com.whitefly.plutocrat.login.events.RequestResetTokenEvent;
@@ -33,8 +34,8 @@ public class ResetPassword1Fragment extends Fragment {
     // Views
     private Button mBtnSubmit;
     private EditText mEdtEmail;
-    private TextView mTvNote;
-    private TextView mTvLoginLink, mTvRegisterLink;
+    private TextView mTvTitle, mTvContent, mTvResetCaption, mTvNote;
+    private Button mBtnLoginLink, mBtnRegisterLink;
 
     /**
      * Use this factory method to create a new instance of
@@ -60,13 +61,20 @@ public class ResetPassword1Fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_resetpw1, container, false);
-        mBtnSubmit = (Button) root.findViewById(R.id.btn_reset1_submit);
-        mEdtEmail = (EditText) root.findViewById(R.id.edt_reset1_email);
-        mTvNote = (TextView) root.findViewById(R.id.tv_reset1_note);
-        mTvLoginLink = (TextView) root.findViewById(R.id.tv_reset1_login_link);
-        mTvRegisterLink = (TextView) root.findViewById(R.id.tv_reset1_register_link);
+        mBtnSubmit      = (Button) root.findViewById(R.id.btn_reset1_submit);
+        mEdtEmail       = (EditText) root.findViewById(R.id.edt_reset1_email);
+        mTvTitle        = (TextView) root.findViewById(R.id.tv_reset1_title);
+        mTvContent      = (TextView) root.findViewById(R.id.tv_reset1_content);
+        mTvResetCaption = (TextView) root.findViewById(R.id.tv_reset1_caption);
+        mTvNote         = (TextView) root.findViewById(R.id.tv_reset1_note);
+        mBtnLoginLink   = (Button) root.findViewById(R.id.btn_reset1_login_link);
+        mBtnRegisterLink = (Button) root.findViewById(R.id.btn_reset1_register_link);
 
         // Initialize
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
+                mBtnLoginLink, mEdtEmail, mTvTitle, mTvContent, mTvResetCaption, mTvNote,
+                mBtnLoginLink, mBtnRegisterLink, mBtnSubmit);
+
         Spannable note = SpannableString.valueOf(getString(R.string.havetoken_content));
         ClickableSpan span = new ClickableSpan() {
             @Override
@@ -93,13 +101,13 @@ public class ResetPassword1Fragment extends Fragment {
                 EventBus.getInstance().post(new RequestResetTokenEvent(email, true));
             }
         });
-        mTvLoginLink.setOnClickListener(new View.OnClickListener() {
+        mBtnLoginLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EventBus.getInstance().post(new BackToLoginEvent(ILoginView.ViewState.Login));
             }
         });
-        mTvRegisterLink.setOnClickListener(new View.OnClickListener() {
+        mBtnRegisterLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EventBus.getInstance().post(new BackToLoginEvent(ILoginView.ViewState.Register));

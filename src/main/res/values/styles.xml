@@ -23,6 +23,7 @@
 
     <style name="DefaultTextViewStyle" parent="android:Widget.TextView">
         <item name="android:fontFamily">sans-serif</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
     </style>
 
     <!-- Theme Styles -->
@@ -30,6 +31,7 @@
         <item name="android:layout_marginBottom">14dp</item>
         <item name="android:padding">4dp</item>
         <item name="android:textColor">@color/colorGrey</item>
+        <item name="android:textSize">@dimen/font_medium</item>
     </style>
 
     <style name="HeaderTextWithLine" parent="TextAppearance.AppCompat.Large">
@@ -45,6 +47,8 @@
         <item name="android:padding">4dp</item>
         <item name="android:layout_marginBottom">14dp</item>
         <item name="android:textColor">@color/colorGrey</item>
+        <item name="android:textSize">@dimen/font_small</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
     </style>
 
     <style name="RedText" parent="TextAppearance.AppCompat.Small">
@@ -63,6 +67,7 @@
         <item name="android:textSize">@dimen/font_big_xx</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/colorGrey</item>
+        <item name="android:layout_marginBottom">-14dp</item>
     </style>
 
     <style name="HeaderBigText" parent="TextAppearance.AppCompat.Large">
@@ -128,15 +133,16 @@
     <style name="Checkbox" parent="Widget.AppCompat.CompoundButton.CheckBox">
         <item name="android:textSize">@dimen/font_small</item>
         <item name="android:textColor">@color/colorGrey</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
     </style>
 
-    <style name="DefaultButton" parent="Base.Widget.AppCompat.Button">
+    <style name="DefaultButton" parent="Widget.AppCompat.Button">
         <item name="android:layout_marginTop">14dp</item>
         <item name="android:layout_marginBottom">14dp</item>
         <item name="android:minWidth">80dp</item>
         <item name="android:minHeight">30dp</item>
-        <item name="android:background">@drawable/bg_button</item>
-        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@drawable/bg_button_line</item>
+        <item name="android:textColor">@color/colorPurpleLink</item>
     </style>
 
     <style name="DefaultButtonThin" parent="DefaultButton">
@@ -144,7 +150,8 @@
     </style>
 
     <style name="RedButton" parent="DefaultButton">
-        <item name="android:background">@drawable/bg_button_red</item>
+        <item name="android:background">@drawable/bg_button_line_red</item>
+        <item name="android:textColor">@color/colorRed</item>
     </style>
 
     <style name="PurpleButton" parent="DefaultButton">
@@ -152,8 +159,8 @@
     </style>
 
     <style name="WhiteButton" parent="DefaultButton">
-        <item name="android:background">@drawable/bg_button_white</item>
-        <item name="android:textColor">@color/colorButtonPurple</item>
+        <item name="android:background">@drawable/bg_button_line_grey</item>
+        <item name="android:textColor">@color/colorGrey</item>
     </style>
 
     <style name="WhiteButtonThin" parent="WhiteButton">

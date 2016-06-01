@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@android:color/white">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -17,6 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:id="@+id/tv_account_setting_header"
             android:text="@string/title_account_settings"
             android:textSize="@dimen/font_medium_x"
             android:textColor="@android:color/white"/>
@@ -38,6 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/activity_default_margin"
+                android:id="@+id/tv_btn_back"
                 android:text="@string/caption_back"
                 android:textSize="@dimen/font_medium_x"
                 android:textColor="@android:color/white"
@@ -85,6 +88,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:id="@+id/tv_tap_to_change"
                     android:text="@string/note_account_settings_change_profile"
                     style="@style/NoteText"
                     android:textStyle="italic"/>
@@ -114,6 +118,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:id="@+id/tv_display_name"
                     android:text="@string/caption_displayname"
                     android:layout_gravity="start|center_vertical"
                     android:textSize="@dimen/font_small"/>
@@ -145,6 +150,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:id="@+id/tv_email"
                     android:text="@string/caption_email"
                     android:layout_gravity="start|center_vertical"
                     android:textSize="@dimen/font_small"/>
@@ -175,6 +181,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:id="@+id/tv_new_pw"
                     android:text="@string/caption_new_password"
                     android:layout_gravity="start|center_vertical"
                     android:textSize="@dimen/font_small"/>
@@ -205,6 +212,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:id="@+id/tv_confirm_pw"
                     android:text="@string/caption_confirm_password"
                     android:layout_gravity="start|center_vertical"
                     android:textSize="@dimen/font_small"/>
@@ -263,6 +271,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:id="@+id/tv_current_pw"
                     android:text="@string/caption_current_password"
                     android:layout_gravity="start|center_vertical"
                     android:textSize="@dimen/font_small"/>
@@ -279,6 +288,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:id="@+id/tv_account_setting_note"
                     android:text="@string/note_account_setting_current_password"
                     style="@style/NoteText"
                     android:textStyle="italic"/>

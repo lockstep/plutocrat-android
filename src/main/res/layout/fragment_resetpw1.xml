@@ -9,6 +9,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:fillViewport="true"
     android:scrollbars="none"
+    android:background="@android:color/white"
     tools:context="com.whitefly.plutocrat.login.LoginActivity">
 
     <RelativeLayout
@@ -87,24 +88,25 @@
         </RelativeLayout>
 
         <LinearLayout
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true">
 
-            <TextView
+            <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/activity_default_margin"
                 android:text="@string/caption_login"
-                android:id="@+id/tv_reset1_login_link"
-                style="@style/LinkText" />
+                android:id="@+id/btn_reset1_login_link"
+                style="@style/WhiteButton" />
 
-            <TextView
+            <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/caption_register"
-                android:id="@+id/tv_reset1_register_link"
-                style="@style/LinkText"/>
+                android:id="@+id/btn_reset1_register_link"
+                style="@style/WhiteButton"/>
          </LinearLayout>
     </RelativeLayout>
 

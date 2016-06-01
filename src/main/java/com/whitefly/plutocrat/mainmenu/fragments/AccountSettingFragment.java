@@ -27,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.helpers.ImageInputHelper;
 import com.whitefly.plutocrat.mainmenu.events.SaveAccountSettingsEvent;
@@ -78,6 +79,10 @@ public class AccountSettingFragment extends DialogFragment
         View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_choose_images, null, false);
         TextView tvCamera = (TextView) root.findViewById(R.id.tv_take_camera);
         TextView tvGallery = (TextView) root.findViewById(R.id.tv_take_gallery);
+
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
+                tvCamera, tvGallery,
+                (TextView) root.findViewById(R.id.tv_dialog_title));
 
         tvCamera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,6 +142,21 @@ public class AccountSettingFragment extends DialogFragment
         mLloBack                = (LinearLayout) root.findViewById(R.id.btn_back);
 
         // Initialize
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
+                mTvProfilePicture, mEdtDisplayName, mEdtEmail, mEdtNewPassword, mEdtConfirmPassword,
+                mEdtCurrentPassword, mChkEnableNotification, mChkEnableUpdates, mBtnSave,
+                (TextView) root.findViewById(R.id.tv_account_setting_header),
+                (TextView) root.findViewById(R.id.tv_btn_back),
+                (TextView) root.findViewById(R.id.tv_display_name),
+                (TextView) root.findViewById(R.id.tv_email),
+                (TextView) root.findViewById(R.id.tv_new_pw),
+                (TextView) root.findViewById(R.id.tv_confirm_pw),
+                (TextView) root.findViewById(R.id.tv_current_pw));
+
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Italic,
+                (TextView) root.findViewById(R.id.tv_tap_to_change),
+                (TextView) root.findViewById(R.id.tv_account_setting_note));
+
         mEdtDisplayName.setText(DEBUG_DISPLAY_NAME);
         mEdtEmail.setText(DEBUG_EMAIL);
 

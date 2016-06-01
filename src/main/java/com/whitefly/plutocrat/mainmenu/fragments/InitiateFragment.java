@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +24,9 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
+import com.whitefly.plutocrat.helpers.text.CustomTypefaceSpan;
 import com.whitefly.plutocrat.mainmenu.events.MoreShareClickEvent;
 import com.whitefly.plutocrat.models.TargetModel;
 
@@ -144,9 +148,14 @@ public class InitiateFragment extends DialogFragment {
                 mShareDialog.dismiss();
             }
         });
+
+        SpannableString dialogButtonText = new SpannableString(getString(R.string.caption_moreshares));
+        dialogButtonText.setSpan(
+                new CustomTypefaceSpan("", AppPreference.getInstance().getFont(AppPreference.FontType.Regular)),
+                0, dialogButtonText.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         mShareDialog = new AlertDialog.Builder(getActivity())
                 .setView(dialog)
-                .setNeutralButton(R.string.caption_moreshares, new DialogInterface.OnClickListener() {
+                .setNeutralButton(dialogButtonText, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         EventBus.getInstance().post(new MoreShareClickEvent());
@@ -159,6 +168,16 @@ public class InitiateFragment extends DialogFragment {
         mShareSeekBar.setMax(mMax - mMin);
 
         // Initiate
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
+                mTvAvailible, mTvMinimum, mTvNote, mTvPlutocratProfile,
+                mTvPlutocratName, mTvPlutocratBuyouts, mTvTargetProfile, mTvTargetName,
+                mTvTargetThreat, mTvTargetBuyout, mTvTargetSurvived, mBtnExecute,
+                mBtnAbort, mBtnPlutocratAbort, mBtnTargetAbort,
+                (TextView) root.findViewById(R.id.tv_initiate_caption),
+                (TextView) root.findViewById(R.id.tv_shares_caption));
+
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Bold, mTvUseShares);
+
         if(target.isPlutocrat) {
             mLloPlutocrat.setVisibility(View.VISIBLE);
             mLloTarget.setVisibility(View.GONE);

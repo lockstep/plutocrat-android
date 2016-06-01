@@ -2,10 +2,13 @@ package com.whitefly.plutocrat.helpers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
+import java.util.EnumMap;
 
 /**
  * Created by Satjapot on 5/9/16 AD.
@@ -16,12 +19,18 @@ public class AppPreference {
 
     private static final String PREF_NAME = "com.whitefly.plutocat.prefs";
 
+    public enum FontType {
+        Regular, Bold, Italic, BoldItalic, Light, LightItalic
+    }
+
     // Attributes
     private static AppPreference singleton;
     private Gson mGson;
 
     private SharedPreferences mPrefs;
     private SessionManager mSession;
+
+    private EnumMap<FontType, Typeface> mFonts;
 
     // Get Methods
     public SharedPreferences getSharedPreference() {
@@ -50,6 +59,30 @@ public class AppPreference {
     }
 
     // Methods
+    public void loadFonts(Context context) {
+        if(mFonts == null) {
+            mFonts = new EnumMap<>(FontType.class);
+            mFonts.put(FontType.Regular, Typeface.createFromAsset(context.getAssets(), "fonts/Helvetica.ttf"));
+            mFonts.put(FontType.Bold, Typeface.createFromAsset(context.getAssets(), "fonts/Helvetica-Bold.ttf"));
+            mFonts.put(FontType.BoldItalic, Typeface.createFromAsset(context.getAssets(), "fonts/Helvetica-BoldOblique.ttf"));
+            mFonts.put(FontType.Light, Typeface.createFromAsset(context.getAssets(), "fonts/Helvetica-Light.ttf"));
+            mFonts.put(FontType.LightItalic, Typeface.createFromAsset(context.getAssets(), "fonts/Helvetica-LightOblique.ttf"));
+            mFonts.put(FontType.Italic, Typeface.createFromAsset(context.getAssets(), "fonts/Helvetica-Oblique.ttf"));
+        }
+    }
+
+    public Typeface getFont(FontType type) {
+        if(mFonts == null) return null;
+        return mFonts.get(type);
+    }
+
+    public void setFontsToViews(FontType type, TextView... views) {
+        if(views.length > 0) {
+            for(int i=0, n= views.length; i<n; i++) {
+                views[i].setTypeface(getFont(type));
+            }
+        }
+    }
 
     public void savePrefs(String key, Object object, Type type) {
         mPrefs.edit()

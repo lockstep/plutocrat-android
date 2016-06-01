@@ -16,6 +16,7 @@ import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.mainmenu.MainMenuActivity;
 import com.whitefly.plutocrat.mainmenu.views.ITabView;
 
@@ -48,11 +50,12 @@ public class HomeFragment extends Fragment implements ITabView {
     private LinearLayout mLloThreat, mLloOwner, mLloNote, mLloHeader;
     private RelativeLayout mLloShares;
     private TextView mTvHeader, mTvTime;
-    private TextView mTvOwnerName, mTvOwnerEmail, mTvOwnerPosition;
+    private TextView mTvOwnerName, mTvOwnerEmail;
     private TextView mTvThreatName, mTvThreatMatch, mTvThreatNote;
     private TextView mTvSuccessValue, mTvFailedValue, mTvDefeatValue;
     private TextView mTvNote;
     private ImageView mImvOwnerPic, mImvThreatPic;
+    private Button mBtnOwnerPosition, mBtnMatchShares, mBtnAcceptDefeat;
 
     // Methods
     private void changeState(State state) {
@@ -206,7 +209,6 @@ public class HomeFragment extends Fragment implements ITabView {
         mTvTime             = (TextView) root.findViewById(R.id.tv_home_time);
         mTvOwnerName        = (TextView) root.findViewById(R.id.tv_home_owner_name);
         mTvOwnerEmail       = (TextView) root.findViewById(R.id.tv_home_owner_email);
-        mTvOwnerPosition    = (TextView) root.findViewById(R.id.tv_home_owner_position);
         mTvThreatName       = (TextView) root.findViewById(R.id.tv_home_threat_name);
         mTvThreatMatch      = (TextView) root.findViewById(R.id.tv_home_threat_match);
         mTvThreatNote       = (TextView) root.findViewById(R.id.tv_home_threat_note);
@@ -216,12 +218,33 @@ public class HomeFragment extends Fragment implements ITabView {
         mTvDefeatValue     = (TextView) root.findViewById(R.id.tv_home_defeat_value);
         mImvOwnerPic        = (ImageView) root.findViewById(R.id.imv_home_owner_pic);
         mImvThreatPic       = (ImageView) root.findViewById(R.id.imv_home_threat_pic);
+        mBtnOwnerPosition   = (Button) root.findViewById(R.id.btn_home_owner_position);
+        mBtnMatchShares     = (Button) root.findViewById(R.id.btn_match_shares);
+        mBtnAcceptDefeat    = (Button) root.findViewById(R.id.btn_accept_defeat);
 
         // Initiate
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
+                mTvHeader, mTvTime, mTvOwnerName, mTvOwnerEmail, mBtnOwnerPosition,
+                mTvThreatName, mTvThreatMatch, mTvThreatNote, mTvNote,
+                mBtnOwnerPosition, mBtnMatchShares, mBtnAcceptDefeat,
+                (TextView) root.findViewById(R.id.tv_home_success),
+                (TextView) root.findViewById(R.id.tv_home_failed),
+                (TextView) root.findViewById(R.id.tv_home_defeat));
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Bold,
+                mTvSuccessValue, mTvFailedValue, mTvDefeatValue);
+
         mTvThreatNote.setText(Html.fromHtml(getString(R.string.home_threat_content)));
 
         // Force to render correctly
         changeState(State.Default);
+
+        // Event Handler
+        mBtnOwnerPosition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainMenuActivity) HomeFragment.this.getActivity()).showAccountSettingFragment();
+            }
+        });
 
         // Debug
         mLloHeader.setOnClickListener(new View.OnClickListener() {
@@ -242,7 +265,7 @@ public class HomeFragment extends Fragment implements ITabView {
 
     @Override
     public int getIcon() {
-        return R.drawable.icon_menu_default;
+        return R.drawable.icon_menu_home;
     }
 
     @Override

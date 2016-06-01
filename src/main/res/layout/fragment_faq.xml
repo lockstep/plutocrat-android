@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@android:color/white">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -17,6 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:id="@+id/tv_faq_header_text"
             android:text="@string/title_faq"
             android:textSize="@dimen/font_medium_x"
             android:textColor="@android:color/white"/>
@@ -38,6 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/activity_default_margin"
+                android:id="@+id/tv_btn_back"
                 android:text="@string/caption_back"
                 android:textSize="@dimen/font_medium_x"
                 android:textColor="@android:color/white"
@@ -61,6 +63,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/tv_faq_title_1"
                 android:text="@string/header_faq_plutocrat"
                 style="@style/HeaderText"/>
 
@@ -68,30 +71,34 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/note_faq_plutocrat"
-                style="@style/NoteText"
-                android:id="@+id/tv_faq_note_plutocrat" />
+                android:id="@+id/tv_faq_note_plutocrat"
+                style="@style/NoteText" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/header_faq_whatshare"
+                android:id="@+id/tv_faq_title_2"
                 style="@style/HeaderText"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/tv_faq_note_2"
                 android:text="@string/note_faq_whatshare"
                 style="@style/NoteText" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/tv_faq_title_3"
                 android:text="@string/header_faq_moreshare"
                 style="@style/HeaderText"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/tv_faq_note_3"
                 android:text="@string/note_faq_moreshare"
                 style="@style/NoteText" />
 

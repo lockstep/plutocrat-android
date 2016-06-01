@@ -5,8 +5,8 @@
     android:paddingTop="8dp">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/icon_img_size"
+        android:layout_height="@dimen/icon_img_size"
         android:id="@+id/imv_icon"
         android:src="@drawable/icon_menu_default"
         android:layout_gravity="center_horizontal" />

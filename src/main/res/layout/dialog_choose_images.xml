@@ -8,6 +8,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/tv_dialog_title"
         android:text="@string/caption_select_image"
         style="@style/HeaderText"
         android:textSize="@dimen/font_medium_x"

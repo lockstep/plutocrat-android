@@ -42,6 +42,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/fix_font_margin"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:id="@+id/tv_player_buyouts"
             android:text="Buyouts: 21"/>
@@ -49,6 +50,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/fix_font_margin"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:id="@+id/tv_player_threats"
             android:text="Threats: 7"/>
@@ -56,6 +58,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/fix_font_margin"
+            android:paddingEnd="1dp"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:id="@+id/tv_player_daysurvived"
             android:text="Day survived: 20"/>
@@ -79,6 +83,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingEnd="1dp"
             android:id="@+id/tv_player_game_status"
             android:text="Under Threat"
             android:visibility="gone"
