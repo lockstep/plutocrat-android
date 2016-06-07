@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "575273122665",
+    "firebase_url": "https://project-7158139588951731662.firebaseio.com",
+    "project_id": "project-7158139588951731662",
+    "storage_bucket": "project-7158139588951731662.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:575273122665:android:9ad7c02ef6a0de3b",
+        "android_client_info": {
+          "package_name": "com.whitefly.plutocrat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "575273122665-s94so7k8oljtlkh0uvgq0qi2c2i6qnki.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8HdYcAcayJ5DaT5KriDwJmNM6GHmB8fY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

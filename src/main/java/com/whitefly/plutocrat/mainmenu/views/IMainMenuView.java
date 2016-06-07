@@ -10,4 +10,5 @@ public interface IMainMenuView {
     void goToShareFromInitiate();
     void callInitiateDialog(TargetModel model);
     void toast(String text);
+    void buyIAP(String sku, String payload);
 }

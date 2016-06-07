@@ -6,13 +6,15 @@ package com.whitefly.plutocrat.models;
 public class ShareBundleModel {
 
     // Attributes
+    public String sku;
     public int qty;
     public int price;
 
     // Constructor
     public ShareBundleModel() {}
 
-    public ShareBundleModel(int qty, int price) {
+    public ShareBundleModel(String sku, int qty, int price) {
+        this.sku = sku;
         this.qty = qty;
         this.price = price;
     }

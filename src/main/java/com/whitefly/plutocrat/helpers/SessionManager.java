@@ -34,7 +34,7 @@ public class SessionManager {
     private UserModel mActiveUser = null;
 
     // Getter Methods
-    public UserModel getmActiveUser() {
+    public UserModel getActiveUser() {
         return mActiveUser;
     }
 

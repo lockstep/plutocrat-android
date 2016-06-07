@@ -95,7 +95,7 @@
     </style>
 
     <style name="ProfileText" parent="TextAppearance.AppCompat.Large">
-        <item name="android:background">@drawable/bg_profile_picture</item>
+        <item name="android:background">@drawable/empty_profile_image</item>
         <item name="android:gravity">center</item>
         <item name="android:textSize">@dimen/font_big_x</item>
         <item name="android:textColor">@color/colorPurpleLink</item>

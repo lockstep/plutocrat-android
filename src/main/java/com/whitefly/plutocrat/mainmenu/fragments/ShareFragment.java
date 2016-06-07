@@ -66,10 +66,10 @@ public class ShareFragment extends Fragment implements ITabView {
         mRvMain.setHasFixedSize(true);
         mRvMain.setLayoutManager(new LinearLayoutManager(getContext()));
         ArrayList<ShareBundleModel> list = new ArrayList<>();
-        list.add(new ShareBundleModel(1, 25));
-        list.add(new ShareBundleModel(5, 25));
-        list.add(new ShareBundleModel(10, 20));
-        list.add(new ShareBundleModel(50, 15));
+        list.add(new ShareBundleModel(null, 1, 25));
+        list.add(new ShareBundleModel(null, 5, 25));
+        list.add(new ShareBundleModel(null, 10, 20));
+        list.add(new ShareBundleModel(null, 50, 15));
         ShareAdapter adapter = new ShareAdapter(getActivity(), list);
         mRvMain.setAdapter(adapter);
 
