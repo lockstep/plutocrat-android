@@ -5,7 +5,9 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.exception.APIConnectionException;
 import com.whitefly.plutocrat.models.MetaModel;
+import com.whitefly.plutocrat.models.TargetModel;
 import com.whitefly.plutocrat.models.UserModel;
 
 import org.json.JSONException;
@@ -22,6 +24,7 @@ import okhttp3.Response;
  */
 public class SessionManager {
     public static final String PREFKEY_SESSION = "com.whitefly.plutocrat.prefs.session";
+    public static final String PREFKEY_SESSION_PLUTOCRAT = "com.whitefly.plutocrat.prefs.session.plutocrat";
 
     // Attributes
     public String access_token;
@@ -33,9 +36,19 @@ public class SessionManager {
 
     private UserModel mActiveUser = null;
 
+    private TargetModel mPlutocrat;
+
     // Getter Methods
     public UserModel getActiveUser() {
         return mActiveUser;
+    }
+
+    public TargetModel getPlutocrat() {
+        return mPlutocrat;
+    }
+
+    public void setPlutocrat(TargetModel plutocrat){
+        mPlutocrat = plutocrat;
     }
 
     // Methods
@@ -61,7 +74,7 @@ public class SessionManager {
                 if(! body.isNull("meta")) {
                     MetaModel model = new MetaModel(body.getJSONObject("meta"));
                     if(model.isError()) {
-                        throw new Exception("Session expired.");
+                        throw new APIConnectionException(model.getErrors());
                     }
                 }
 
@@ -73,7 +86,7 @@ public class SessionManager {
                 e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
-            } catch (Exception e) {
+            } catch (APIConnectionException e) {
                 e.printStackTrace();
             }
 
@@ -98,6 +111,34 @@ public class SessionManager {
         user_id = userId;
 
         AppPreference.getInstance().savePrefs(PREFKEY_SESSION, this, SessionManager.class);
+    }
+
+    public void savePlutocrat(TargetModel model) {
+        Gson gson = new Gson();
+
+        if(model == null) {
+            mPlutocrat = model;
+            AppPreference.getInstance().getSharedPreference().edit()
+                    .remove(PREFKEY_SESSION_PLUTOCRAT)
+                    .commit();
+        } else {
+            if(mPlutocrat == null || mPlutocrat.id != model.id) {
+                mPlutocrat = model;
+                String json = gson.toJson(model);
+                AppPreference.getInstance().getSharedPreference().edit()
+                        .putString(PREFKEY_SESSION_PLUTOCRAT, json)
+                        .apply();
+            }
+        }
+    }
+
+    public void loadPlutocrat() {
+        Gson gson = new Gson();
+
+        if(AppPreference.getInstance().getSharedPreference().contains(PREFKEY_SESSION_PLUTOCRAT)) {
+            String json = AppPreference.getInstance().getSharedPreference().getString(PREFKEY_SESSION_PLUTOCRAT, null);
+            mPlutocrat = gson.fromJson(json, TargetModel.class);
+        }
     }
 
     public Headers getHeaders() {

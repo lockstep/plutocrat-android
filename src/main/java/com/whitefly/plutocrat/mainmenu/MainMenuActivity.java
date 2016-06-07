@@ -142,6 +142,8 @@ public class MainMenuActivity extends AppCompatActivity
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
                 (TextView) navigationView.findViewById(R.id.tv_nav_license));
 
+        AppPreference.getInstance().getSession().loadPlutocrat();
+
         CustomTypefaceSpan fontSpan =
                 new CustomTypefaceSpan("", AppPreference.getInstance().getFont(AppPreference.FontType.Regular));
         Menu menu = navigationView.getMenu();

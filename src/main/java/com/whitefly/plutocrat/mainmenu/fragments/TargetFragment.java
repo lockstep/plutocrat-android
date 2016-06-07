@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.AppPreference;
@@ -20,9 +19,11 @@ import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.mainmenu.adapters.TargetAdapter;
 import com.whitefly.plutocrat.mainmenu.adapters.listeners.OnLoadmoreListener;
 import com.whitefly.plutocrat.mainmenu.events.EngageClickEvent;
+import com.whitefly.plutocrat.mainmenu.events.GetPlutocratEvent;
 import com.whitefly.plutocrat.mainmenu.events.LoadTargetsEvent;
 import com.whitefly.plutocrat.mainmenu.views.ITabView;
 import com.whitefly.plutocrat.mainmenu.views.ITargetView;
+import com.whitefly.plutocrat.models.MetaModel;
 import com.whitefly.plutocrat.models.TargetModel;
 
 import java.util.ArrayList;
@@ -63,12 +64,17 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
     }
 
     // Methods
-    private void changeState(HeaderState state) {
+    private void changeState(HeaderState state, TargetModel user) {
         mState = state;
         switch (mState) {
             case Plutocrat:
                 mLloPlutocrat.setVisibility(View.VISIBLE);
                 mLloNoPlutocrat.setVisibility(View.GONE);
+
+                mTvPlutocratNickname.setText(user.getNickName());
+                mTvPlutocratName.setText(user.name);
+                mTvPlutocratBuyouts.setText(
+                        String.format(getString(R.string.value_plutocrat_buyouts), user.numSuccessfulBuyout));
                 break;
             case NoPlutocrat:
                 mLloPlutocrat.setVisibility(View.GONE);
@@ -107,7 +113,7 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
         mAdapter = new TargetAdapter(getActivity(), dataset);
         mRvMain.setAdapter(mAdapter);
 
-        changeState(HeaderState.Plutocrat);
+        EventBus.getInstance().post(new GetPlutocratEvent());
 
         // Get Adapter
         cpage = FIRST_PAGE;
@@ -128,30 +134,10 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
                 EventBus.getInstance().post(new LoadTargetsEvent(++cpage, TARGET_USERS_PER_PAGE));
             }
         });
-        // Debug
-        mLloPlutocrat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeState(HeaderState.NoPlutocrat);
-            }
-        });
-        mLloNoPlutocrat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeState(HeaderState.Plutocrat);
-            }
-        });
         mBtnEngage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TargetModel model = new TargetModel();
-                model.name = "Aaron Pinchai";
-                model.numBuyouts = 35;
-                model.numThreats = 7;
-                model.daySurvived = 119;
-                model.status = TargetModel.TargetStatus.Normal;
-                model.isPlutocrat = true;
-                model.picProfile = 0;
+                TargetModel model = AppPreference.getInstance().getSession().getPlutocrat();
 
                 EventBus.getInstance().post(new EngageClickEvent(model));
             }
@@ -171,7 +157,7 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
     }
 
     @Override
-    public void setTargetList(ArrayList<TargetModel> items) {
+    public void setTargetList(ArrayList<TargetModel> items, MetaModel meta) {
         if(cpage == FIRST_PAGE) {
             mAdapter.getDataSet().clear();
         }
@@ -179,5 +165,11 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
 
         // Switch off all loading widget
         mSRLMain.setRefreshing(false);
+    }
+
+    @Override
+    public void setPlutocrat(TargetModel user) {
+        HeaderState state = user == null ? HeaderState.NoPlutocrat : HeaderState.Plutocrat;
+        changeState(state, user);
     }
 }

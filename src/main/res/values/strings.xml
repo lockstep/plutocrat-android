@@ -136,6 +136,7 @@
     <!-- Server API -->
     <string name="api_host" translatable="false">http://plutocracy-staging.herokuapp.com</string>
     <string name="api_register" translatable="false">/api/v1/users</string>
+    <string name="api_targets" translatable="false">/api/v1/users</string>
     <string name="api_signin" translatable="false">/api/v1/users/sign_in</string>
     <string name="api_signout" translatable="false">/api/v1/users/sign_out</string>
     <string name="api_profile" translatable="false">/api/v1/users/%1$d</string>
