@@ -23,7 +23,8 @@ import java.util.ArrayList;
  * Created by Satjapot on 5/17/16 AD.
  */
 public class ShareAdapter extends RecyclerView.Adapter<ShareAdapter.ViewHolder> {
-    public static final String CURRENCY_FORMAT = "$%d";
+    public static final String CURRENCY_FLOATING_FORMAT = "$%.2f";
+    public static final String CURRENCY_INTEGER_FORMAT = "$%.0f";
     private static final int AMOUNT_QTY_SMALL = 1;
     private static final int AMOUNT_QTY_MEDIUM = 10;
 
@@ -61,6 +62,16 @@ public class ShareAdapter extends RecyclerView.Adapter<ShareAdapter.ViewHolder> 
     }
 
     // Methods
+    public String getPriceString(float value) {
+        String result = "";
+        if(value == (int) value) {
+            result = String.format(CURRENCY_INTEGER_FORMAT, value);
+        } else {
+            result = String.format(CURRENCY_FLOATING_FORMAT, value);
+        }
+        return result;
+    }
+
     @Override
     public ShareAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View root = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_share_bundle, parent, false);
@@ -91,8 +102,8 @@ public class ShareAdapter extends RecyclerView.Adapter<ShareAdapter.ViewHolder> 
 
         if(model != null) {
             holder.tvQty.setText(String.valueOf(model.qty));
-            holder.tvPrice.setText(String.format(CURRENCY_FORMAT, model.price));
-            holder.tvTotal.setText(String.format(CURRENCY_FORMAT, model.getTotal()));
+            holder.tvPrice.setText(getPriceString(model.price));
+            holder.tvTotal.setText(getPriceString(model.getTotal()));
 
             if(model.qty > AMOUNT_QTY_MEDIUM) {
                 holder.tvShareCaption.setText(mSharesCaption);

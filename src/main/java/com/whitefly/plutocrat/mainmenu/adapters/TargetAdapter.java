@@ -36,6 +36,7 @@ public class TargetAdapter extends RecyclerView.Adapter<TargetAdapter.ViewHolder
     private Context mContext;
     private ArrayList<TargetModel> mDataSet;
     private String mBuyoutFormat, mThreatFormat, mDaySurvivedFormat;
+    private String mUnderThreatCaption, mEliminatedCaption;
     private OnLoadmoreListener mLoadMoreListener;
     private View.OnClickListener mEngageClick;
 
@@ -57,6 +58,8 @@ public class TargetAdapter extends RecyclerView.Adapter<TargetAdapter.ViewHolder
         mBuyoutFormat = mContext.getString(R.string.value_buyouts);
         mThreatFormat = mContext.getString(R.string.value_threats);
         mDaySurvivedFormat = mContext.getString(R.string.value_daysurvived);
+        mUnderThreatCaption = mContext.getString(R.string.caption_under_threat);
+        mEliminatedCaption = mContext.getString(R.string.caption_eliminated);
 
         mEngageClick = new View.OnClickListener() {
             @Override
@@ -148,6 +151,11 @@ public class TargetAdapter extends RecyclerView.Adapter<TargetAdapter.ViewHolder
             if (! model.isAttackingCurrentUser && ! model.isUnderBuyoutThreat) {
                 holder.btnEngage.setVisibility(View.VISIBLE);
                 holder.tvGameStatus.setVisibility(View.GONE);
+                holder.tvGameStatus.setText(mUnderThreatCaption);
+            } else if(model.defeatedAt != null) {
+                holder.btnEngage.setVisibility(View.VISIBLE);
+                holder.tvGameStatus.setVisibility(View.GONE);
+                holder.tvGameStatus.setText(mEliminatedCaption);
             } else {
                 holder.btnEngage.setVisibility(View.GONE);
                 holder.tvGameStatus.setVisibility(View.VISIBLE);

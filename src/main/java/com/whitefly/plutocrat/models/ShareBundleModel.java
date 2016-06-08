@@ -8,19 +8,19 @@ public class ShareBundleModel {
     // Attributes
     public String sku;
     public int qty;
-    public int price;
+    public float price;
 
     // Constructor
     public ShareBundleModel() {}
 
-    public ShareBundleModel(String sku, int qty, int price) {
+    public ShareBundleModel(String sku, int qty, float price) {
         this.sku = sku;
         this.qty = qty;
         this.price = price;
     }
 
     // Methods
-    public int getTotal() {
+    public float getTotal() {
         return qty * price;
     }
 }

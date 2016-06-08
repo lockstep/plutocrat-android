@@ -1,14 +1,11 @@
 package com.whitefly.plutocrat.helpers;
 
-import android.content.Context;
-import android.util.Log;
+import android.os.Bundle;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.exception.APIConnectionException;
 import com.whitefly.plutocrat.models.BuyoutModel;
-import com.whitefly.plutocrat.models.MetaModel;
 import com.whitefly.plutocrat.models.TargetModel;
 import com.whitefly.plutocrat.models.UserModel;
 
@@ -16,10 +13,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Date;
 
 import okhttp3.Headers;
-import okhttp3.Response;
 
 /**
  * Created by Satjapot on 5/9/16 AD.
@@ -28,6 +23,12 @@ import okhttp3.Response;
 public class SessionManager {
     public static final String PREFKEY_SESSION = "com.whitefly.plutocrat.prefs.session";
     public static final String PREFKEY_SESSION_PLUTOCRAT = "com.whitefly.plutocrat.prefs.session.plutocrat";
+
+    private static final String INSTANCE_STATE_ACTIVE_USER = "com.whitefly.plutocrat.instance.active_user";
+    private static final String INSTANCE_STATE_ACTIVE_USER_INITIATING_BUYOUT = "com.whitefly.plutocrat.instance.active_user_initiating_buyout";
+    private static final String INSTANCE_STATE_ACTIVE_USER_TERMINAL_BUYOUT = "com.whitefly.plutocrat.instance.active_user_terminal_buyout";
+    private static final String INSTANCE_STATE_INITIATING_TARGET = "com.whitefly.plutocrat.instance.initiating_user";
+    private static final String INSTANCE_STATE_TERMINAL_TARGET = "com.whitefly.plutocrat.instance.terminal_user";
 
     // Attributes
     public String access_token;
@@ -185,6 +186,38 @@ public class SessionManager {
         if(AppPreference.getInstance().getSharedPreference().contains(PREFKEY_SESSION_PLUTOCRAT)) {
             String json = AppPreference.getInstance().getSharedPreference().getString(PREFKEY_SESSION_PLUTOCRAT, null);
             mPlutocrat = gson.fromJson(json, TargetModel.class);
+        }
+    }
+
+    public void onSaveInstanceState(Bundle outState) {
+        Gson gson = AppPreference.getInstance().getGson();
+        if(mActiveUser != null) {
+            outState.putString(INSTANCE_STATE_ACTIVE_USER, gson.toJson(mActiveUser));
+            if(mActiveUser.activeInboundBuyout != null) {
+                outState.putString(INSTANCE_STATE_ACTIVE_USER_INITIATING_BUYOUT, gson.toJson(mActiveUser.activeInboundBuyout));
+                outState.putString(INSTANCE_STATE_INITIATING_TARGET, gson.toJson(mInitiatingUser));
+            }
+            if(mActiveUser.terminalBuyout != null) {
+                outState.putString(INSTANCE_STATE_ACTIVE_USER_TERMINAL_BUYOUT, gson.toJson(mActiveUser.terminalBuyout));
+                outState.putString(INSTANCE_STATE_TERMINAL_TARGET, gson.toJson(mTerminalUser));
+            }
+        }
+    }
+
+    public void onLoadInstanceState(Bundle savedInstanceState) {
+        Gson gson = AppPreference.getInstance().getGson();
+        if(savedInstanceState.containsKey(INSTANCE_STATE_ACTIVE_USER)) {
+            mActiveUser = gson.fromJson(savedInstanceState.getString(INSTANCE_STATE_ACTIVE_USER), UserModel.class);
+            if(savedInstanceState.containsKey(INSTANCE_STATE_ACTIVE_USER_INITIATING_BUYOUT)) {
+                mActiveUser.activeInboundBuyout =
+                        gson.fromJson(savedInstanceState.getString(INSTANCE_STATE_ACTIVE_USER_INITIATING_BUYOUT), BuyoutModel.class);
+                mInitiatingUser = gson.fromJson(savedInstanceState.getString(INSTANCE_STATE_INITIATING_TARGET), TargetModel.class);
+            }
+            if(savedInstanceState.containsKey(INSTANCE_STATE_ACTIVE_USER_TERMINAL_BUYOUT)) {
+                mActiveUser.terminalBuyout =
+                        gson.fromJson(savedInstanceState.getString(INSTANCE_STATE_ACTIVE_USER_TERMINAL_BUYOUT), BuyoutModel.class);
+                mTerminalUser = gson.fromJson(savedInstanceState.getString(INSTANCE_STATE_TERMINAL_TARGET), TargetModel.class);
+            }
         }
     }
 

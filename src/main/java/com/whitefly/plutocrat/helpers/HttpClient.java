@@ -198,6 +198,8 @@ public class HttpClient {
         Request request = getRequest(url, method);
         int requestTime = 5;
 
+        Log.d(AppPreference.DEBUG_APP, String.format("Request URL: %s", url));
+
         // Clear data
         mResponse = null;
         mResponseBody = null;

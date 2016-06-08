@@ -4,8 +4,12 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -13,12 +17,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.text.Editable;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -29,6 +34,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -53,7 +59,8 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
  * Created by satjapotiamopas on 5/25/16 AD.
  */
 public class AccountSettingFragment extends DialogFragment
-        implements View.OnClickListener, ImageInputHelper.ImageActionListener, IAccountSettingView{
+        implements View.OnClickListener, ImageInputHelper.ImageActionListener, IAccountSettingView,
+        RequestListener<Uri, GlideDrawable>{
 
     private static final int IMAGE_OUTPUT_X = 250;
     private static final int IMAGE_OUTPUT_Y = 250;
@@ -66,11 +73,13 @@ public class AccountSettingFragment extends DialogFragment
     private static final String FORM_CONFIRM_PASSWORD_ID = "confirm_password";
     private static final String FORM_CURRENT_PASSWORD_ID = "current_password";
 
+    private static final String INSTANCE_STATE_CREATED_VIEW = "com.whitefly.plutocrat.account_setting.state.create_view";
+
     // Attributes
-    private AlertDialog mImageDialog;
+    private AlertDialog mImageDialog, mErrorDialog;
     private ImageInputHelper imageInputHelper;
     private Bitmap mSavingPicture;
-    private boolean mIsPictureChanged;
+    private boolean mIsPictureChanged, mIsCreateView;
     private FormValidationHelper mFormValidator;
 
     // Views
@@ -81,6 +90,9 @@ public class AccountSettingFragment extends DialogFragment
     private Button mBtnSave;
     private LinearLayout mLloBack;
 
+    private AlertDialog mLoadingDialog;
+    private TextView mTvLoadingMessage;
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -90,6 +102,7 @@ public class AccountSettingFragment extends DialogFragment
     public static AccountSettingFragment newInstance() {
         AccountSettingFragment fragment = new AccountSettingFragment();
         fragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogTheme);
+        fragment.setRetainInstance(true);
 
         return fragment;
     }
@@ -130,22 +143,8 @@ public class AccountSettingFragment extends DialogFragment
         UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
 
         mTvProfilePicture.setText(activeUser.getNickName());
-        Glide.with(getActivity()).load(activeUser.profileImage)
-                .listener(new RequestListener<String, GlideDrawable>() {
-                    @Override
-                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                        mImvProfilePicture.setVisibility(View.GONE);
-                        mTvProfilePicture.setVisibility(View.VISIBLE);
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                        mImvProfilePicture.setVisibility(View.VISIBLE);
-                        mTvProfilePicture.setVisibility(View.GONE);
-                        return false;
-                    }
-                })
+        Glide.with(getActivity()).load(Uri.parse(activeUser.profileImage))
+                .listener(this)
                 .bitmapTransform(new CropCircleTransformation(getActivity()))
                 .into(mImvProfilePicture);
 
@@ -156,6 +155,52 @@ public class AccountSettingFragment extends DialogFragment
         mEdtCurrentPassword.setText("");
         mChkEnableTransactionalEmail.setChecked(activeUser.isTransactionalEmailsEnabled);
         mChkEnableProductUpdates.setChecked(activeUser.isProductEmailsEnabled);
+
+        mIsCreateView = false;
+    }
+
+    public AlertDialog getLoadingDialog(String message) {
+        if(message == null) {
+            mTvLoadingMessage.setText(getString(R.string.loading_default));
+        } else {
+            mTvLoadingMessage.setText(message);
+        }
+        return mLoadingDialog;
+    }
+
+    private void createLoadingDialog(LayoutInflater inflater, ViewGroup parent) {
+        View root = inflater.inflate(R.layout.dialog_loading, parent, false);
+        mTvLoadingMessage = (TextView) root.findViewById(R.id.tv_loading_message);
+
+        mLoadingDialog = new AlertDialog.Builder(getActivity())
+                .setView(root)
+                .setCancelable(false)
+                .create();
+        mLoadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+    }
+
+    private void showErrorDialog(String title, String message) {
+        Typeface typeface = AppPreference.getInstance().getFont(AppPreference.FontType.Regular);
+
+        SpannableString spanTitle = new SpannableString(title);
+        spanTitle.setSpan(typeface, 0, spanTitle.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+        SpannableString spanMessage = new SpannableString(message);
+        spanMessage.setSpan(typeface, 0, spanMessage.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+        SpannableString negativeText = new SpannableString(getString(R.string.caption_close));
+        negativeText.setSpan(typeface, 0, negativeText.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+        new AlertDialog.Builder(getActivity())
+                .setTitle(spanTitle)
+                .setMessage(spanMessage)
+                .setNegativeButton(negativeText, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 
     @Override
@@ -200,7 +245,9 @@ public class AccountSettingFragment extends DialogFragment
                 mTvProfilePicture, mEdtDisplayName, mEdtEmail, mEdtNewPassword, mEdtConfirmPassword,
                 mEdtCurrentPassword, mChkEnableTransactionalEmail, mChkEnableProductUpdates, mBtnSave,
                 (TextView) root.findViewById(R.id.tv_account_setting_header),
-                (TextView) root.findViewById(R.id.tv_btn_back),
+                (TextView) root.findViewById(R.id.tv_btn_back));
+
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Bold,
                 (TextView) root.findViewById(R.id.tv_display_name),
                 (TextView) root.findViewById(R.id.tv_email),
                 (TextView) root.findViewById(R.id.tv_new_pw),
@@ -208,14 +255,20 @@ public class AccountSettingFragment extends DialogFragment
                 (TextView) root.findViewById(R.id.tv_current_pw));
 
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Italic,
-                (TextView) root.findViewById(R.id.tv_tap_to_change),
                 (TextView) root.findViewById(R.id.tv_account_setting_note));
+
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.BoldItalic,
+                (TextView) root.findViewById(R.id.tv_tap_to_change));
 
         mFormValidator.addView(FORM_DISPLAY_NAME_ID, "Display name", mEdtDisplayName);
         mFormValidator.addView(FORM_EMAIL_ID, "E-mail", mEdtEmail);
         mFormValidator.addView(FORM_NEW_PASSWORD_ID, "New Password", mEdtNewPassword);
         mFormValidator.addView(FORM_CONFIRM_PASSWORD_ID, "Confirm Password", mEdtConfirmPassword);
         mFormValidator.addView(FORM_CURRENT_PASSWORD_ID, "Current Password", mEdtCurrentPassword);
+
+        mIsCreateView = true;
+
+        createLoadingDialog(inflater, container);
 
         // Event handler
         mBtnSave.setOnClickListener(this);
@@ -259,7 +312,9 @@ public class AccountSettingFragment extends DialogFragment
     public void onStart() {
         super.onStart();
 
-        clearView();
+        if(mIsCreateView) {
+            clearView();
+        }
     }
 
     @Override
@@ -332,6 +387,23 @@ public class AccountSettingFragment extends DialogFragment
     }
 
     /**
+     * Implement RequestListener
+     */
+    @Override
+    public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {
+        mImvProfilePicture.setVisibility(View.GONE);
+        mTvProfilePicture.setVisibility(View.VISIBLE);
+        return false;
+    }
+
+    @Override
+    public boolean onResourceReady(GlideDrawable resource, Uri model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+        mImvProfilePicture.setVisibility(View.VISIBLE);
+        mTvProfilePicture.setVisibility(View.GONE);
+        return false;
+    }
+
+    /**
      * Implement ImageInputHelper.ImageActionListener
      */
     public void showPictureProfile(Uri uri) {
@@ -340,18 +412,20 @@ public class AccountSettingFragment extends DialogFragment
                 mSavingPicture = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
             } while ( mSavingPicture == null);
 
-            RoundedBitmapDrawable circularBitmapDrawable =
-                    RoundedBitmapDrawableFactory.create(getActivity().getResources(), mSavingPicture);
-            circularBitmapDrawable.setCircular(true);
-
-            mImvProfilePicture.setImageDrawable(circularBitmapDrawable);
-
-            mImvProfilePicture.setVisibility(View.VISIBLE);
-            mTvProfilePicture.setVisibility(View.GONE);
+            Glide.clear(mImvProfilePicture);
+            Glide.with(getActivity())
+                    .load(uri)
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .listener(this)
+                    .bitmapTransform(new CropCircleTransformation(getActivity()))
+                    .into(mImvProfilePicture);
 
             mIsPictureChanged = true;
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             e.printStackTrace();
+            showErrorDialog(getString(R.string.error_title_cannot_save_picture),
+                    getString(R.string.error_profile_picture));
         }
     }
 

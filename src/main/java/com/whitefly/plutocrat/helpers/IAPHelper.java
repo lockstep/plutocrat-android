@@ -45,7 +45,7 @@ public class IAPHelper {
     private static final int BILLING_RESPONSE_RESULT_INVALID_PAYLOAD= 102;
 
     // Attributes
-    private Activity mActivity;
+    private Context mActivity;
     private IAPProcessListener mListener;
     private IInAppBillingService mIAPService;
     private Gson mGson;
@@ -64,9 +64,9 @@ public class IAPHelper {
     private String mLastDeveloperPayload;
 
     // Constructor
-    public IAPHelper(Activity activity) {
+    public IAPHelper(Context activity) {
         mActivity = activity;
-        mGson = new Gson();
+        mGson = AppPreference.getInstance().getGson();
 
         // Create IAP connection
         Intent serviceIntent =
@@ -94,6 +94,7 @@ public class IAPHelper {
 
             if (resultCode == Activity.RESULT_OK) {
                 Log.d(AppPreference.DEBUG_APP, "purchaseData: " + purchaseData);
+                Log.d(AppPreference.DEBUG_APP, "signatureData: " + dataSignature);
                 if(responseCode == BILLING_RESPONSE_RESULT_OK) {
                     IAPPurchaseModel model = mGson.fromJson(purchaseData, IAPPurchaseModel.class);
                     if(model.developerPayload == mLastDeveloperPayload) {
@@ -133,8 +134,11 @@ public class IAPHelper {
                     sku, IAP_INAPP_TYPE, payload);
             PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
             if (pendingIntent != null) {
-                mActivity.startIntentSenderForResult(pendingIntent.getIntentSender(), IAP_REQUEST_CODE, new Intent(),
-                        Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0));
+                if(mActivity instanceof Activity) {
+                    ((Activity) mActivity).startIntentSenderForResult(
+                            pendingIntent.getIntentSender(), IAP_REQUEST_CODE, new Intent(),
+                            Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0));
+                }
             }
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -145,8 +149,8 @@ public class IAPHelper {
         }
     }
 
-    public void consume(String payloadToken) {
-        new IAP_ConsumeCallback().execute(payloadToken);
+    public void consume(String purchaseToken) {
+        new IAP_ConsumeCallback().execute(purchaseToken);
     }
 
     /*
@@ -155,24 +159,33 @@ public class IAPHelper {
     public interface IAPProcessListener {
         void onBuySuccess(int resultCode, IAPPurchaseModel model);
         void onBuyFailed(int resultCode);
+        void onConsumed(int resultCode);
     }
 
-    private class IAP_ConsumeCallback extends AsyncTask<String, Void, Void> {
+    private class IAP_ConsumeCallback extends AsyncTask<String, Void, Integer> {
         @Override
-        protected Void doInBackground(String... params) {
-            String payloadToken = null;
+        protected Integer doInBackground(String... params) {
+            Integer resultCode = -1;
+            String purchaseToken = null;
             if(params.length == 0) {
-                payloadToken = "inapp:" + mActivity.getPackageName() + ":android.test.purchased";
+                purchaseToken = "inapp:" + mActivity.getPackageName() + ":android.test.purchased";
             } else {
-                payloadToken = params[0];
+                purchaseToken = params[0];
             }
             try {
-                mIAPService.consumePurchase(IAP_VERSION, mActivity.getPackageName(), payloadToken);
+                resultCode = mIAPService.consumePurchase(IAP_VERSION, mActivity.getPackageName(), purchaseToken);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
             Log.d(AppPreference.DEBUG_APP, "Consume complete");
-            return null;
+            return resultCode;
+        }
+
+        @Override
+        protected void onPostExecute(Integer code) {
+            if(mListener != null) {
+                mListener.onConsumed(code);
+            }
         }
     }
 }

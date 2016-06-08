@@ -28,9 +28,8 @@ import java.util.ArrayList;
  */
 public class ShareFragment extends Fragment implements ITabView {
     public static final String TITLE = "Shares";
-    public static final String CURRENCY_FORMAT = "$%d";
-
-    private static final int DEBUG_UNUSED_SHARES = 12;
+    public static final String ITEM_TEST1 = "com.whitefly.plutocrat.iap.test_item";
+    public static final String ITEM_TEST2 = "com.whitefly.plutocrat.iap.test_item2";
 
     // Attributes
 
@@ -61,12 +60,14 @@ public class ShareFragment extends Fragment implements ITabView {
         // Initialize
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Light, mTvTitle);
 
-        mTvTitle.setText(String.format(getString(R.string.title_unused_shares), 32));
+        mTvTitle.setText(String.format(getString(R.string.title_unused_shares),
+                AppPreference.getInstance().getSession().getActiveUser().numAvailableShares));
 
         mRvMain.setHasFixedSize(true);
         mRvMain.setLayoutManager(new LinearLayoutManager(getContext()));
         ArrayList<ShareBundleModel> list = new ArrayList<>();
-        list.add(new ShareBundleModel(null, 1, 25));
+        list.add(new ShareBundleModel(ITEM_TEST1, 1, 0.99f));
+        list.add(new ShareBundleModel(ITEM_TEST2, 1, 25));
         list.add(new ShareBundleModel(null, 5, 25));
         list.add(new ShareBundleModel(null, 10, 20));
         list.add(new ShareBundleModel(null, 50, 15));

@@ -1,5 +1,6 @@
 package com.whitefly.plutocrat.mainmenu.views;
 
+import com.whitefly.plutocrat.models.MetaModel;
 import com.whitefly.plutocrat.models.NewBuyoutModel;
 import com.whitefly.plutocrat.models.TargetModel;
 
@@ -13,6 +14,6 @@ public interface IMainMenuView {
     void toast(String text);
     void buyIAP(String sku, String payload);
     void handleLoadingDialog(boolean isShow);
-    void handleError(String title, String message);
+    void handleError(String title, String message, MetaModel meta);
     void closeInitiatePage(boolean isSuccess);
 }

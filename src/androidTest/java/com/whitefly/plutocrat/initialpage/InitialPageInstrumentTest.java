@@ -11,6 +11,7 @@ import com.whitefly.plutocrat.mainmenu.events.EngageClickEvent;
 import com.whitefly.plutocrat.mainmenu.events.ExecuteShareEvent;
 import com.whitefly.plutocrat.mainmenu.presenters.MainMenuPresenter;
 import com.whitefly.plutocrat.mainmenu.views.IMainMenuView;
+import com.whitefly.plutocrat.models.MetaModel;
 import com.whitefly.plutocrat.models.NewBuyoutModel;
 import com.whitefly.plutocrat.models.TargetModel;
 import com.whitefly.plutocrat.models.UserModel;
@@ -95,10 +96,10 @@ public class InitialPageInstrumentTest {
             }
 
             @Override
-            public void handleError(String title, String message) {
+            public void handleError(String title, String message, MetaModel meta) {
 
             }
-        }, null, null, null, null);
+        }, null, null);
         presenter.onEngageClick(new EngageClickEvent(model));
 
         signal.await();
@@ -150,10 +151,10 @@ public class InitialPageInstrumentTest {
             }
 
             @Override
-            public void handleError(String title, String message) {
+            public void handleError(String title, String message, MetaModel meta) {
 
             }
-        }, null, null, null, null);
+        }, null, null);
         presenter.onExecuteBuyout(new ExecuteShareEvent(initiate_user_id, amount));
 
         signal.await();

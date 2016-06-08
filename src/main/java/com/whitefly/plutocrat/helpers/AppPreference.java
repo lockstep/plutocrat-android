@@ -3,6 +3,7 @@ package com.whitefly.plutocrat.helpers;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -26,6 +27,10 @@ public class AppPreference {
     public static final String PREF_NAME = "com.whitefly.plutocat.prefs";
     public static final String PREFKEY_USER_PERSISTENCE = "com.whitefly.plutocrat.prefs.user_persistence";
     public static final String PREFKEY_LAST_LOGIN_ID = "com.whitefly.plutocrat.prefs.last_login_id";
+    public static final String PREFKEY_FCM_TOKEN = "com.whitefly.plutocrat.prefs.fcm_token";
+
+    private static final String INSTANCE_STATE_LAST_LOGIN_ID = "com.whitefly.plutocrat.instance.login_id";
+    private static final String INSTANCE_STATE_CURRENT_TARGET = "com.whitefly.plutocrat.instance.current_target";
 
     private static final int NO_USER_ID = 0;
 
@@ -127,6 +132,27 @@ public class AppPreference {
     }
 
     // Methods
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(INSTANCE_STATE_LAST_LOGIN_ID, mLastLoginId);
+        if(mCurrentTarget != null) {
+            outState.putString(INSTANCE_STATE_CURRENT_TARGET, mGson.toJson(mCurrentTarget));
+        }
+
+        mSession.onSaveInstanceState(outState);
+    }
+
+    public void onLoadInstanceState(Bundle savedInstanceState) {
+        if(savedInstanceState != null) {
+            mLastLoginId = savedInstanceState.getInt(INSTANCE_STATE_LAST_LOGIN_ID);
+            if(savedInstanceState.containsKey(INSTANCE_STATE_CURRENT_TARGET)) {
+                mCurrentTarget = mGson.fromJson(savedInstanceState.getString(
+                        INSTANCE_STATE_CURRENT_TARGET), TargetModel.class);
+            }
+
+            mSession.onLoadInstanceState(savedInstanceState);
+        }
+    }
+
     public void loadUserPersistence() {
         mLastLoginId = mPrefs.getInt(PREFKEY_LAST_LOGIN_ID, NO_USER_ID);
         mUserPersistences = new HashMap<>();

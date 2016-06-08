@@ -11,14 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.squareup.otto.Subscribe;
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.mainmenu.adapters.BuyoutAdapter;
 import com.whitefly.plutocrat.mainmenu.adapters.listeners.OnLoadmoreListener;
 import com.whitefly.plutocrat.mainmenu.events.LoadBuyoutsEvent;
-import com.whitefly.plutocrat.mainmenu.views.IBuyoutView;
 import com.whitefly.plutocrat.mainmenu.views.ITabView;
+import com.whitefly.plutocrat.mainmenu.views.events.LoadBuyoutCompletedEvent;
 import com.whitefly.plutocrat.models.BuyoutModel;
 import com.whitefly.plutocrat.models.MetaModel;
 import com.whitefly.plutocrat.models.UserModel;
@@ -28,8 +29,9 @@ import java.util.ArrayList;
 /**
  * Created by Satjapot on 5/10/16 AD.
  */
-public class BuyoutFragment extends Fragment implements ITabView, IBuyoutView {
+public class BuyoutFragment extends Fragment implements ITabView {
     public static final String TITLE = "Buyouts";
+    private static final int FIRST_TIME_PAGE = 0;
     private static final int FIRST_PAGE = 1;
     private static final int BUYOUT_USERS_PER_PAGE = 4;
 
@@ -51,6 +53,20 @@ public class BuyoutFragment extends Fragment implements ITabView, IBuyoutView {
     public static BuyoutFragment newInstance() {
         BuyoutFragment fragment = new BuyoutFragment();
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        EventBus.getInstance().register(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        EventBus.getInstance().unregister(this);
     }
 
     @Nullable
@@ -81,8 +97,7 @@ public class BuyoutFragment extends Fragment implements ITabView, IBuyoutView {
         updateView();
 
         // Get Adapter
-        cpage = FIRST_PAGE;
-        EventBus.getInstance().post(new LoadBuyoutsEvent(cpage, BUYOUT_USERS_PER_PAGE));
+        cpage = FIRST_TIME_PAGE;
 
         // Event Handler
         mSRLMain.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -127,19 +142,26 @@ public class BuyoutFragment extends Fragment implements ITabView, IBuyoutView {
         mTvTitle.setText(String.format(getActivity().getString(R.string.title_success_buyout), activeUser.numSuccessfulBuyout));
     }
 
-    @Override
-    public void setBuyoutList(ArrayList<BuyoutModel> items, MetaModel meta) {
+    /*
+    Bus event
+     */
+    @Subscribe
+    public void onLoadBuyoutCompleted(LoadBuyoutCompletedEvent event) {
+        ArrayList<BuyoutModel> items = event.getItems();
+        MetaModel meta = event.getMeta();
+
+        BuyoutAdapter adapter = (BuyoutAdapter) mRvMain.getAdapter();
         if(meta != null && meta.hasKey("current_page") && meta.getInt("current_page") == FIRST_PAGE) {
             if(items.size() == 0) {
                 mSRLMain.setVisibility(View.GONE);
                 mSRLEmpty.setVisibility(View.VISIBLE);
             } else {
-                mAdapter.getDataSet().clear();
+                adapter.getDataSet().clear();
                 mSRLMain.setVisibility(View.VISIBLE);
                 mSRLEmpty.setVisibility(View.GONE);
             }
         }
-        mAdapter.addItems(items);
+        adapter.addItems(items);
 
         // Switch off all loading widget
         mSRLMain.setRefreshing(false);

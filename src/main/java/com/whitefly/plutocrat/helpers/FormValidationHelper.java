@@ -1,5 +1,6 @@
 package com.whitefly.plutocrat.helpers;
 
+import android.support.annotation.Nullable;
 import android.widget.EditText;
 
 import com.whitefly.plutocrat.exception.FormValidationException;
@@ -22,7 +23,7 @@ public class FormValidationHelper {
         mNameList = new HashMap<>();
     }
 
-    public FormValidationHelper addView(String id, String name, EditText view) {
+    public FormValidationHelper addView(String id, String name, @Nullable EditText view) {
         mWhereViewList.put(id, view);
         mNameList.put(id, name);
 
@@ -64,11 +65,14 @@ public class FormValidationHelper {
 
         public ValidationRule ruleRequired(String id, boolean withTrim) {
             EditText view = getView(id);
-            String name = getName(id);
-            String value = withTrim ? view.getText().toString().trim() : view.getText().toString();
+            if(view != null) {
 
-            if(value.equals("")) {
-                mException.addItem(getView(id), String.format(MESSAGE_DEFAULT_REQUIRED, name));
+                String name = getName(id);
+                String value = withTrim ? view.getText().toString().trim() : view.getText().toString();
+
+                if (value.equals("")) {
+                    mException.addItem(getView(id), String.format(MESSAGE_DEFAULT_REQUIRED, name));
+                }
             }
 
             return this;
@@ -77,13 +81,16 @@ public class FormValidationHelper {
         public ValidationRule ruleMatched(String id1, String id2) {
             EditText view1 = getView(id1);
             EditText view2 = getView(id2);
-            String name1 = getName(id1);
-            String name2 = getName(id2);
-            String value1 = view1.getText().toString();
-            String value2 = view2.getText().toString();
 
-            if(! value1.equals(value2)) {
-                mException.addItem(view1, String.format(MESSAGE_DEFAULT_MATCHED, name1));
+            if(view1 != null && view2 != null) {
+                String name1 = getName(id1);
+                String name2 = getName(id2);
+                String value1 = view1.getText().toString();
+                String value2 = view2.getText().toString();
+
+                if (!value1.equals(value2)) {
+                    mException.addItem(view1, String.format(MESSAGE_DEFAULT_MATCHED, name1));
+                }
             }
 
             return this;

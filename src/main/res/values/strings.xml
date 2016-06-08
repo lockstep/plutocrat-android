@@ -58,11 +58,13 @@
     <string name="caption_action_threat">Threated you with</string>
     <string name="caption_attacking">Attacking You</string>
     <string name="caption_eliminated">Eliminated</string>
+    <string name="caption_under_threat">Under Threat</string>
     <string name="value_plutocrat_buyouts">%1$d Buyouts</string>
     <string name="value_buyouts">Buyouts: %1$d</string>
     <string name="value_threats">Threats: %1$d</string>
     <string name="value_daysurvived">Day survived: %1$d</string>
-    <string name="value_period">%1$d shares %2$s ago</string>
+    <string name="value_period">%1$d share %2$s ago</string>
+    <string name="values_period">%1$d shares %2$s ago</string>
     <string name="status_pending">Outcome Pending</string>
     <string name="status_succeed">Buyout Succeeded</string>
     <string name="status_failed">Buyout Failed</string>
@@ -112,6 +114,11 @@
     <string name="caption_share_to_match">Shares to match: %1$d</string>
     <string name="caption_no_target_list">No Targets</string>
     <string name="caption_no_buyout_list">No Buyouts</string>
+    <string name="caption_deadline_time">Deadline:</string>
+
+    <string name="menu_manage_account">Manage Account</string>
+    <string name="menu_faq">FAQ</string>
+    <string name="menu_sign_out">Sign Out</string>
 
     <string name="loading_default">Loading...</string>
 
@@ -123,10 +130,12 @@
     <string name="error_iap_default">In-app error occur.</string>
     <string name="error_iap_buy">IAP buy error occur.</string>
 
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_field_required">This field is required</string>
+    <string name="error_invalid_email">This email address is invalid.</string>
+    <string name="error_invalid_password">This password is too short.</string>
+    <string name="error_incorrect_password">This password is incorrect.</string>
+    <string name="error_field_required">This field is required.</string>
+    <string name="error_profile_picture">Please try again.</string>
+    <string name="error_suspending">It may take a few minutes to proceed, please log in again. Sorry for any inconvenience caused.</string>
 
     <string name="error_connection">Cannot connect to server.</string>
     <string name="error_title_cannot_new_buyout">Cannot engage target</string>
@@ -134,6 +143,9 @@
     <string name="error_title_cannot_save_settings">Cannot save settings</string>
     <string name="error_title_cannot_register">Cannot register</string>
     <string name="error_title_authenticate_failed">Authentication failed</string>
+    <string name="error_title_cannot_match_shares">Cannot match shares</string>
+    <string name="error_title_cannot_save_picture">Cannot save profile picture</string>
+    <string name="error_title_suspending">Your account is being suspended</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
