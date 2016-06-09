@@ -10,6 +10,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
@@ -107,27 +111,38 @@ public class TargetAdapter extends RecyclerView.Adapter<TargetAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(TargetAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final TargetAdapter.ViewHolder holder, int position) {
         // Set value to views
         TargetModel model = mDataSet.get(position);
 
         if(model != null) {
             holder.tvProfile.setText(model.getNickName());
             holder.tvName.setText(model.name);
-            holder.tvBuyout.setText(String.format(mBuyoutFormat, model.numBuyouts));
-            holder.tvThreat.setText(String.format(mThreatFormat, model.numThreats));
-            holder.tvSurvived.setText(String.format(mDaySurvivedFormat, model.daySurvived));
+            holder.tvBuyout.setText(String.format(mBuyoutFormat, model.numSuccessfulBuyout));
+            holder.tvThreat.setText(String.format(mThreatFormat, model.numMatchedBuyout));
+            holder.tvSurvived.setText(String.format(mDaySurvivedFormat, model.getDaySurvived()));
 
-            if(model.picProfile == TargetModel.DEBUG_NO_PROFILE_PICTURE) {
-                holder.tvProfile.setVisibility(View.VISIBLE);
-                holder.imvProfile.setVisibility(View.GONE);
-            } else {
-                holder.tvProfile.setVisibility(View.GONE);
-                holder.imvProfile.setVisibility(View.VISIBLE);
-                holder.imvProfile.setImageDrawable(ContextCompat.getDrawable(mContext, model.picProfile));
-            }
+            Glide.with(mContext).load(model.profileImage)
+                    .listener(new RequestListener<String, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e, String model,
+                                   Target<GlideDrawable> target, boolean isFirstResource) {
+                            holder.tvProfile.setVisibility(View.VISIBLE);
+                            holder.imvProfile.setVisibility(View.GONE);
+                            return false;
+                        }
 
-            if (model.status == TargetModel.TargetStatus.Normal) {
+                        @Override
+                        public boolean onResourceReady(GlideDrawable resource,
+                                   String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            holder.tvProfile.setVisibility(View.GONE);
+                            holder.imvProfile.setVisibility(View.VISIBLE);
+                            return false;
+                        }
+                    })
+                    .into(holder.imvProfile);
+
+            if (! model.isAttackingCurrentUser && ! model.isUnderBuyoutThreat) {
                 holder.btnEngage.setVisibility(View.VISIBLE);
                 holder.tvGameStatus.setVisibility(View.GONE);
             } else {

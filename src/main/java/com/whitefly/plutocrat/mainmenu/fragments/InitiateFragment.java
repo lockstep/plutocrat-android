@@ -4,14 +4,12 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +20,10 @@ import android.widget.NumberPicker;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.google.gson.Gson;
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.AppPreference;
@@ -182,38 +184,54 @@ public class InitiateFragment extends DialogFragment {
             mLloPlutocrat.setVisibility(View.VISIBLE);
             mLloTarget.setVisibility(View.GONE);
 
-            if(target.picProfile == TargetModel.DEBUG_NO_PROFILE_PICTURE) {
-                mImvPlutocrat.setVisibility(View.GONE);
-                mTvPlutocratProfile.setVisibility(View.VISIBLE);
+            Glide.with(getActivity()).load(target.profileImage)
+                    .listener(new RequestListener<String, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e, String model,
+                                                   Target<GlideDrawable> target, boolean isFirstResource) {
+                            mImvPlutocrat.setVisibility(View.GONE);
+                            mTvPlutocratProfile.setVisibility(View.VISIBLE);
+                            return false;
+                        }
 
-                mTvPlutocratProfile.setText(target.getNickName());
-            } else {
-                mImvPlutocrat.setVisibility(View.VISIBLE);
-                mTvPlutocratProfile.setVisibility(View.GONE);
-
-                mImvPlutocrat.setImageDrawable(ContextCompat.getDrawable(getActivity(), target.picProfile));
-            }
+                        @Override
+                        public boolean onResourceReady(GlideDrawable resource,
+                                                       String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            mImvPlutocrat.setVisibility(View.VISIBLE);
+                            mTvPlutocratProfile.setVisibility(View.GONE);
+                            return false;
+                        }
+                    })
+                    .into(mImvPlutocrat);
             mTvPlutocratName.setText(target.name);
-            mTvPlutocratBuyouts.setText(String.format(getActivity().getString(R.string.value_plutocrat_buyouts), target.numBuyouts));
+            mTvPlutocratBuyouts.setText(String.format(getActivity().getString(R.string.value_plutocrat_buyouts), target.numSuccessfulBuyout));
         } else {
             mLloPlutocrat.setVisibility(View.GONE);
             mLloTarget.setVisibility(View.VISIBLE);
 
-            if(target.picProfile == TargetModel.DEBUG_NO_PROFILE_PICTURE) {
-                mImvTarget.setVisibility(View.GONE);
-                mTvTargetProfile.setVisibility(View.VISIBLE);
+            Glide.with(getActivity()).load(target.profileImage)
+                    .listener(new RequestListener<String, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e, String model,
+                                                   Target<GlideDrawable> target, boolean isFirstResource) {
+                            mImvPlutocrat.setVisibility(View.GONE);
+                            mTvPlutocratProfile.setVisibility(View.VISIBLE);
+                            return false;
+                        }
 
-                mTvTargetProfile.setText(target.getNickName());
-            } else {
-                mImvTarget.setVisibility(View.VISIBLE);
-                mTvTargetProfile.setVisibility(View.GONE);
-
-                mImvTarget.setImageDrawable(ContextCompat.getDrawable(getActivity(), target.picProfile));
-            }
+                        @Override
+                        public boolean onResourceReady(GlideDrawable resource,
+                                                       String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            mImvPlutocrat.setVisibility(View.VISIBLE);
+                            mTvPlutocratProfile.setVisibility(View.GONE);
+                            return false;
+                        }
+                    })
+                    .into(mImvPlutocrat);
             mTvTargetName.setText(target.name);
-            mTvTargetBuyout.setText(String.format(getActivity().getString(R.string.value_buyouts), target.numBuyouts));
-            mTvTargetThreat.setText(String.format(getActivity().getString(R.string.value_threats), target.numThreats));
-            mTvTargetSurvived.setText(String.format(getActivity().getString(R.string.value_daysurvived), target.daySurvived));
+            mTvTargetBuyout.setText(String.format(getActivity().getString(R.string.value_buyouts), target.numSuccessfulBuyout));
+            mTvTargetThreat.setText(String.format(getActivity().getString(R.string.value_threats), target.numMatchedBuyout));
+            mTvTargetSurvived.setText(String.format(getActivity().getString(R.string.value_daysurvived), target.getDaySurvived()));
         }
 
         mTvAvailible.setText(String.format(getActivity().getString(R.string.caption_available_shares), mMax));

@@ -6,6 +6,8 @@ import android.graphics.Typeface;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.whitefly.plutocrat.models.TargetModel;
+import com.whitefly.plutocrat.models.UserModel;
 
 import java.lang.reflect.Type;
 import java.util.EnumMap;
@@ -41,6 +43,19 @@ public class AppPreference {
         return mSession;
     }
 
+    public Typeface getFont(FontType type) {
+        if(mFonts == null) return null;
+        return mFonts.get(type);
+    }
+
+    public void setFontsToViews(FontType type, TextView... views) {
+        if(views.length > 0) {
+            for(int i=0, n= views.length; i<n; i++) {
+                views[i].setTypeface(getFont(type));
+            }
+        }
+    }
+
     // Constructor
     public AppPreference(SharedPreferences prefs) {
         mPrefs = prefs;
@@ -68,19 +83,6 @@ public class AppPreference {
             mFonts.put(FontType.Light, Typeface.createFromAsset(context.getAssets(), "fonts/Helvetica-Light.ttf"));
             mFonts.put(FontType.LightItalic, Typeface.createFromAsset(context.getAssets(), "fonts/Helvetica-LightOblique.ttf"));
             mFonts.put(FontType.Italic, Typeface.createFromAsset(context.getAssets(), "fonts/Helvetica-Oblique.ttf"));
-        }
-    }
-
-    public Typeface getFont(FontType type) {
-        if(mFonts == null) return null;
-        return mFonts.get(type);
-    }
-
-    public void setFontsToViews(FontType type, TextView... views) {
-        if(views.length > 0) {
-            for(int i=0, n= views.length; i<n; i++) {
-                views[i].setTypeface(getFont(type));
-            }
         }
     }
 

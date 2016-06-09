@@ -20,11 +20,10 @@ public class EngageClickEvent {
     public EngageClickEvent(BuyoutModel buyout) {
         // Debug
         TargetModel model = new TargetModel();
-        model.picProfile = buyout.picProfile;
+        model.profileImage = "";
         model.name = buyout.name;
-        model.daySurvived = buyout.hours;
-        model.numBuyouts = buyout.shares;
-        model.numThreats = 2;
+        model.numSuccessfulBuyout = buyout.shares;
+        model.numMatchedBuyout = 2;
         model.isPlutocrat = false;
 
         mTarget = model;

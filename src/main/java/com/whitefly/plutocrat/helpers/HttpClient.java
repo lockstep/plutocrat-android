@@ -9,7 +9,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Iterator;
 
 import okhttp3.Call;
@@ -74,6 +78,8 @@ public class HttpClient {
                 if(mRequestString != null) {
                     // Create request parameter
                     try {
+                        URI uri = new URI(url);
+
                         JSONObject query = new JSONObject(mRequestString);
                         HttpUrl.Builder httpBuilder = new HttpUrl.Builder();
                         Iterator<String> keys = query.keys();
@@ -81,10 +87,16 @@ public class HttpClient {
                             String key = keys.next();
                             httpBuilder.addQueryParameter(key, query.getString(key));
                         }
-                        url = String.format("%s%s", url, httpBuilder.build().toString());
+                        httpBuilder.scheme(uri.getScheme())
+                                .host(uri.getHost())
+                                .addEncodedPathSegments(uri.getPath());
+
+                        url = httpBuilder.build().toString();
                     } catch (JSONException e) {
                         e.printStackTrace();
                         // Create request failed so do nothing
+                    } catch (URISyntaxException e) {
+                        e.printStackTrace();
                     }
                 }
                 break;

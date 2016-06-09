@@ -3,6 +3,7 @@ package com.whitefly.plutocrat.mainmenu.presenters;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.google.gson.Gson;
 import com.squareup.otto.Subscribe;
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.AppPreference;
@@ -10,6 +11,7 @@ import com.whitefly.plutocrat.helpers.HttpClient;
 import com.whitefly.plutocrat.mainmenu.events.BuySharesEvent;
 import com.whitefly.plutocrat.mainmenu.events.CheckNotificationEnableEvent;
 import com.whitefly.plutocrat.mainmenu.events.EngageClickEvent;
+import com.whitefly.plutocrat.mainmenu.events.GetPlutocratEvent;
 import com.whitefly.plutocrat.mainmenu.events.LoadBuyoutsEvent;
 import com.whitefly.plutocrat.mainmenu.events.LoadTargetsEvent;
 import com.whitefly.plutocrat.mainmenu.events.MoreShareClickEvent;
@@ -23,9 +25,14 @@ import com.whitefly.plutocrat.mainmenu.views.IHomeView;
 import com.whitefly.plutocrat.mainmenu.views.IMainMenuView;
 import com.whitefly.plutocrat.mainmenu.views.ITargetView;
 import com.whitefly.plutocrat.models.BuyoutModel;
+import com.whitefly.plutocrat.models.MetaModel;
 import com.whitefly.plutocrat.models.ShareBundleModel;
 import com.whitefly.plutocrat.models.TargetModel;
 import com.whitefly.plutocrat.models.UserModel;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,6 +43,7 @@ import okhttp3.Headers;
  * Created by Satjapot on 5/12/16 AD.
  */
 public class MainMenuPresenter {
+    private static final int FIRST_PAGE = 1;
 
     // Attributes
     private Context mContext;
@@ -58,6 +66,11 @@ public class MainMenuPresenter {
     }
 
     // Methods
+    @Subscribe
+    public void onGetPlutocratEvent(GetPlutocratEvent event) {
+        mTargetView.setPlutocrat(AppPreference.getInstance().getSession().getPlutocrat());
+    }
+
     @Subscribe
     public void onSetHomeState(SetHomeStateEvent event) {
         HomeFragment.State state = HomeFragment.State.Default;
@@ -100,7 +113,7 @@ public class MainMenuPresenter {
 
     @Subscribe
     public void onLoadTargets(LoadTargetsEvent event) {
-        new LoadDummyTargetCallback().execute(event);
+        new LoadTargetBuyoutCallBack().execute(event);
     }
 
     @Subscribe
@@ -168,86 +181,37 @@ public class MainMenuPresenter {
         }
     }
 
-    private class LoadDummyTargetCallback extends AsyncTask<LoadTargetsEvent, Void, ArrayList<TargetModel>> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
+    private class LoadTargetBuyoutCallBack extends AsyncTask<LoadTargetsEvent, Void, ArrayList<TargetModel>> {
+        private MetaModel mMetaModel;
 
         @Override
         protected ArrayList<TargetModel> doInBackground(LoadTargetsEvent... params) {
             ArrayList<TargetModel> result = new ArrayList<>();
-            // Dummy data
-            if(params[0].page == 1) {
-                TargetModel model;
-                model = new TargetModel();
-                model.name = "Aaron Pinchai";
-                model.numBuyouts = 23;
-                model.numThreats = 7;
-                model.daySurvived = 119;
-                model.status = TargetModel.TargetStatus.Normal;
-                model.picProfile = 0;
-                result.add(model);
+            Gson gson = new Gson();
+            Headers headers = AppPreference.getInstance().getSession().getHeaders();
+            int page = params[0].page;
+            String requestParam = String.format("{page:%d}", page);
 
-                model = new TargetModel();
-                model.name = "Sara Mayer";
-                model.numBuyouts = 21;
-                model.numThreats = 2;
-                model.daySurvived = 81;
-                model.status = TargetModel.TargetStatus.UnderThreat;
-                model.picProfile = R.drawable.demo_profile1;
-                result.add(model);
-
-                model = new TargetModel();
-                model.name = "Peter Cook";
-                model.numBuyouts = 13;
-                model.numThreats = 0;
-                model.daySurvived = 20;
-                model.status = TargetModel.TargetStatus.Normal;
-                model.picProfile = R.drawable.demo_profile2;
-                result.add(model);
-
-                model = new TargetModel();
-                model.name = "M. Dorsey";
-                model.numBuyouts = 11;
-                model.numThreats = 3;
-                model.daySurvived = 119;
-                model.status = TargetModel.TargetStatus.Normal;
-                model.picProfile = R.drawable.demo_profile3;
-                result.add(model);
-            } else if(params[0].page == 2) {
-                TargetModel model;
-                model = new TargetModel();
-                model.name = "Danielle Steele";
-                model.numBuyouts = 21;
-                model.numThreats = 5;
-                model.daySurvived = 190;
-                model.status = TargetModel.TargetStatus.Normal;
-                model.picProfile = R.drawable.demo_profile4;
-                result.add(model);
-
-                model = new TargetModel();
-                model.name = "Satjapot I.";
-                model.numBuyouts = 1;
-                model.numThreats = 11;
-                model.daySurvived = 111;
-                model.status = TargetModel.TargetStatus.UnderThreat;
-                result.add(model);
-
-                model = new TargetModel();
-                model.name = "Amy Sasitorn";
-                model.numBuyouts = 12;
-                model.numThreats = 5;
-                model.daySurvived = 145;
-                model.status = TargetModel.TargetStatus.Normal;
-                model.picProfile = R.drawable.demo_profile5;
-                result.add(model);
-            }
-
-            // Dummy take time
             try {
-                Thread.sleep(2000L);
-            } catch (InterruptedException e) {
+                String jsonBody = mHttp.header(headers).request(requestParam).get(R.string.api_targets);
+                JSONObject root = new JSONObject(jsonBody);
+                mMetaModel = new MetaModel(root.getJSONObject("meta"));
+                JSONArray users = root.getJSONArray("users");
+
+                if(users.length() > 0) {
+                    for (int i = 0, n = users.length(); i < n; i++) {
+                        TargetModel model = gson.fromJson(users.get(i).toString(), TargetModel.class);
+                        result.add(model);
+
+                        if(page == FIRST_PAGE && i == 0) {
+                            AppPreference.getInstance().getSession()
+                                    .savePlutocrat(model.isPlutocrat ? model : null);
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
 
@@ -259,7 +223,11 @@ public class MainMenuPresenter {
             if(targetModels.size() > 0) {
                 targetModels.add(null);
             }
-            mTargetView.setTargetList(targetModels);
+            mTargetView.setTargetList(targetModels, mMetaModel);
+
+            if(mMetaModel.getInt("current_page") == FIRST_PAGE) {
+                mTargetView.setPlutocrat(AppPreference.getInstance().getSession().getPlutocrat());
+            }
         }
     }
 
