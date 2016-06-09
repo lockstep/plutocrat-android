@@ -34,7 +34,17 @@ public class AppPreference {
 
     private EnumMap<FontType, Typeface> mFonts;
 
-    // Get Methods
+    private TargetModel mCurrentTarget;
+
+    // Get/Set Methods
+    public TargetModel getCurrentTarget() {
+        return mCurrentTarget;
+    }
+
+    public void setCurrentTarget(TargetModel target) {
+        mCurrentTarget = target;
+    }
+
     public SharedPreferences getSharedPreference() {
         return mPrefs;
     }

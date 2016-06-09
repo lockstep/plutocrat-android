@@ -6,11 +6,13 @@ import android.os.AsyncTask;
 import com.google.gson.Gson;
 import com.squareup.otto.Subscribe;
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.exception.APIConnectionException;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.HttpClient;
 import com.whitefly.plutocrat.mainmenu.events.BuySharesEvent;
 import com.whitefly.plutocrat.mainmenu.events.CheckNotificationEnableEvent;
 import com.whitefly.plutocrat.mainmenu.events.EngageClickEvent;
+import com.whitefly.plutocrat.mainmenu.events.ExecuteShareEvent;
 import com.whitefly.plutocrat.mainmenu.events.GetPlutocratEvent;
 import com.whitefly.plutocrat.mainmenu.events.LoadBuyoutsEvent;
 import com.whitefly.plutocrat.mainmenu.events.LoadTargetsEvent;
@@ -26,6 +28,7 @@ import com.whitefly.plutocrat.mainmenu.views.IMainMenuView;
 import com.whitefly.plutocrat.mainmenu.views.ITargetView;
 import com.whitefly.plutocrat.models.BuyoutModel;
 import com.whitefly.plutocrat.models.MetaModel;
+import com.whitefly.plutocrat.models.NewBuyoutModel;
 import com.whitefly.plutocrat.models.ShareBundleModel;
 import com.whitefly.plutocrat.models.TargetModel;
 import com.whitefly.plutocrat.models.UserModel;
@@ -66,6 +69,10 @@ public class MainMenuPresenter {
     }
 
     // Methods
+    public void setHttpClient(HttpClient client) {
+        mHttp = client;
+    }
+
     @Subscribe
     public void onGetPlutocratEvent(GetPlutocratEvent event) {
         mTargetView.setPlutocrat(AppPreference.getInstance().getSession().getPlutocrat());
@@ -123,7 +130,8 @@ public class MainMenuPresenter {
 
     @Subscribe
     public void onEngageClick(EngageClickEvent event) {
-        mMainMenuView.callInitiateDialog(event.getTargetModel());
+        AppPreference.getInstance().setCurrentTarget(event.getTargetModel());
+        new GetNewBuyoutCallback().execute(event.getTargetModel());
     }
 
     @Subscribe
@@ -146,10 +154,17 @@ public class MainMenuPresenter {
         mMainMenuView.toast("Save complete");
     }
 
+    @Subscribe
+    public void onExecuteBuyout(ExecuteShareEvent event) {
+        new ExecuteBuyoutCallback().execute(event);
+    }
+
     /*
     Request Callback
      */
     private class SignOutCallback extends AsyncTask<Void, Void, Boolean> {
+        private String mErrorMessage;
+
         @Override
         protected void onPreExecute() {
             mMainMenuView.toast("Signing out...");
@@ -166,6 +181,10 @@ public class MainMenuPresenter {
                 result = mHttp.getResponse().isSuccessful();
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (APIConnectionException e) {
+                e.printStackTrace();
+                MetaModel model = new MetaModel(e.getMessage());
+                mErrorMessage = model.getErrors();
             }
             return result;
         }
@@ -183,6 +202,7 @@ public class MainMenuPresenter {
 
     private class LoadTargetBuyoutCallBack extends AsyncTask<LoadTargetsEvent, Void, ArrayList<TargetModel>> {
         private MetaModel mMetaModel;
+        private String mErrorMessage;
 
         @Override
         protected ArrayList<TargetModel> doInBackground(LoadTargetsEvent... params) {
@@ -213,6 +233,10 @@ public class MainMenuPresenter {
                 e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
+            } catch (APIConnectionException e) {
+                e.printStackTrace();
+                MetaModel model = new MetaModel(e.getMessage());
+                mErrorMessage = model.getErrors();
             }
 
             return result;
@@ -323,6 +347,135 @@ public class MainMenuPresenter {
                 buyoutModels.add(null);
             }
             mBuyoutView.setTargetList(buyoutModels);
+        }
+    }
+
+    private class GetNewBuyoutCallback extends AsyncTask<TargetModel, Void, NewBuyoutModel> {
+        private TargetModel mTarget;
+        private String mErrorMessage = null;
+
+        @Override
+        protected void onPreExecute() {
+            mMainMenuView.handleLoadingDialog(true);
+        }
+
+        @Override
+        protected NewBuyoutModel doInBackground(TargetModel... params) {
+            Gson gson = new Gson();
+
+            NewBuyoutModel result = null;
+            mTarget = params[0];
+            UserModel currentUser = AppPreference.getInstance().getSession().getActiveUser();
+            Headers headers = AppPreference.getInstance().getSession().getHeaders();
+
+            String url = String.format(mContext.getString(R.string.api_newbuyout), currentUser.id);
+            String requestParam = String.format("{\"initiating_user_id\":%d}", mTarget.id);
+
+            try {
+                String bodyString = mHttp.header(headers).request(requestParam).get(url);
+                JSONObject jsonBody = new JSONObject(bodyString);
+                result = gson.fromJson(jsonBody.getString("new_buyout"), NewBuyoutModel.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+                mErrorMessage = mContext.getString(R.string.error_connection);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                mErrorMessage = mContext.getString(R.string.error_connection);
+            } catch (APIConnectionException e) {
+                e.printStackTrace();
+                MetaModel model = new MetaModel(e.getMessage());
+                mErrorMessage = model.getErrors();
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(NewBuyoutModel model) {
+            mMainMenuView.handleLoadingDialog(false);
+            if(mErrorMessage != null) {
+                mMainMenuView.handleError(mContext.getString(R.string.error_title_cannot_new_buyout),
+                        mErrorMessage);
+            } else {
+                mMainMenuView.callInitiateDialog(mTarget, model);
+            }
+        }
+    }
+
+    private class ExecuteBuyoutCallback extends AsyncTask<ExecuteShareEvent, Void, String> {
+        private Gson mGson;
+        private String mErrorMessage = null;
+
+        public ExecuteBuyoutCallback() {
+            mGson = new Gson();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            mMainMenuView.handleLoadingDialog(true);
+        }
+
+        @Override
+        protected String doInBackground(ExecuteShareEvent... params) {
+            ExecuteShareEvent param = params[0];
+            String result = null;
+            Headers headers = AppPreference.getInstance().getSession().getHeaders();
+
+            String url = String.format(mContext.getString(R.string.api_execute_buyout), param.getInitiateUserId());
+
+            try {
+                JSONObject requestJson = new JSONObject();
+                requestJson.put("number_of_shares", param.getNumberOfShare());
+                String requestString = requestJson.toString();
+
+                result = mHttp.header(headers).request(requestString).post(url);
+            } catch (IOException e) {
+                e.printStackTrace();
+                mErrorMessage = mContext.getString(R.string.error_connection);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                mErrorMessage = mContext.getString(R.string.error_connection);
+            } catch (APIConnectionException e) {
+                e.printStackTrace();
+                MetaModel model = new MetaModel(e.getMessage());
+                mErrorMessage = model.getErrors();
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            mMainMenuView.handleLoadingDialog(false);
+            if(mErrorMessage != null) {
+                mMainMenuView.handleError(mContext.getString(R.string.error_title_cannot_execute_buyout),
+                        mErrorMessage);
+            } else {
+                try {
+                    JSONObject rootJson = new JSONObject(response);
+                    JSONObject buyoutJson = rootJson.getJSONObject("buyout");
+                    TargetModel initiatingUser = mGson.fromJson(buyoutJson.getString("initiating_user"),
+                            TargetModel.class);
+                    TargetModel targetUser = mGson.fromJson(buyoutJson.getString("target_user"),
+                            TargetModel.class);
+
+                    UserModel currentUser = AppPreference.getInstance().getSession().getActiveUser();
+                    currentUser.successful_buyouts_count = initiatingUser.numSuccessfulBuyout;
+                    currentUser.matched_buyouts_count = initiatingUser.numMatchedBuyout;
+                    currentUser.available_shares_count = initiatingUser.numAvailableShares;
+
+                    TargetModel currentTarget = AppPreference.getInstance().getCurrentTarget();
+                    currentTarget.isUnderBuyoutThreat = targetUser.isUnderBuyoutThreat;
+                    currentTarget.numSuccessfulBuyout = targetUser.numSuccessfulBuyout;
+                    currentTarget.numMatchedBuyout = targetUser.numMatchedBuyout;
+                    currentTarget.numAvailableShares = targetUser.numAvailableShares;
+                    AppPreference.getInstance().setCurrentTarget(null);
+
+                    mMainMenuView.closeInitiatePage(response != null);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

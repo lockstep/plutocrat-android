@@ -106,6 +106,11 @@
     <string name="dialog_note_enable_push_notice">Are you sure to enable notification?</string>
     <string name="caption_enable">ENABLE</string>
     <string name="caption_dismiss">DISMISS</string>
+    <string name="dialog_title_moreshare">Your share is not sufficient</string>
+    <string name="dialog_content_moreshare">Do you want to buy more shares?</string>
+    <string name="caption_close">Close</string>
+
+    <string name="loading_default">Loading...</string>
 
     <string name="caption_select_image">Select image</string>
     <string name="caption_take_from_camera">Take from camera</string>
@@ -114,10 +119,15 @@
     <string name="error_input_shares_number">Please input number of shares</string>
     <string name="error_iap_default">In-app error occur.</string>
     <string name="error_iap_buy">IAP buy error occur.</string>
+
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
+
+    <string name="error_connection">Cannot connect to server.</string>
+    <string name="error_title_cannot_new_buyout">Cannot engage target</string>
+    <string name="error_title_cannot_execute_buyout">Cannot execute target</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -140,4 +150,6 @@
     <string name="api_signin" translatable="false">/api/v1/users/sign_in</string>
     <string name="api_signout" translatable="false">/api/v1/users/sign_out</string>
     <string name="api_profile" translatable="false">/api/v1/users/%1$d</string>
+    <string name="api_newbuyout" translatable="false">/api/v1/users/%1$d/buyouts/new</string>
+    <string name="api_execute_buyout" translatable="false">/api/v1/users/%1$d/buyout</string>
 </resources>

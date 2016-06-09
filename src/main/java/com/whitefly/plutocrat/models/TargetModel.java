@@ -45,9 +45,6 @@ public class TargetModel {
     @SerializedName("is_plutocrat")
     public boolean isPlutocrat;
 
-//    "active_inbound_buyout": null,
-//    "terminal_buyout": null
-
     // Methods
     public String getNickName() {
         String result;

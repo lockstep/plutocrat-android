@@ -25,6 +25,20 @@ public class MetaModel {
         create(meta);
     }
 
+    public MetaModel(String root) {
+        try {
+            JSONObject rootJson = new JSONObject(root);
+
+            mMaps = new HashMap<>();
+            mIsError = false;
+
+            create(rootJson.getJSONObject("meta"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     // Methods
     private void create(JSONObject meta) {
         // Clear hash map

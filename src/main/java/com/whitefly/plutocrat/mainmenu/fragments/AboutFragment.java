@@ -72,4 +72,9 @@ public class AboutFragment extends Fragment implements ITabView {
     public String getTitle() {
         return TITLE;
     }
+
+    @Override
+    public void updateView() {
+
+    }
 }

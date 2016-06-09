@@ -8,4 +8,5 @@ import android.view.View;
 public interface ITabView {
     int getIcon();
     String getTitle();
+    void updateView();
 }

@@ -72,7 +72,9 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/tv_plutocrat_name"
                         android:text="Aaron Pinchai"
-                        style="@style/HeaderMediumText"/>
+                        style="@style/HeaderMediumText"
+                        android:ellipsize="end"
+                        android:maxLines="1"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -96,7 +98,8 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/btn_player_engage"
                     android:text="@string/caption_engage"
-                    style="@style/DefaultButton"/>
+                    style="@style/DefaultButton"
+                    android:minWidth="80dp"/>
             </LinearLayout>
         </LinearLayout>
 

@@ -83,6 +83,10 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
         }
     }
 
+    public void updateList() {
+        mAdapter.notifyDataSetChanged();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -154,6 +158,11 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
     @Override
     public String getTitle() {
         return TITLE;
+    }
+
+    @Override
+    public void updateView() {
+
     }
 
     @Override

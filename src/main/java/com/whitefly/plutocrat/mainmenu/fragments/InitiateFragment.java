@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -29,7 +31,10 @@ import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.helpers.text.CustomTypefaceSpan;
+import com.whitefly.plutocrat.mainmenu.MainMenuActivity;
+import com.whitefly.plutocrat.mainmenu.events.ExecuteShareEvent;
 import com.whitefly.plutocrat.mainmenu.events.MoreShareClickEvent;
+import com.whitefly.plutocrat.models.NewBuyoutModel;
 import com.whitefly.plutocrat.models.TargetModel;
 
 import java.lang.reflect.Field;
@@ -39,12 +44,11 @@ import java.lang.reflect.Field;
  */
 public class InitiateFragment extends DialogFragment {
     private static final String BUNDLE_TARGET = "targetModel";
-
-    private static final int DEBUG_MIN_SHARES = 12;
-    private static final int DEBUG_MAX_SHARES = 23;
+    private static final String BUNDLE_NEW_BUYOUT = "buyoutModel";
 
     // Attributes
     private int mMin, mMax;
+    private TargetModel mTarget;
     private View.OnClickListener mAbortClick;
 
     // Views
@@ -55,10 +59,12 @@ public class InitiateFragment extends DialogFragment {
     private Button mBtnAbort, mBtnExecute, mBtnTargetAbort, mBtnPlutocratAbort;
     private ImageView mImvPlutocrat, mImvTarget;
     private TextView mTvPlutocratProfile, mTvTargetProfile;
+    private TextView mTvLoadingMessage;
 
     private SeekBar mShareSeekBar;
     private NumberPicker mPicker;
-    private AlertDialog mShareDialog;
+    private AlertDialog mShareDialog, mBuyMoreDialog, mLoadingDialog;
+    private CustomTypefaceSpan mFontSpan;
 
     /**
      * Use this factory method to create a new instance of
@@ -66,20 +72,95 @@ public class InitiateFragment extends DialogFragment {
      *
      * @return A new instance of fragment LoginFragment.
      */
-    public static InitiateFragment newInstance(TargetModel model) {
+    public static InitiateFragment newInstance(TargetModel target, NewBuyoutModel newBuyout) {
         Gson gson = new Gson();
         InitiateFragment fragment = new InitiateFragment();
         fragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogTheme);
 
         // Send target model to it
         Bundle bundle = new Bundle();
-        bundle.putString(BUNDLE_TARGET, gson.toJson(model, TargetModel.class));
+        bundle.putString(BUNDLE_TARGET, gson.toJson(target, TargetModel.class));
+        bundle.putString(BUNDLE_NEW_BUYOUT, gson.toJson(newBuyout, NewBuyoutModel.class));
         fragment.setArguments(bundle);
 
         return fragment;
     }
 
     // Methods
+    public AlertDialog getLoadingDialog(String message) {
+        if(message == null) {
+            mTvLoadingMessage.setText(getString(R.string.loading_default));
+        } else {
+            mTvLoadingMessage.setText(message);
+        }
+        return mLoadingDialog;
+    }
+
+    private void createShareDialog(LayoutInflater inflater, ViewGroup parent) {
+        View dialog = inflater.inflate(R.layout.dialog_numberpicker, parent, false);
+        mPicker = (NumberPicker) dialog.findViewById(R.id.numberPicker);
+
+        SpannableString dialogButtonText = new SpannableString(getString(R.string.caption_moreshares));
+        dialogButtonText.setSpan(
+               mFontSpan, 0, dialogButtonText.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        mShareDialog = new AlertDialog.Builder(getActivity())
+                .setView(dialog)
+                .setNeutralButton(dialogButtonText, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        EventBus.getInstance().post(new MoreShareClickEvent());
+
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+    }
+
+    private void createBuyMoreDialog() {
+        SpannableString titleText = new SpannableString(getString(R.string.dialog_title_moreshare));
+        titleText.setSpan( mFontSpan, 0, titleText.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+        SpannableString contentText = new SpannableString(getString(R.string.dialog_content_moreshare));
+        contentText.setSpan( mFontSpan, 0, contentText.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+        SpannableString negativeText = new SpannableString(getString(R.string.caption_dismiss));
+        negativeText.setSpan( mFontSpan, 0, negativeText.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+        SpannableString positiveText = new SpannableString(getString(R.string.caption_moreshares));
+        positiveText.setSpan( mFontSpan, 0, positiveText.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+
+        mBuyMoreDialog = new AlertDialog.Builder(getActivity())
+                .setTitle(titleText)
+                .setMessage(contentText)
+                .setPositiveButton(positiveText, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        MainMenuActivity activity = (MainMenuActivity) getActivity();
+                        activity.goToShareFromInitiate();
+                    }
+                })
+                .setNegativeButton(negativeText, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+    }
+
+    private void createLoadingDialog(LayoutInflater inflater, ViewGroup parent) {
+        View root = inflater.inflate(R.layout.dialog_loading, parent, false);
+        mTvLoadingMessage = (TextView) root.findViewById(R.id.tv_loading_message);
+
+        mLoadingDialog = new AlertDialog.Builder(getActivity())
+                .setView(root)
+                .setCancelable(false)
+                .create();
+        mLoadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
@@ -92,7 +173,6 @@ public class InitiateFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_initiate, container, false);
-        View dialog = inflater.inflate(R.layout.dialog_numberpicker, null, false);
 
         // Get views
         mLloPlutocrat       = (LinearLayout) root.findViewById(R.id.llo_initiate_plutocrat);
@@ -116,14 +196,18 @@ public class InitiateFragment extends DialogFragment {
         mBtnPlutocratAbort  = (Button) root.findViewById(R.id.btn_plutocrat_abort);
         mBtnTargetAbort     = (Button) root.findViewById(R.id.btn_target_abort);
         mShareSeekBar       = (SeekBar) root.findViewById(R.id.seekBar);
-        mPicker             = (NumberPicker) dialog.findViewById(R.id.numberPicker);
-
-        mMin = DEBUG_MIN_SHARES;
-        mMax = DEBUG_MAX_SHARES;
-        mTvUseShares.setText(String.valueOf(mMin));
 
         Gson gson = new Gson();
-        TargetModel target = gson.fromJson(getArguments().getString(BUNDLE_TARGET), TargetModel.class);
+        mTarget = gson.fromJson(getArguments().getString(BUNDLE_TARGET), TargetModel.class);
+        NewBuyoutModel newBuyout = gson.fromJson(getArguments().getString(BUNDLE_NEW_BUYOUT), NewBuyoutModel.class);
+        mFontSpan = new CustomTypefaceSpan("", AppPreference.getInstance().getFont(AppPreference.FontType.Regular));
+
+        createShareDialog(inflater, container);
+        createLoadingDialog(inflater, container);
+        createBuyMoreDialog();
+
+        mMin = newBuyout.minimumAmount;
+        mMax = newBuyout.availableShareCount;
 
         try {
             Field dividerField = mPicker.getClass().getDeclaredField("mSelectionDivider");
@@ -136,8 +220,6 @@ public class InitiateFragment extends DialogFragment {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        mPicker.setMinValue(mMin);
-        mPicker.setMaxValue(mMax);
         mPicker.setWrapSelectorWheel(false);
         mPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         mPicker.setOnClickListener(new View.OnClickListener() {
@@ -151,23 +233,18 @@ public class InitiateFragment extends DialogFragment {
             }
         });
 
-        SpannableString dialogButtonText = new SpannableString(getString(R.string.caption_moreshares));
-        dialogButtonText.setSpan(
-                new CustomTypefaceSpan("", AppPreference.getInstance().getFont(AppPreference.FontType.Regular)),
-                0, dialogButtonText.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-        mShareDialog = new AlertDialog.Builder(getActivity())
-                .setView(dialog)
-                .setNeutralButton(dialogButtonText, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        EventBus.getInstance().post(new MoreShareClickEvent());
-
-                        dialog.dismiss();
-                    }
-                })
-                .create();
-
         mShareSeekBar.setMax(mMax - mMin);
+
+        if(mMin > mMax || mMax == 0) {
+            mTvAvailible.setTextColor(ContextCompat.getColor(getActivity(), R.color.colorRed));
+            mTvUseShares.setText(String.valueOf(mMax));
+            mPicker.setMinValue(mMax);
+            mPicker.setMaxValue(mMax);
+        } else {
+            mTvUseShares.setText(String.valueOf(mMin));
+            mPicker.setMinValue(mMin);
+            mPicker.setMaxValue(mMax);
+        }
 
         // Initiate
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
@@ -180,11 +257,11 @@ public class InitiateFragment extends DialogFragment {
 
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Bold, mTvUseShares);
 
-        if(target.isPlutocrat) {
+        if(mTarget.isPlutocrat) {
             mLloPlutocrat.setVisibility(View.VISIBLE);
             mLloTarget.setVisibility(View.GONE);
 
-            Glide.with(getActivity()).load(target.profileImage)
+            Glide.with(getActivity()).load(mTarget.profileImage)
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
                         public boolean onException(Exception e, String model,
@@ -203,13 +280,13 @@ public class InitiateFragment extends DialogFragment {
                         }
                     })
                     .into(mImvPlutocrat);
-            mTvPlutocratName.setText(target.name);
-            mTvPlutocratBuyouts.setText(String.format(getActivity().getString(R.string.value_plutocrat_buyouts), target.numSuccessfulBuyout));
+            mTvPlutocratName.setText(mTarget.name);
+            mTvPlutocratBuyouts.setText(String.format(getActivity().getString(R.string.value_plutocrat_buyouts), mTarget.numSuccessfulBuyout));
         } else {
             mLloPlutocrat.setVisibility(View.GONE);
             mLloTarget.setVisibility(View.VISIBLE);
 
-            Glide.with(getActivity()).load(target.profileImage)
+            Glide.with(getActivity()).load(mTarget.profileImage)
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
                         public boolean onException(Exception e, String model,
@@ -228,10 +305,10 @@ public class InitiateFragment extends DialogFragment {
                         }
                     })
                     .into(mImvPlutocrat);
-            mTvTargetName.setText(target.name);
-            mTvTargetBuyout.setText(String.format(getActivity().getString(R.string.value_buyouts), target.numSuccessfulBuyout));
-            mTvTargetThreat.setText(String.format(getActivity().getString(R.string.value_threats), target.numMatchedBuyout));
-            mTvTargetSurvived.setText(String.format(getActivity().getString(R.string.value_daysurvived), target.getDaySurvived()));
+            mTvTargetName.setText(mTarget.name);
+            mTvTargetBuyout.setText(String.format(getActivity().getString(R.string.value_buyouts), mTarget.numSuccessfulBuyout));
+            mTvTargetThreat.setText(String.format(getActivity().getString(R.string.value_threats), mTarget.numMatchedBuyout));
+            mTvTargetSurvived.setText(String.format(getActivity().getString(R.string.value_daysurvived), mTarget.getDaySurvived()));
         }
 
         mTvAvailible.setText(String.format(getActivity().getString(R.string.caption_available_shares), mMax));
@@ -253,9 +330,13 @@ public class InitiateFragment extends DialogFragment {
         mBtnExecute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Do something
+                if(mMin > mMax || mMax == 0) {
+                    mBuyMoreDialog.show();
+                } else {
+                    int useShare = Integer.valueOf(mTvUseShares.getText().toString());
 
-                InitiateFragment.this.dismiss();
+                    EventBus.getInstance().post(new ExecuteShareEvent(mTarget.id, useShare));
+                }
             }
         });
 

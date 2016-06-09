@@ -428,6 +428,11 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
     }
 
     @Override
+    public void updateView() {
+
+    }
+
+    @Override
     public void handleNotificationEnable(boolean isEnabled) {
         mNotificationEnableDialog.show();
     }
