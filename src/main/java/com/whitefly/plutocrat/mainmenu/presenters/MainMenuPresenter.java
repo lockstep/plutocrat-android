@@ -13,9 +13,11 @@ import com.whitefly.plutocrat.mainmenu.events.BuySharesEvent;
 import com.whitefly.plutocrat.mainmenu.events.CheckNotificationEnableEvent;
 import com.whitefly.plutocrat.mainmenu.events.EngageClickEvent;
 import com.whitefly.plutocrat.mainmenu.events.ExecuteShareEvent;
+import com.whitefly.plutocrat.mainmenu.events.FailMatchBuyoutEvent;
 import com.whitefly.plutocrat.mainmenu.events.GetPlutocratEvent;
 import com.whitefly.plutocrat.mainmenu.events.LoadBuyoutsEvent;
 import com.whitefly.plutocrat.mainmenu.events.LoadTargetsEvent;
+import com.whitefly.plutocrat.mainmenu.events.MatchBuyoutEvent;
 import com.whitefly.plutocrat.mainmenu.events.MoreShareClickEvent;
 import com.whitefly.plutocrat.mainmenu.events.SaveAccountSettingsEvent;
 import com.whitefly.plutocrat.mainmenu.events.SetHomeStateEvent;
@@ -83,34 +85,35 @@ public class MainMenuPresenter {
         HomeFragment.State state = HomeFragment.State.Default;
         UserModel userModel = AppPreference.getInstance().getSession().getActiveUser();
 
-        if (userModel.defeated_at != null) {
+        if (userModel.defeatedAt != null) {
             state = HomeFragment.State.Suspend;
-        } else if (userModel.under_buyout_threat) {
+//        } else if (userModel.isUnderBuyoutThreat) {
+        } else if (userModel.activeInboundBuyout != null) {
             state = HomeFragment.State.Threat;
         }
 
-        mHomeView.changeState(state, userModel.user_notice_id);
+        mHomeView.changeState(state, userModel.userNoticeId);
     }
 
     @Subscribe
     public void onUpdateUserNoticeId(UpdateUserNoticeIdEvent event) {
         HomeFragment.State state = HomeFragment.State.Default;
         UserModel userModel = AppPreference.getInstance().getSession().getActiveUser();
-        userModel.user_notice_id = event.getNextNoticeId();
+        userModel.userNoticeId = event.getNextNoticeId();
 
-        if (userModel.defeated_at != null) {
+        if (userModel.defeatedAt != null) {
             state = HomeFragment.State.Suspend;
-        } else if (userModel.attacking_current_user) {
+        } else if (userModel.isAttackingCurrentUser) {
             state = HomeFragment.State.Threat;
         }
 
-        mHomeView.changeState(state, userModel.user_notice_id);
+        mHomeView.changeState(state, userModel.userNoticeId);
     }
 
     @Subscribe
     public void onCheckNotificationEnable(CheckNotificationEnableEvent event) {
         UserModel model = AppPreference.getInstance().getSession().getActiveUser();
-        mHomeView.handleNotificationEnable(model.is_enable_notification);
+        mHomeView.handleNotificationEnable(model.isEnableNotification);
     }
 
     @Subscribe
@@ -157,6 +160,16 @@ public class MainMenuPresenter {
     @Subscribe
     public void onExecuteBuyout(ExecuteShareEvent event) {
         new ExecuteBuyoutCallback().execute(event);
+    }
+
+    @Subscribe
+    public void onMatchBuyout(MatchBuyoutEvent event) {
+        new MatchBuyoutCallback().execute();
+    }
+
+    @Subscribe
+    public void onFailMatchBuyout(FailMatchBuyoutEvent event) {
+        new FailMatchBuyoutCallback().execute();
     }
 
     /*
@@ -206,8 +219,8 @@ public class MainMenuPresenter {
 
         @Override
         protected ArrayList<TargetModel> doInBackground(LoadTargetsEvent... params) {
+            Gson gson = AppPreference.getInstance().getGson();
             ArrayList<TargetModel> result = new ArrayList<>();
-            Gson gson = new Gson();
             Headers headers = AppPreference.getInstance().getSession().getHeaders();
             int page = params[0].page;
             String requestParam = String.format("{page:%d}", page);
@@ -264,70 +277,115 @@ public class MainMenuPresenter {
         @Override
         protected ArrayList<BuyoutModel> doInBackground(LoadBuyoutsEvent... params) {
             ArrayList<BuyoutModel> result = new ArrayList<>();
+            BuyoutModel model;
+            TargetModel initiate, target;
+            int currentUserId = AppPreference.getInstance().getSession().getActiveUser().id;
             // Dummy data
             if(params[0].page == 1) {
-                BuyoutModel model;
+
+                initiate = new TargetModel();
+                initiate.id = 20;
+                target = new TargetModel();
+                target.id = currentUserId;
+                target.name = "Aaron Pinchai";
+                target.profileImage = "";
                 model = new BuyoutModel();
-                model.name = "Aaron Pinchai";
-                model.shares = 23;
-                model.hours = 2;
-                model.status = BuyoutModel.BuyoutStatus.Threat;
-                model.gameStatus = BuyoutModel.GameStatus.Playing;
-                model.picProfile = 0;
+                model.numShares = 23;
+                model.state = "initiated";
+                model.initiatedTimeAgo = "2 hours ago";
+                model.resolvedTimeAgo = null;
+                model.initiatingUser = initiate;
+                model.targetUser = target;
                 result.add(model);
 
+                initiate = new TargetModel();
+                initiate.id = currentUserId;
+                target = new TargetModel();
+                target.id = 22;
+                target.name = "Sara Mayer";
+                target.profileImage = "";
                 model = new BuyoutModel();
-                model.name = "Sara Mayer";
-                model.shares = 21;
-                model.hours = 48;
-                model.status = BuyoutModel.BuyoutStatus.Initiate;
-                model.gameStatus = BuyoutModel.GameStatus.Lose;
-                model.picProfile = R.drawable.demo_profile1;
+                model.numShares = 21;
+                model.state = "matched";
+                model.initiatedTimeAgo = null;
+                model.resolvedTimeAgo = "48 hours ago";
+                model.initiatingUser = initiate;
+                model.targetUser = target;
                 result.add(model);
 
+                initiate = new TargetModel();
+                initiate.id = 77;
+                target = new TargetModel();
+                target.id = currentUserId;
+                target.name = "Peter Cook";
+                target.profileImage = "";
                 model = new BuyoutModel();
-                model.name = "Peter Cook";
-                model.shares = 13;
-                model.hours = 96;
-                model.status = BuyoutModel.BuyoutStatus.Threat;
-                model.gameStatus = BuyoutModel.GameStatus.Lose;
-                model.picProfile = R.drawable.demo_profile2;
+                model.numShares = 13;
+                model.state = "succeeded";
+                model.initiatedTimeAgo = null;
+                model.resolvedTimeAgo = "96 hours ago";
+                model.initiatingUser = initiate;
+                model.targetUser = target;
                 result.add(model);
 
+                initiate = new TargetModel();
+                initiate.id = currentUserId;
+                target = new TargetModel();
+                target.id = 55;
+                target.name = "M. Dorsey";
+                target.profileImage = "";
                 model = new BuyoutModel();
-                model.name = "M. Dorsey";
-                model.shares = 11;
-                model.hours = 120;
-                model.status = BuyoutModel.BuyoutStatus.Initiate;
-                model.gameStatus = BuyoutModel.GameStatus.Win;
-                model.picProfile = R.drawable.demo_profile3;
+                model.numShares = 11;
+                model.state = "succeeded";
+                model.initiatedTimeAgo = null;
+                model.resolvedTimeAgo = "120 hours ago";
+                model.initiatingUser = initiate;
+                model.targetUser = target;
                 result.add(model);
             } else if(params[0].page == 2) {
-                BuyoutModel model;
+                initiate = new TargetModel();
+                initiate.id = currentUserId;
+                target = new TargetModel();
+                target.id = 90;
+                target.name = "Danielle Steele";
+                target.profileImage = "";
                 model = new BuyoutModel();
-                model.name = "Danielle Steele";
-                model.shares = 21;
-                model.hours = 190;
-                model.status = BuyoutModel.BuyoutStatus.Initiate;
-                model.gameStatus = BuyoutModel.GameStatus.Lose;
-                model.picProfile = R.drawable.demo_profile4;
+                model.numShares = 21;
+                model.state = "matched";
+                model.initiatedTimeAgo = null;
+                model.resolvedTimeAgo = "190 hours ago";
+                model.initiatingUser = initiate;
+                model.targetUser = target;
                 result.add(model);
 
+                initiate = new TargetModel();
+                initiate.id = currentUserId;
+                target = new TargetModel();
+                target.id = 192;
+                target.name = "Satjapot I.";
+                target.profileImage = "";
                 model = new BuyoutModel();
-                model.name = "Satjapot I.";
-                model.shares = 1;
-                model.hours = 111;
-                model.status = BuyoutModel.BuyoutStatus.Initiate;
-                model.gameStatus = BuyoutModel.GameStatus.Lose;
+                model.numShares = 1;
+                model.state = "matched";
+                model.initiatedTimeAgo = null;
+                model.resolvedTimeAgo = "180 hours ago";
+                model.initiatingUser = initiate;
+                model.targetUser = target;
                 result.add(model);
 
+                initiate = new TargetModel();
+                initiate.id = currentUserId;
+                target = new TargetModel();
+                target.id = 222;
+                target.name = "Amy Sasitorn";
+                target.profileImage = "";
                 model = new BuyoutModel();
-                model.name = "Amy Sasitorn";
-                model.shares = 12;
-                model.hours = 145;
-                model.status = BuyoutModel.BuyoutStatus.Initiate;
-                model.gameStatus = BuyoutModel.GameStatus.Lose;
-                model.picProfile = R.drawable.demo_profile5;
+                model.numShares = 12;
+                model.state = "matched";
+                model.initiatedTimeAgo = null;
+                model.resolvedTimeAgo = "250 hours ago";
+                model.initiatingUser = initiate;
+                model.targetUser = target;
                 result.add(model);
             }
 
@@ -361,7 +419,7 @@ public class MainMenuPresenter {
 
         @Override
         protected NewBuyoutModel doInBackground(TargetModel... params) {
-            Gson gson = new Gson();
+            Gson gson = AppPreference.getInstance().getGson();
 
             NewBuyoutModel result = null;
             mTarget = params[0];
@@ -460,9 +518,9 @@ public class MainMenuPresenter {
                             TargetModel.class);
 
                     UserModel currentUser = AppPreference.getInstance().getSession().getActiveUser();
-                    currentUser.successful_buyouts_count = initiatingUser.numSuccessfulBuyout;
-                    currentUser.matched_buyouts_count = initiatingUser.numMatchedBuyout;
-                    currentUser.available_shares_count = initiatingUser.numAvailableShares;
+                    currentUser.numSuccessfulBuyout = initiatingUser.numSuccessfulBuyout;
+                    currentUser.numMatchedBuyout = initiatingUser.numMatchedBuyout;
+                    currentUser.numAvailableShares = initiatingUser.numAvailableShares;
 
                     TargetModel currentTarget = AppPreference.getInstance().getCurrentTarget();
                     currentTarget.isUnderBuyoutThreat = targetUser.isUnderBuyoutThreat;
@@ -475,6 +533,132 @@ public class MainMenuPresenter {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+            }
+        }
+    }
+
+    private class MatchBuyoutCallback extends AsyncTask<Void, Void, TargetModel> {
+        private String mErrorMessage = null;
+
+        @Override
+        protected void onPreExecute() {
+            mMainMenuView.handleLoadingDialog(true);
+        }
+
+        @Override
+        protected TargetModel doInBackground(Void... params) {
+            TargetModel result = null;
+            Gson gson = AppPreference.getInstance().getGson();
+            UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
+            Headers headers = AppPreference.getInstance().getSession().getHeaders();
+
+            String url = String.format(mContext.getString(R.string.api_match_buyout), activeUser.activeInboundBuyout.id);
+
+            try {
+                String response = mHttp.header(headers).patch(url);
+
+                JSONObject userJson = new JSONObject(response);
+
+                result = gson.fromJson(userJson.getString("user"), TargetModel.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+                mErrorMessage = mContext.getString(R.string.error_connection);
+            } catch (APIConnectionException e) {
+                e.printStackTrace();
+                MetaModel model = new MetaModel(e.getMessage());
+                mErrorMessage = model.getErrors();
+            } catch (JSONException e) {
+                mErrorMessage = mContext.getString(R.string.error_connection);
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(TargetModel user) {
+            mMainMenuView.handleLoadingDialog(false);
+
+            if (mErrorMessage != null) {
+                mMainMenuView.handleError(mContext.getString(R.string.error_title_cannot_execute_buyout),
+                        mErrorMessage);
+            } else {
+                AppPreference.getInstance().getSession().updateInitiatingUser(null);
+                UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
+                activeUser.updateTargetData(user);
+                activeUser.activeInboundBuyout = null;
+
+                onSetHomeState(new SetHomeStateEvent());
+            }
+        }
+    }
+
+    private class FailMatchBuyoutCallback extends AsyncTask<Void, Void, TargetModel> {
+        private String mErrorMessage = null;
+
+        @Override
+        protected void onPreExecute() {
+            mMainMenuView.handleLoadingDialog(true);
+        }
+
+        @Override
+        protected TargetModel doInBackground(Void... params) {
+            TargetModel result = null;
+            Gson gson = AppPreference.getInstance().getGson();
+            UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
+            Headers headers = AppPreference.getInstance().getSession().getHeaders();
+
+            String url = String.format(mContext.getString(R.string.api_fail_buyout), activeUser.activeInboundBuyout.id);
+
+            try {
+                String response = mHttp.header(headers).patch(url);
+
+                JSONObject rootJson = new JSONObject(response);
+
+                result = gson.fromJson(rootJson.getString("user"), TargetModel.class);
+
+                JSONObject userJson = new JSONObject(rootJson.getString("user"));
+                if(userJson.isNull("terminal_buyout")) {
+                    mErrorMessage = "Cannot get terminal buyout";
+                } else {
+                    activeUser.terminalBuyout =
+                            gson.fromJson(userJson.getString("terminal_buyout"), BuyoutModel.class);
+
+                    String terminalUser = mHttp.header(headers)
+                            .get(String.format(mHttp.getContext().getString(R.string.api_profile),
+                                    activeUser.terminalBuyout.initiatingUserId));
+
+                    JSONObject terminalUserJSON = new JSONObject(terminalUser);
+                    TargetModel terminalTarget = gson.fromJson(terminalUserJSON.getString("user"), TargetModel.class);
+                    AppPreference.getInstance().getSession().updateTerminalUser(terminalTarget);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                mErrorMessage = mContext.getString(R.string.error_connection);
+            } catch (APIConnectionException e) {
+                e.printStackTrace();
+                MetaModel model = new MetaModel(e.getMessage());
+                mErrorMessage = model.getErrors();
+            } catch (JSONException e) {
+                mErrorMessage = mContext.getString(R.string.error_connection);
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(TargetModel user) {
+            mMainMenuView.handleLoadingDialog(false);
+
+            if (mErrorMessage != null) {
+                mMainMenuView.handleError(mContext.getString(R.string.error_title_cannot_execute_buyout),
+                        mErrorMessage);
+            } else {
+                AppPreference.getInstance().getSession().updateInitiatingUser(null);
+                UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
+                activeUser.updateTargetData(user);
+                activeUser.activeInboundBuyout = null;
+
+                onSetHomeState(new SetHomeStateEvent());
             }
         }
     }

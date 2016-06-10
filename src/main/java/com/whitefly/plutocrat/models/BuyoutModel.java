@@ -1,5 +1,10 @@
 package com.whitefly.plutocrat.models;
 
+import com.google.gson.annotations.SerializedName;
+import com.whitefly.plutocrat.helpers.AppPreference;
+
+import java.util.Date;
+
 /**
  * Created by Satjapot on 5/17/16 AD.
  */
@@ -15,38 +20,70 @@ public class BuyoutModel {
     }
 
     // Attributes
-    public String name;
-    public int shares;
-    public int hours;
-    public BuyoutStatus status;
-    public GameStatus gameStatus;
-    public int picProfile = DEBUG_NO_PROFILE_PICTURE;
+    public int id;
 
-    // Methods
-    public String getPicName() {
-        String result;
-        char firstCh, secondCh;
+    @SerializedName("initiated_at")
+    public Date initiatedAt;
 
-        if(name == null) {
-            result = "";
-        } else {
-            String[] names = name.split("\\s+");
-            if(names.length > 1) {
-                firstCh = names[0].charAt(0);
-                secondCh = names[1].charAt(0);
-                result = String.format("%s%s", firstCh, secondCh).toUpperCase();
-            } else {
-                firstCh = name.charAt(0);
-                secondCh = name.length() > 1 ? name.charAt(1) : Character.MIN_VALUE;
-                result = String.format("%s%s", firstCh, secondCh).toUpperCase();
-            }
+    @SerializedName("initiated_time_ago")
+    public String initiatedTimeAgo;
+
+    @SerializedName("deadline_at")
+    public Date deadlineAt;
+
+    @SerializedName("number_of_shares")
+    public int numShares;
+
+    public String state;
+
+    @SerializedName("resolved_at")
+    public String resolvedAt;
+
+    @SerializedName("resolved_time_ago")
+    public String resolvedTimeAgo;
+
+    @SerializedName("target_user_id")
+    public int targetUserId;
+
+    @SerializedName("initiating_user_id")
+    public int initiatingUserId;
+
+    @SerializedName("created_at")
+    public Date createdAt;
+
+    @SerializedName("updated_at")
+    public Date updatedAt;
+
+    public transient TargetModel initiatingUser;
+    public transient TargetModel targetUser;
+
+    // Method
+    public String getTimeAgo() {
+        if(resolvedTimeAgo != null) {
+            return resolvedTimeAgo;
+        }
+        return initiatedTimeAgo;
+    }
+
+    public BuyoutStatus getBuyoutStatus() {
+        BuyoutStatus result = BuyoutStatus.Initiate;
+        UserModel currentUser = AppPreference.getInstance().getSession().getActiveUser();
+        if(currentUser.id == initiatingUser.id) {
+            result = BuyoutStatus.Initiate;
+        } else if(currentUser.id == targetUser.id) {
+            result = BuyoutStatus.Threat;
         }
 
         return result;
     }
 
-    public String getPeriod() {
-        // For debug
-        return String.format("%d hours", hours);
+    public GameStatus getGameStatus() {
+        if(state.equals("initiated")) {
+            return GameStatus.Playing;
+        } else if(state.equals("matched")) {
+            return GameStatus.Lose;
+        }else {
+            return GameStatus.Win;
+        }
     }
 }

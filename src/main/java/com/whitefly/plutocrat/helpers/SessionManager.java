@@ -4,8 +4,10 @@ import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.exception.APIConnectionException;
+import com.whitefly.plutocrat.models.BuyoutModel;
 import com.whitefly.plutocrat.models.MetaModel;
 import com.whitefly.plutocrat.models.TargetModel;
 import com.whitefly.plutocrat.models.UserModel;
@@ -14,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Date;
 
 import okhttp3.Headers;
 import okhttp3.Response;
@@ -36,7 +39,7 @@ public class SessionManager {
 
     private UserModel mActiveUser = null;
 
-    private TargetModel mPlutocrat;
+    private TargetModel mPlutocrat, mInitiatingUser, mTerminalUser;
 
     // Getter Methods
     public UserModel getActiveUser() {
@@ -45,6 +48,22 @@ public class SessionManager {
 
     public TargetModel getPlutocrat() {
         return mPlutocrat;
+    }
+
+    public TargetModel getInitiatingUser() {
+        return mInitiatingUser;
+    }
+
+    public void updateInitiatingUser(TargetModel model) {
+        mInitiatingUser = model;
+    }
+
+    public TargetModel getTerminalUser() {
+        return mTerminalUser;
+    }
+
+    public void updateTerminalUser(TargetModel model) {
+        mTerminalUser = model;
     }
 
     public void setPlutocrat(TargetModel plutocrat){
@@ -59,28 +78,43 @@ public class SessionManager {
      */
     public boolean isLogin(HttpClient http) {
         boolean result = false;
+        Gson gson = AppPreference.getInstance().getGson();
 
         if(AppPreference.getInstance().getSharedPreference().contains(PREFKEY_SESSION)) {
             Headers headers = this.getHeaders();
             try {
-                String strBody = http.header(headers).get(
-                        String.format(http.getContext().getString(R.string.api_profile), user_id)
-                );
+                String strBody = http.header(headers)
+                        .get(String.format(http.getContext().getString(R.string.api_profile), user_id));
 
-                Log.d(AppPreference.DEBUG_APP, String.format("Response: %s", strBody));
                 JSONObject body = new JSONObject(strBody);
+                UserModel activeUser = gson.fromJson(body.getString("user"), UserModel.class);
 
-                // Get error
-                if(! body.isNull("meta")) {
-                    MetaModel model = new MetaModel(body.getJSONObject("meta"));
-                    if(model.isError()) {
-                        throw new APIConnectionException(model.getErrors());
-                    }
+                JSONObject userJson = body.getJSONObject("user");
+                if(! userJson.isNull("active_inbound_buyout")) {
+                    String inboundBuyout = userJson.getString("active_inbound_buyout");
+                    activeUser.activeInboundBuyout = gson.fromJson(inboundBuyout, BuyoutModel.class);
+
+                    String initiatingUser = http.header(headers)
+                            .get(String.format(http.getContext().getString(R.string.api_profile),
+                                    activeUser.activeInboundBuyout.initiatingUserId));
+
+                    JSONObject initiatingUserJSON = new JSONObject(initiatingUser);
+                    mInitiatingUser = gson.fromJson(initiatingUserJSON.getString("user"), TargetModel.class);
                 }
 
-                // Save active user
-                Gson gson = new Gson();
-                updateActiveUser(gson.fromJson(body.getString("user"), UserModel.class));
+                if(! userJson.isNull("terminal_buyout")) {
+                    String inboundBuyout = userJson.getString("terminal_buyout");
+                    activeUser.terminalBuyout = gson.fromJson(inboundBuyout, BuyoutModel.class);
+
+                    String terminalUser = http.header(headers)
+                            .get(String.format(http.getContext().getString(R.string.api_profile),
+                                    activeUser.terminalBuyout.initiatingUserId));
+
+                    JSONObject terminalUserJSON = new JSONObject(terminalUser);
+                    mTerminalUser = gson.fromJson(terminalUserJSON.getString("user"), TargetModel.class);
+                }
+
+                updateActiveUser(activeUser);
                 result = true;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -114,7 +148,7 @@ public class SessionManager {
     }
 
     public void savePlutocrat(TargetModel model) {
-        Gson gson = new Gson();
+        Gson gson = AppPreference.getInstance().getGson();
 
         if(model == null) {
             mPlutocrat = model;
@@ -133,7 +167,7 @@ public class SessionManager {
     }
 
     public void loadPlutocrat() {
-        Gson gson = new Gson();
+        Gson gson = AppPreference.getInstance().getGson();
 
         if(AppPreference.getInstance().getSharedPreference().contains(PREFKEY_SESSION_PLUTOCRAT)) {
             String json = AppPreference.getInstance().getSharedPreference().getString(PREFKEY_SESSION_PLUTOCRAT, null);

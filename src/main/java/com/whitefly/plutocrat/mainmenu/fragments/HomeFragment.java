@@ -38,10 +38,14 @@ import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.helpers.text.CustomTypefaceSpan;
 import com.whitefly.plutocrat.mainmenu.MainMenuActivity;
 import com.whitefly.plutocrat.mainmenu.events.CheckNotificationEnableEvent;
+import com.whitefly.plutocrat.mainmenu.events.FailMatchBuyoutEvent;
+import com.whitefly.plutocrat.mainmenu.events.MatchBuyoutEvent;
 import com.whitefly.plutocrat.mainmenu.events.SetHomeStateEvent;
 import com.whitefly.plutocrat.mainmenu.events.UpdateUserNoticeIdEvent;
 import com.whitefly.plutocrat.mainmenu.views.IHomeView;
 import com.whitefly.plutocrat.mainmenu.views.ITabView;
+import com.whitefly.plutocrat.models.BuyoutModel;
+import com.whitefly.plutocrat.models.TargetModel;
 import com.whitefly.plutocrat.models.UserModel;
 
 import java.util.Calendar;
@@ -67,21 +71,22 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
     private State mState;
     private String mHeaderDefault, mHeaderThreat, mHeaderSuspend;
     private String mNoteSuspend, mNoteDefault;
-    private Drawable mDefaultBG, mThreatBG, mTopLineBG, mBottomLineBG;
+    private Drawable mDefaultBG, mThreatBG;
     private ClickableSpan mClickToBuyouts;
     private StyleSpan mStyleLink;
     private AlertDialog mNotificationEnableDialog;
 
     private Timer mTimer;
+    private boolean mIsTimerRunning;
     private Date mIssueDate;
 
     // Views
     private LinearLayout mLloThreat, mLloOwner, mLloNote, mLloHeader;
-    private LinearLayout mLloActiveDefaultNote, mLloFindTargetDefaultNote, mLloEnableNotificationNote;
+    private LinearLayout mLloNoteWrapper, mLloActiveDefaultNote, mLloFindTargetDefaultNote, mLloEnableNotificationNote;
     private RelativeLayout mLloShares;
     private TextView mTvHeader, mTvTime;
     private TextView mTvOwnerNickName, mTvOwnerName, mTvOwnerEmail;
-    private TextView mTvThreatName, mTvThreatMatch, mTvThreatNote;
+    private TextView mTvThreatNickName, mTvThreatName, mTvThreatMatch, mTvThreatNote;
     private TextView mTvSuccessValue, mTvFailedValue, mTvDefeatValue;
     private TextView mTvNote;
     private ImageView mImvOwnerPic, mImvThreatPic;
@@ -139,6 +144,12 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
                 mLloThreat.setVisibility(View.GONE);
                 mLloOwner.setVisibility(View.VISIBLE);
                 mLloShares.setVisibility(View.VISIBLE);
+                mLloNoteWrapper.setVisibility(View.VISIBLE);
+
+                mLloThreat.setBackground(null);
+                mLloOwner.setBackgroundResource(R.drawable.bg_line_bottom);
+                mLloShares.setBackgroundResource(R.drawable.bg_line_bottom);
+                mLloNote.setBackground(null);
 
                 switch(noticeId) {
                     case UserModel.NOTICE_GETTING_STARTED:
@@ -178,6 +189,8 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
                 ((MainMenuActivity) getActivity()).activateMenu();
 
                 setOwnerView();
+
+                startTimer();
                 break;
             case Threat:
                 // Change header
@@ -189,14 +202,19 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
                 mLloThreat.setVisibility(View.VISIBLE);
                 mLloOwner.setVisibility(View.VISIBLE);
                 mLloShares.setVisibility(View.GONE);
-                mLloNote.setVisibility(View.GONE);
+                mLloNoteWrapper.setVisibility(View.GONE);
 
-                mLloThreat.setBackground(mBottomLineBG);
+                mLloThreat.setBackgroundResource(R.drawable.bg_line_bottom);
                 mLloOwner.setBackground(null);
                 mLloShares.setBackground(null);
                 mLloNote.setBackground(null);
 
                 ((MainMenuActivity) getActivity()).activateMenu();
+
+                setOwnerView();
+                setInitiatingUserView();
+
+                startTimer();
                 break;
             case Suspend:
                 // Change header
@@ -208,30 +226,34 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
                 mLloThreat.setVisibility(View.GONE);
                 mLloOwner.setVisibility(View.VISIBLE);
                 mLloShares.setVisibility(View.VISIBLE);
+                mLloNoteWrapper.setVisibility(View.VISIBLE);
+
                 mLloNote.setVisibility(View.VISIBLE);
+                mLloFindTargetDefaultNote.setVisibility(View.GONE);
+                mLloEnableNotificationNote.setVisibility(View.GONE);
 
                 mLloThreat.setBackground(null);
-                mLloOwner.setBackground(mBottomLineBG);
-                mLloShares.setBackground(mBottomLineBG);
+                mLloOwner.setBackgroundResource(R.drawable.bg_line_bottom);
+                mLloShares.setBackgroundResource(R.drawable.bg_line_bottom);
                 mLloNote.setBackground(null);
 
-                // Set value
-                mTvNote.setText(Html.fromHtml(String.format(mNoteSuspend, "amy", 32, 4)));
-
                 ((MainMenuActivity) getActivity()).suspendMenu();
+
+                setOwnerView();
+                setSuspendView();
                 break;
         }
     }
 
     private void setOwnerView() {
-        UserModel model = AppPreference.getInstance().getSession().getActiveUser();
-        mTvOwnerNickName.setText(model.getNickName());
-        mTvOwnerName.setText(model.display_name);
-        mTvOwnerEmail.setText(model.email);
-        mTvSuccessValue.setText(String.valueOf(model.successful_buyouts_count));
-        mTvFailedValue.setText(String.valueOf(model.failed_buyouts_count));
-        mTvDefeatValue.setText(String.valueOf(model.matched_buyouts_count));
-        Glide.with(getActivity()).load(getString(R.string.api_host) + model.profile_image_url)
+        UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
+        mTvOwnerNickName.setText(activeUser.getNickName());
+        mTvOwnerName.setText(activeUser.name);
+        mTvOwnerEmail.setText(activeUser.email);
+        mTvSuccessValue.setText(String.valueOf(activeUser.numSuccessfulBuyout));
+        mTvFailedValue.setText(String.valueOf(activeUser.numFailedBuyouts));
+        mTvDefeatValue.setText(String.valueOf(activeUser.numMatchedBuyout));
+        Glide.with(getActivity()).load(getString(R.string.api_host) + activeUser.profileImage)
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -250,8 +272,62 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
                     }
                 })
                 .into(mImvOwnerPic);
-        mIssueDate = model.registered_at;
-        startTimer();
+        mIssueDate = activeUser.registeredAt;
+    }
+
+    private void setInitiatingUserView() {
+        TargetModel initiatingUser = AppPreference.getInstance().getSession().getInitiatingUser();
+        UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
+        String matchShare  = String.format(getString(R.string.caption_share_to_match),
+                activeUser.activeInboundBuyout.numShares);
+
+        mTvThreatNickName.setText(initiatingUser.getNickName());
+        mTvThreatName.setText(initiatingUser.name);
+        mTvThreatMatch.setText(matchShare);
+        Glide.with(getActivity()).load(getString(R.string.api_host) + initiatingUser.profileImage)
+                .listener(new RequestListener<String, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        mTvThreatNickName.setVisibility(View.VISIBLE);
+                        mImvThreatPic.setVisibility(View.GONE);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, String model,
+                                                   Target<GlideDrawable> target,
+                                                   boolean isFromMemoryCache, boolean isFirstResource) {
+                        mTvThreatNickName.setVisibility(View.GONE);
+                        mImvThreatPic.setVisibility(View.VISIBLE);
+                        return false;
+                    }
+                })
+                .into(mImvThreatPic);
+    }
+
+    private void setSuspendView() {
+        TargetModel terminalUser = AppPreference.getInstance().getSession().getTerminalUser();
+        UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
+        String numShare = String.format("%d %s", activeUser.terminalBuyout.numShares,
+                activeUser.terminalBuyout.numShares == 1 ? "share" : "shares");
+        long survivedTime = activeUser.defeatedAt.getTime() - activeUser.registeredAt.getTime();
+
+        mTvNote.setText(Html.fromHtml(String.format(mNoteSuspend, terminalUser.name,
+                numShare, activeUser.terminalBuyout.getTimeAgo())));
+        mTvTime.setText(getTimeDurationString(survivedTime));
+    }
+
+    private String getTimeDurationString(long elapseTime) {
+        long day = TimeUnit.MILLISECONDS.toDays(elapseTime);
+        long hr = TimeUnit.MILLISECONDS.toHours(elapseTime - TimeUnit.DAYS.toMillis(day));
+        long min = TimeUnit.MILLISECONDS.toMinutes(elapseTime - TimeUnit.DAYS.toMillis(day) - TimeUnit.HOURS.toMillis(hr));
+        long sec = TimeUnit.MILLISECONDS.toSeconds(elapseTime - TimeUnit.DAYS.toMillis(day) - TimeUnit.HOURS.toMillis(hr) - TimeUnit.MINUTES.toMillis(min));
+
+        if(day == 0) {
+            return String.format("%dh %dm %ds", hr, min, sec);
+        } else {
+            return String.format("%dd %dh %dm %ds", day, hr, min, sec);
+        }
     }
 
     private void startTimer() {
@@ -268,23 +344,19 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
                             Date currentTime = Calendar.getInstance().getTime();
                             long elapseTime = Math.abs(mIssueDate.getTime() - currentTime.getTime());
 
-                            long day = TimeUnit.MILLISECONDS.toDays(elapseTime);
-                            long hr = TimeUnit.MILLISECONDS.toHours(elapseTime - TimeUnit.DAYS.toMillis(day));
-                            long min = TimeUnit.MILLISECONDS.toMinutes(elapseTime - TimeUnit.DAYS.toMillis(day) - TimeUnit.HOURS.toMillis(hr));
-                            long sec = TimeUnit.MILLISECONDS.toSeconds(elapseTime - TimeUnit.DAYS.toMillis(day) - TimeUnit.HOURS.toMillis(hr) - TimeUnit.MINUTES.toMillis(min));
-
-                            mTvTime.setText(String.format("%dd %dh %dm %ds", day, hr, min, sec));
+                            mTvTime.setText(getTimeDurationString(elapseTime));
                         }
                     });
                 }
             }, NO_DELAY, ONE_SECOND);
-
+            mIsTimerRunning = true;
         }
     }
 
     private void stopTimer() {
         if(mTimer != null) {
             mTimer.cancel();
+            mIsTimerRunning = false;
         }
     }
 
@@ -311,8 +383,6 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
         mNoteSuspend    = getString(R.string.home_suspend_content);
         mDefaultBG      = ContextCompat.getDrawable(getActivity(), R.drawable.header_bg_default);
         mThreatBG       = ContextCompat.getDrawable(getActivity(), R.drawable.header_bg_under_threat);
-        mTopLineBG      = ContextCompat.getDrawable(getActivity(), R.drawable.bg_line_top);
-        mBottomLineBG   = ContextCompat.getDrawable(getActivity(), R.drawable.bg_line_bottom);
 
         setupNotificationEnableDialog();
 
@@ -330,15 +400,7 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
             }
         };
         mStyleLink = new StyleSpan(R.style.LinkText);
-        if(mTimer == null) {
-            mTimer = new Timer();
-            mTimer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-
-                }
-            }, NO_DELAY, ONE_SECOND);
-        }
+        mIsTimerRunning = false;
     }
 
     @Nullable
@@ -348,8 +410,9 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
         mLloThreat          = (LinearLayout) root.findViewById(R.id.llo_home_threat);
         mLloOwner           = (LinearLayout) root.findViewById(R.id.llo_home_owner);
         mLloShares          = (RelativeLayout) root.findViewById(R.id.llo_home_shares);
-        mLloNote            = (LinearLayout) root.findViewById(R.id.llo_home_note);
         mLloHeader          = (LinearLayout) root.findViewById(R.id.llo_home_header);
+        mLloNoteWrapper     = (LinearLayout) root.findViewById(R.id.llo_home_note_wrapper);
+        mLloNote            = (LinearLayout) root.findViewById(R.id.llo_home_note);
         mLloFindTargetDefaultNote   = (LinearLayout) root.findViewById(R.id.llo_getting_start_note);
         mLloEnableNotificationNote  = (LinearLayout) root.findViewById(R.id.llo_enable_notice_note);
         mTvHeader           = (TextView) root.findViewById(R.id.tv_home_title);
@@ -357,6 +420,7 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
         mTvOwnerNickName    = (TextView) root.findViewById(R.id.tv_owner_profile_nickname);
         mTvOwnerName        = (TextView) root.findViewById(R.id.tv_home_owner_name);
         mTvOwnerEmail       = (TextView) root.findViewById(R.id.tv_home_owner_email);
+        mTvThreatNickName    = (TextView) root.findViewById(R.id.tv_threat_profile_nickname);
         mTvThreatName       = (TextView) root.findViewById(R.id.tv_home_threat_name);
         mTvThreatMatch      = (TextView) root.findViewById(R.id.tv_home_threat_match);
         mTvThreatNote       = (TextView) root.findViewById(R.id.tv_home_threat_note);
@@ -376,7 +440,7 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
                 mTvHeader, mTvTime, mTvOwnerName, mTvOwnerEmail, mBtnOwnerPosition,
                 mTvThreatName, mTvThreatMatch, mTvThreatNote, mTvNote,
-                mBtnOwnerPosition, mBtnMatchShares, mBtnAcceptDefeat,
+                mBtnOwnerPosition, mBtnMatchShares, mBtnAcceptDefeat, mTvThreatNickName,
                 (TextView) root.findViewById(R.id.tv_home_success),
                 (TextView) root.findViewById(R.id.tv_home_failed),
                 (TextView) root.findViewById(R.id.tv_home_defeat));
@@ -386,7 +450,7 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
         mTvThreatNote.setText(Html.fromHtml(getString(R.string.home_threat_content)));
 
         // TODO: Delete Debug code
-        AppPreference.getInstance().getSession().getActiveUser().user_notice_id = UserModel.NOTICE_GETTING_STARTED;
+        AppPreference.getInstance().getSession().getActiveUser().userNoticeId = UserModel.NOTICE_GETTING_STARTED;
 
         EventBus.getInstance().post(new SetHomeStateEvent());
 
@@ -409,8 +473,19 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
         mBtnEnableNotification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: Push notification permission show
                 EventBus.getInstance().post(new CheckNotificationEnableEvent());
+            }
+        });
+        mBtnMatchShares.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventBus.getInstance().post(new MatchBuyoutEvent());
+            }
+        });
+        mBtnAcceptDefeat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventBus.getInstance().post(new FailMatchBuyoutEvent());
             }
         });
 
@@ -440,12 +515,16 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
     @Override
     public void onPause() {
         super.onPause();
-        stopTimer();
+        if(mIsTimerRunning) {
+            stopTimer();
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        startTimer();
+        if(mIsTimerRunning) {
+            startTimer();
+        }
     }
 }

@@ -18,14 +18,6 @@ public class EngageClickEvent {
     }
 
     public EngageClickEvent(BuyoutModel buyout) {
-        // Debug
-        TargetModel model = new TargetModel();
-        model.profileImage = "";
-        model.name = buyout.name;
-        model.numSuccessfulBuyout = buyout.shares;
-        model.numMatchedBuyout = 2;
-        model.isPlutocrat = false;
-
-        mTarget = model;
+        mTarget = buyout.targetUser;
     }
 }
