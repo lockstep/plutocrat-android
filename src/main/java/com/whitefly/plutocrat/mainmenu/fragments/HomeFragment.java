@@ -55,6 +55,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
+
 /**
  * Created by Satjapot on 5/10/16 AD.
  */
@@ -253,7 +255,7 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
         mTvSuccessValue.setText(String.valueOf(activeUser.numSuccessfulBuyout));
         mTvFailedValue.setText(String.valueOf(activeUser.numFailedBuyouts));
         mTvDefeatValue.setText(String.valueOf(activeUser.numMatchedBuyout));
-        Glide.with(getActivity()).load(getString(R.string.api_host) + activeUser.profileImage)
+        Glide.with(getActivity()).load(activeUser.profileImage)
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -268,9 +270,11 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
                                                    boolean isFromMemoryCache, boolean isFirstResource) {
                         mTvOwnerNickName.setVisibility(View.GONE);
                         mImvOwnerPic.setVisibility(View.VISIBLE);
+
                         return false;
                     }
                 })
+                .bitmapTransform(new CropCircleTransformation(getActivity()))
                 .into(mImvOwnerPic);
         mIssueDate = activeUser.registeredAt;
     }
@@ -284,7 +288,7 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
         mTvThreatNickName.setText(initiatingUser.getNickName());
         mTvThreatName.setText(initiatingUser.name);
         mTvThreatMatch.setText(matchShare);
-        Glide.with(getActivity()).load(getString(R.string.api_host) + initiatingUser.profileImage)
+        Glide.with(getActivity()).load(initiatingUser.profileImage)
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -302,6 +306,7 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
                         return false;
                     }
                 })
+                .bitmapTransform(new CropCircleTransformation(getActivity()))
                 .into(mImvThreatPic);
     }
 
@@ -453,7 +458,7 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
         // TODO: Delete Debug code
         AppPreference.getInstance().getSession().getActiveUser().userNoticeId = UserModel.NOTICE_GETTING_STARTED;
 
-        EventBus.getInstance().post(new SetHomeStateEvent());
+        updateView();
 
         // Event Handler
         mBtnOwnerPosition.setOnClickListener(new View.OnClickListener() {
@@ -505,7 +510,7 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
 
     @Override
     public void updateView() {
-
+        EventBus.getInstance().post(new SetHomeStateEvent());
     }
 
     @Override

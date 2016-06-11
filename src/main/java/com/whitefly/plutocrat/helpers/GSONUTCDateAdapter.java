@@ -19,7 +19,7 @@ import java.util.TimeZone;
 /**
  * Created by satjapotiamopas on 6/10/16 AD.
  */
-public class GSONUTCDateAdapter implements JsonSerializer<Date>,JsonDeserializer<Date> {
+public class GSONUTCDateAdapter implements JsonSerializer<Date>, JsonDeserializer<Date> {
     private final DateFormat dateFormat;
     private final DateFormat dateFormatWithSSS;
 

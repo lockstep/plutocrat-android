@@ -23,6 +23,8 @@ import com.whitefly.plutocrat.models.TargetModel;
 
 import java.util.ArrayList;
 
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
+
 /**
  * Created by Satjapot on 5/17/16 AD.
  */
@@ -140,6 +142,7 @@ public class TargetAdapter extends RecyclerView.Adapter<TargetAdapter.ViewHolder
                             return false;
                         }
                     })
+                    .bitmapTransform(new CropCircleTransformation(mContext))
                     .into(holder.imvProfile);
 
             if (! model.isAttackingCurrentUser && ! model.isUnderBuyoutThreat) {

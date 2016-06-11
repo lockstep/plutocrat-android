@@ -2,18 +2,31 @@ package com.whitefly.plutocrat.mainmenu.events;
 
 import android.graphics.Bitmap;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by satjapotiamopas on 5/25/16 AD.
  */
 public class SaveAccountSettingsEvent {
-    private Bitmap mProfilePicture;
+    private transient Bitmap mProfilePicture;
+
+    @SerializedName("display_name")
     private String mDisplayName;
+
+    @SerializedName("email")
     private String mEmail;
+
+    @SerializedName("password")
     private String mNewPassword;
-    private String mConfirmPassword;
+
+    @SerializedName("current_password")
     private String mCurrentPassword;
-    private boolean mIsEnableNotification;
-    private boolean mIsEnableUpdates;
+
+    @SerializedName("transactional_emails_enabled")
+    private boolean mIsTransactionEmailEnabled;
+
+    @SerializedName("product_emails_enabled")
+    private boolean mIsProductEmailEnabled;
 
     public Bitmap getProfilePicture() {
         return mProfilePicture;
@@ -31,32 +44,27 @@ public class SaveAccountSettingsEvent {
         return mNewPassword;
     }
 
-    public String getConfirmPassword() {
-        return mConfirmPassword;
-    }
-
     public String getCurrentPassword() {
         return mCurrentPassword;
     }
 
-    public boolean isEnableNotification() {
-        return mIsEnableNotification;
+    public boolean isTransactionEmailEnabled() {
+        return mIsTransactionEmailEnabled;
     }
 
-    public boolean isEnableUpdates() {
-        return mIsEnableUpdates;
+    public boolean isProductEmailEnabled() {
+        return mIsProductEmailEnabled;
     }
 
     public SaveAccountSettingsEvent(Bitmap profilePicture, String displayName, String email,
-                                    String newPassword, String confirmPassword, String currentPassword,
-                                    boolean isEnableNotification, boolean isEnableUpdates) {
+                                    String newPassword, String currentPassword,
+                                    boolean isTransactionEmailEnabled, boolean isProductEmailEnabled) {
         mProfilePicture = profilePicture;
         mDisplayName = displayName;
         mEmail = email;
         mNewPassword = newPassword;
-        mConfirmPassword = confirmPassword;
         mCurrentPassword = currentPassword;
-        mIsEnableNotification = isEnableNotification;
-        mIsEnableUpdates = isEnableUpdates;
+        mIsTransactionEmailEnabled = isTransactionEmailEnabled;
+        mIsProductEmailEnabled = isProductEmailEnabled;
     }
 }

@@ -24,6 +24,7 @@ import com.whitefly.plutocrat.mainmenu.events.SetHomeStateEvent;
 import com.whitefly.plutocrat.mainmenu.events.SignOutEvent;
 import com.whitefly.plutocrat.mainmenu.events.UpdateUserNoticeIdEvent;
 import com.whitefly.plutocrat.mainmenu.fragments.HomeFragment;
+import com.whitefly.plutocrat.mainmenu.views.IAccountSettingView;
 import com.whitefly.plutocrat.mainmenu.views.IBuyoutView;
 import com.whitefly.plutocrat.mainmenu.views.IHomeView;
 import com.whitefly.plutocrat.mainmenu.views.IMainMenuView;
@@ -59,15 +60,19 @@ public class MainMenuPresenter {
     private IHomeView mHomeView;
     private ITargetView mTargetView;
     private IBuyoutView mBuyoutView;
+    private IAccountSettingView mSettingView;
 
     // Constructor
-    public MainMenuPresenter(Context context, IMainMenuView mmView, IHomeView homeView, ITargetView targetView, IBuyoutView buyoutView) {
+    public MainMenuPresenter(Context context, IMainMenuView mmView, IHomeView homeView,
+                             ITargetView targetView, IBuyoutView buyoutView,
+                             IAccountSettingView settingView) {
         mContext = context;
         mHttp = new HttpClient(context);
         mMainMenuView = mmView;
         mHomeView = homeView;
         mTargetView = targetView;
         mBuyoutView = buyoutView;
+        mSettingView = settingView;
     }
 
     // Methods
@@ -154,7 +159,7 @@ public class MainMenuPresenter {
 
     @Subscribe
     public void onSaveAccountSettings(SaveAccountSettingsEvent event) {
-        mMainMenuView.toast("Save complete");
+        new SaveAccountSettingCallback().execute(event);
     }
 
     @Subscribe
@@ -577,6 +582,79 @@ public class MainMenuPresenter {
                 activeUser.activeInboundBuyout = null;
 
                 onSetHomeState(new SetHomeStateEvent());
+            }
+        }
+    }
+    private class SaveAccountSettingCallback extends AsyncTask<SaveAccountSettingsEvent, Void, Boolean> {
+        private String mErrorMessage = null;
+        private MetaModel mMetaError = null;
+
+        @Override
+        protected void onPreExecute() {
+            mMainMenuView.handleLoadingDialog(true);
+        }
+
+        @Override
+        protected Boolean doInBackground(SaveAccountSettingsEvent... params) {
+            Boolean result = false;
+            SaveAccountSettingsEvent param = params[0];
+            Gson gson = AppPreference.getInstance().getGson();
+            UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
+            Headers headers = AppPreference.getInstance().getSession().getHeaders();
+
+            String url = String.format(mContext.getString(R.string.api_save_settings), activeUser.id);
+
+            try {
+                String requestString = gson.toJson(param);
+                JSONObject requestJson = new JSONObject(requestString);
+                if(param.getNewPassword() == null) {
+                    requestJson.remove("password");
+                    requestJson.remove("current_password");
+                }
+
+                mHttp.header(headers).request(requestJson.toString());
+                if(param.getProfilePicture() != null) {
+                    mHttp.addMultipartImage("profile_image", param.getProfilePicture());
+                }
+
+                String response = mHttp.patch(url);
+
+                JSONObject bodyJson = new JSONObject(response);
+                if(! bodyJson.isNull("meta")) {
+                    throw new APIConnectionException(response);
+                }
+
+                AppPreference.getInstance().getSession().updateUserJson(response, mHttp);
+                activeUser.email = param.getEmail();
+                activeUser.isTransactionalEmailsEnabled = param.isTransactionEmailEnabled();
+                activeUser.isProductEmailsEnabled = param.isProductEmailEnabled();
+
+                result = true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                mErrorMessage = mContext.getString(R.string.error_connection);
+            } catch (APIConnectionException e) {
+                e.printStackTrace();
+                mMetaError = new MetaModel(e.getMessage());
+                mErrorMessage = mMetaError.getErrors();
+            } catch (JSONException e) {
+                mErrorMessage = mContext.getString(R.string.error_connection);
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean b) {
+            mMainMenuView.handleLoadingDialog(false);
+
+            if (mMetaError != null) {
+                mSettingView.handleError(mMetaError);
+            } else if(mErrorMessage != null) {
+                mMainMenuView.handleError(mContext.getString(R.string.error_title_cannot_save_settings),
+                        mErrorMessage);
+            } else {
+                mMainMenuView.toast("Save successful.");
             }
         }
     }
