@@ -20,6 +20,8 @@ import com.whitefly.plutocrat.mainmenu.events.LoadBuyoutsEvent;
 import com.whitefly.plutocrat.mainmenu.views.IBuyoutView;
 import com.whitefly.plutocrat.mainmenu.views.ITabView;
 import com.whitefly.plutocrat.models.BuyoutModel;
+import com.whitefly.plutocrat.models.MetaModel;
+import com.whitefly.plutocrat.models.UserModel;
 
 import java.util.ArrayList;
 
@@ -30,7 +32,6 @@ public class BuyoutFragment extends Fragment implements ITabView, IBuyoutView {
     public static final String TITLE = "Buyouts";
     private static final int FIRST_PAGE = 1;
     private static final int BUYOUT_USERS_PER_PAGE = 4;
-    private static final int DEBUG_SUCCESSFUL_BUYOUTS = 32;
 
     // Attributes
     private BuyoutAdapter mAdapter;
@@ -38,8 +39,8 @@ public class BuyoutFragment extends Fragment implements ITabView, IBuyoutView {
 
     // Views
     private RecyclerView mRvMain;
-    private SwipeRefreshLayout mSRLMain;
-    private TextView mTitle;
+    private SwipeRefreshLayout mSRLMain, mSRLEmpty;
+    private TextView mTvTitle, mTvEmpty;
 
     /**
      * Use this factory method to create a new instance of
@@ -60,11 +61,13 @@ public class BuyoutFragment extends Fragment implements ITabView, IBuyoutView {
         // Get Views
         mRvMain = (RecyclerView) root.findViewById(R.id.rv_players);
         mSRLMain = (SwipeRefreshLayout) root.findViewById(R.id.srl_players);
-        mTitle = (TextView) root.findViewById(R.id.tv_title_buyout);
+        mSRLEmpty = (SwipeRefreshLayout) root.findViewById(R.id.srl_players_empty);
+        mTvTitle = (TextView) root.findViewById(R.id.tv_title_buyout);
+        mTvEmpty = (TextView) root.findViewById(R.id.tv_empty);
 
         // Initiate
-        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Light, mTitle);
-        mTitle.setText(String.format(getActivity().getString(R.string.title_success_buyout), DEBUG_SUCCESSFUL_BUYOUTS));
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Light, mTvTitle);
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Bold, mTvEmpty);
 
         ArrayList<BuyoutModel> dataset = new ArrayList<>();
         dataset.add(null);
@@ -75,12 +78,22 @@ public class BuyoutFragment extends Fragment implements ITabView, IBuyoutView {
         mAdapter = new BuyoutAdapter(getActivity(), dataset);
         mRvMain.setAdapter(mAdapter);
 
+        updateView();
+
         // Get Adapter
         cpage = FIRST_PAGE;
         EventBus.getInstance().post(new LoadBuyoutsEvent(cpage, BUYOUT_USERS_PER_PAGE));
 
         // Event Handler
         mSRLMain.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Loading new list
+                cpage = FIRST_PAGE;
+                EventBus.getInstance().post(new LoadBuyoutsEvent(cpage, BUYOUT_USERS_PER_PAGE));
+            }
+        });
+        mSRLEmpty.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 // Loading new list
@@ -110,17 +123,26 @@ public class BuyoutFragment extends Fragment implements ITabView, IBuyoutView {
 
     @Override
     public void updateView() {
-
+        UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
+        mTvTitle.setText(String.format(getActivity().getString(R.string.title_success_buyout), activeUser.numSuccessfulBuyout));
     }
 
     @Override
-    public void setTargetList(ArrayList<BuyoutModel> items) {
-        if(cpage == FIRST_PAGE) {
+    public void setBuyoutList(ArrayList<BuyoutModel> items, MetaModel meta) {
+        if(meta != null && meta.hasKey("current_page") && meta.getInt("current_page") == FIRST_PAGE) {
             mAdapter.getDataSet().clear();
+            if(items.size() == 0) {
+                mSRLMain.setVisibility(View.GONE);
+                mSRLEmpty.setVisibility(View.VISIBLE);
+            } else {
+                mSRLMain.setVisibility(View.VISIBLE);
+                mSRLEmpty.setVisibility(View.GONE);
+            }
         }
         mAdapter.addItems(items);
 
         // Switch off all loading widget
         mSRLMain.setRefreshing(false);
+        mSRLEmpty.setRefreshing(false);
     }
 }

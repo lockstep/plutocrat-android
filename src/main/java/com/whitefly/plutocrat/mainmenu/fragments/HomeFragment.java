@@ -438,7 +438,7 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
 
         // Initiate
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
-                mTvHeader, mTvTime, mTvOwnerName, mTvOwnerEmail, mBtnOwnerPosition,
+                mTvOwnerName, mTvOwnerEmail, mBtnOwnerPosition,
                 mTvThreatName, mTvThreatMatch, mTvThreatNote, mTvNote,
                 mBtnOwnerPosition, mBtnMatchShares, mBtnAcceptDefeat, mTvThreatNickName,
                 (TextView) root.findViewById(R.id.tv_home_success),
@@ -446,6 +446,7 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
                 (TextView) root.findViewById(R.id.tv_home_defeat));
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Bold,
                 mTvSuccessValue, mTvFailedValue, mTvDefeatValue);
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Light, mTvHeader, mTvTime);
 
         mTvThreatNote.setText(Html.fromHtml(getString(R.string.home_threat_content)));
 

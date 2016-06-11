@@ -110,6 +110,8 @@
     <string name="dialog_content_moreshare">Do you want to buy more shares?</string>
     <string name="caption_close">Close</string>
     <string name="caption_share_to_match">Shares to match: %1$d</string>
+    <string name="caption_no_target_list">No Targets</string>
+    <string name="caption_no_buyout_list">No Buyouts</string>
 
     <string name="loading_default">Loading...</string>
 
@@ -155,4 +157,5 @@
     <string name="api_execute_buyout" translatable="false">/api/v1/users/%1$d/buyout</string>
     <string name="api_match_buyout" translatable="false">/api/v1/buyouts/%1$d/match</string>
     <string name="api_fail_buyout" translatable="false">/api/v1/buyouts/%1$d/fail_to_match</string>
+    <string name="api_get_buyouts" translatable="false">/api/v1/users/%1$d/buyouts</string>
 </resources>

@@ -47,10 +47,10 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
 
     // Views
     private RecyclerView mRvMain;
-    private SwipeRefreshLayout mSRLMain;
+    private SwipeRefreshLayout mSRLMain, mSRLEmpty;
     private LinearLayout mLloPlutocrat, mLloNoPlutocrat;
     private Button mBtnEngage;
-    private TextView mTvPlutocratNickname, mTvPlutocratName, mTvPlutocratBuyouts;
+    private TextView mTvPlutocratNickname, mTvPlutocratName, mTvPlutocratBuyouts, mTvEmpty;
 
     /**
      * Use this factory method to create a new instance of
@@ -95,17 +95,21 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
         // Get Views
         mRvMain = (RecyclerView) root.findViewById(R.id.rv_players);
         mSRLMain = (SwipeRefreshLayout) root.findViewById(R.id.srl_players);
+        mSRLEmpty = (SwipeRefreshLayout) root.findViewById(R.id.srl_players_empty);
         mLloPlutocrat = (LinearLayout) root.findViewById(R.id.llo_targets_plutocrat);
         mLloNoPlutocrat = (LinearLayout) root.findViewById(R.id.llo_targets_noplutocrat);
         mTvPlutocratNickname = (TextView) root.findViewById(R.id.tv_plutocrat_profile_nickname);
         mTvPlutocratName = (TextView) root.findViewById(R.id.tv_plutocrat_name);
         mTvPlutocratBuyouts = (TextView) root.findViewById(R.id.tv_plutocrat_buyouts);
+        mTvEmpty = (TextView) root.findViewById(R.id.tv_empty);
         mBtnEngage = (Button) root.findViewById(R.id.btn_player_engage);
 
         // Initiate
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
                 mTvPlutocratNickname, mTvPlutocratName, mTvPlutocratBuyouts, mBtnEngage,
-                (TextView) root.findViewById(R.id.tv_plutocrat_caption),
+                (TextView) root.findViewById(R.id.tv_plutocrat_caption));
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Bold, mTvEmpty);
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Light,
                 (TextView) root.findViewById(R.id.tv_no_plutocrat));
 
         ArrayList<TargetModel> dataset = new ArrayList<>();
@@ -119,12 +123,22 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
 
         EventBus.getInstance().post(new GetPlutocratEvent());
 
+        updateView();
+
         // Get Adapter
         cpage = FIRST_PAGE;
         EventBus.getInstance().post(new LoadTargetsEvent(cpage, TARGET_USERS_PER_PAGE));
 
         // Event Handler
         mSRLMain.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Loading new list
+                cpage = FIRST_PAGE;
+                EventBus.getInstance().post(new LoadTargetsEvent(cpage, TARGET_USERS_PER_PAGE));
+            }
+        });
+        mSRLEmpty.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 // Loading new list
@@ -167,13 +181,21 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
 
     @Override
     public void setTargetList(ArrayList<TargetModel> items, MetaModel meta) {
-        if(cpage == FIRST_PAGE) {
+        if(meta != null && meta.hasKey("current_page") && meta.getInt("current_page") == FIRST_PAGE) {
             mAdapter.getDataSet().clear();
+            if(items.size() == 0) {
+                mSRLMain.setVisibility(View.GONE);
+                mSRLEmpty.setVisibility(View.VISIBLE);
+            } else {
+                mSRLMain.setVisibility(View.VISIBLE);
+                mSRLEmpty.setVisibility(View.GONE);
+            }
         }
         mAdapter.addItems(items);
 
         // Switch off all loading widget
         mSRLMain.setRefreshing(false);
+        mSRLEmpty.setRefreshing(false);
     }
 
     @Override
