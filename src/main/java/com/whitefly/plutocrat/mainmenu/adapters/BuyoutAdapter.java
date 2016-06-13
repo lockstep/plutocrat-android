@@ -128,9 +128,9 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
         BuyoutModel model = mDataSet.get(position);
 
         if(model != null) {
-            holder.tvProfile.setText(model.getPicName());
-            holder.tvName.setText(model.name);
-            holder.tvPeroid.setText(String.format(mPeriodFormat, model.shares, model.getPeriod()));
+            holder.tvProfile.setText(model.targetUser.getNickName());
+            holder.tvName.setText(model.targetUser.name);
+            holder.tvPeroid.setText(String.format(mPeriodFormat, model.numShares, model.getTimeAgo()));
 
             holder.tvStatus.setText(mPendingCaption);
             holder.tvStatus.setTextColor(mGreyColor);
@@ -138,24 +138,20 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
             holder.tvGameStatus.setText(mAttackingCaption);
             holder.tvGameStatus.setTextColor(mRedColor);
 
-            if(model.picProfile == BuyoutModel.DEBUG_NO_PROFILE_PICTURE) {
-                holder.tvProfile.setVisibility(View.VISIBLE);
-                holder.imvProfile.setVisibility(View.GONE);
-            } else {
-                holder.tvProfile.setVisibility(View.GONE);
-                holder.imvProfile.setVisibility(View.VISIBLE);
-                holder.imvProfile.setImageDrawable(ContextCompat.getDrawable(mContext, model.picProfile));
-            }
+            // TODO: Change to retrieve from url
+            holder.tvProfile.setVisibility(View.VISIBLE);
+            holder.imvProfile.setVisibility(View.GONE);
+//            holder.imvProfile.setImageDrawable(ContextCompat.getDrawable(mContext, model.picProfile));
 
-            if(model.status == BuyoutModel.BuyoutStatus.Initiate) {
+            if(model.getBuyoutStatus() == BuyoutModel.BuyoutStatus.Initiate) {
                 holder.tvAction.setText(mInitiateCaption);
-                if(model.gameStatus == BuyoutModel.GameStatus.Win) {
+                if(model.getGameStatus() == BuyoutModel.GameStatus.Win) {
                     holder.tvStatus.setText(mFailedCaption);
                     holder.tvStatus.setTextColor(mRedColor);
 
                     holder.btnEngage.setVisibility(View.VISIBLE);
                     holder.tvGameStatus.setVisibility(View.GONE);
-                } else if(model.gameStatus == BuyoutModel.GameStatus.Lose) {
+                } else if(model.getGameStatus() == BuyoutModel.GameStatus.Lose) {
                     holder.tvStatus.setText(mSucceedCaption);
                     holder.tvStatus.setTextColor(mGreenColor);
 
@@ -165,9 +161,9 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
                 }
             } else {
                 holder.tvAction.setText(mThreatCaption);
-                if(model.gameStatus == BuyoutModel.GameStatus.Win) {
-                    // This case is not impossible
-                } else if(model.gameStatus == BuyoutModel.GameStatus.Lose) {
+                if(model.getGameStatus() == BuyoutModel.GameStatus.Win) {
+                    // This case is impossible
+                } else if(model.getGameStatus() == BuyoutModel.GameStatus.Lose) {
                     holder.tvStatus.setText(mFailedCaption);
                     holder.tvStatus.setTextColor(mGreenColor);
 

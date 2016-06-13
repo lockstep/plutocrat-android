@@ -87,7 +87,7 @@ public class MainMenuActivity extends AppCompatActivity
 
     private DialogFragment mFrgAccountSetting;
     private IAPHelper mIAPHelper;
-    private AlertDialog mLoadingDialog;
+    private AlertDialog mLoadingDialog, mErrorDialog;
     private TextView mTvLoadingMessage;
     private CustomTypefaceSpan mFontSpan;
 
@@ -215,7 +215,6 @@ public class MainMenuActivity extends AppCompatActivity
         mTabLayout.getTabAt(FRAGMENT_HOME_INDEX).select();
 
         createLoadingDialog();
-
 
         // Event Handler
         mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

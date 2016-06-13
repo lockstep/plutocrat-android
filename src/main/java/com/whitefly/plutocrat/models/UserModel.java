@@ -1,5 +1,7 @@
 package com.whitefly.plutocrat.models;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Date;
 
 /**
@@ -12,49 +14,77 @@ public class UserModel {
 
     // Attributes
     public int id;
-    public String display_name;
-    public String profile_image_url;
-    public Date registered_at;
-    public boolean attacking_current_user;
-    public int successful_buyouts_count;
-    public int matched_buyouts_count;
-    public int available_shares_count;
-    public boolean under_buyout_threat;
-    public Date defeated_at;
-    public boolean is_plutocrat;
-    public String active_inbound_buyout;
-    public String terminal_buyout;
+
+    @SerializedName("display_name")
+    public String name;
+
+    @SerializedName("initials")
+    public String nickName;
+
+    @SerializedName("profile_image_url")
+    public String profileImage;
+
+    @SerializedName("registered_at")
+    public Date registeredAt;
+
+    @SerializedName("attacking_current_user")
+    public boolean isAttackingCurrentUser;
+
+    @SerializedName("successful_buyouts_count")
+    public int numSuccessfulBuyout;
+
+    @SerializedName("matched_buyouts_count")
+    public int numMatchedBuyout;
+
+    @SerializedName("available_shares_count")
+    public int numAvailableShares;
+
+    @SerializedName("under_buyout_threat")
+    public boolean isUnderBuyoutThreat;
+
+    @SerializedName("defeated_at")
+    public Date defeatedAt;
+
+    @SerializedName("is_plutocrat")
+    public boolean isPlutocrat;
+
+    public transient BuyoutModel activeInboundBuyout;
+
+    public transient BuyoutModel terminalBuyout;
+
     public String email;
-    public boolean transactional_emails_enabled;
-    public boolean product_emails_enabled;
-    public int failed_buyouts_count;
-    public int user_notice_id;
 
-    public boolean is_enable_notification;
+    @SerializedName("transactional_emails_enabled")
+    public boolean isTransactionalEmailsEnabled;
 
+    @SerializedName("product_emails_enabled")
+    public boolean isProductEmailsEnabled;
 
+    @SerializedName("failed_buyouts_count")
+    public int numFailedBuyouts;
+
+    @SerializedName("user_notice_id")
+    public int userNoticeId;
+
+    @SerializedName("is_enable_notification")
+    public boolean isEnableNotification;
 
     // Methods
     public String getNickName() {
-        String result;
-        char firstCh, secondCh;
 
-        if(display_name == null) {
-            result = "";
-        } else {
-            String[] names = display_name.split("\\s+");
-            if(names.length > 1) {
-                firstCh = names[0].charAt(0);
-                secondCh = names[1].charAt(0);
-                result = String.format("%s%s", firstCh, secondCh).toUpperCase();
-            } else {
-                firstCh = display_name.charAt(0);
-                secondCh = display_name.length() > 1 ? display_name.charAt(1) : Character.MIN_VALUE;
-                result = String.format("%s%s", firstCh, secondCh).toUpperCase();
-            }
-        }
-
-        return result;
+        return nickName;
     }
 
+    public void updateTargetData(TargetModel model) {;
+        name = model.name;
+        nickName = model.nickName;
+        profileImage = model.profileImage;
+        isAttackingCurrentUser = model.isAttackingCurrentUser;
+        numSuccessfulBuyout = model.numSuccessfulBuyout;
+        numMatchedBuyout = model.numMatchedBuyout;
+        numAvailableShares = model.numAvailableShares;
+        isUnderBuyoutThreat = model.isUnderBuyoutThreat;
+        defeatedAt = model.defeatedAt;
+        isPlutocrat = model.isPlutocrat;
+    }
 }

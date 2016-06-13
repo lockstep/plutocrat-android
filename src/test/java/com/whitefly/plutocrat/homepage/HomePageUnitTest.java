@@ -38,9 +38,9 @@ public class HomePageUnitTest {
     @Test
     public void testActiveStateWithFirstTime() throws Exception {
         UserModel model = new UserModel();
-        model.defeated_at = null;
-        model.under_buyout_threat = false;
-        model.user_notice_id = UserModel.NOTICE_GETTING_STARTED;
+        model.defeatedAt = null;
+        model.isUnderBuyoutThreat = false;
+        model.userNoticeId = UserModel.NOTICE_GETTING_STARTED;
         AppPreference.getInstance().getSession().updateActiveUser(model);
 
         MainMenuPresenter presenter = new MainMenuPresenter(mContext, null, new IHomeView() {
@@ -61,9 +61,9 @@ public class HomePageUnitTest {
     @Test
     public void testActiveStateWithEnableNotification() throws Exception {
         UserModel model = new UserModel();
-        model.defeated_at = null;
-        model.under_buyout_threat = false;
-        model.user_notice_id = UserModel.NOTICE_ENABLE_PUSH_NOTIFICATION;
+        model.defeatedAt = null;
+        model.isUnderBuyoutThreat = false;
+        model.userNoticeId = UserModel.NOTICE_ENABLE_PUSH_NOTIFICATION;
         AppPreference.getInstance().getSession().updateActiveUser(model);
 
         MainMenuPresenter presenter = new MainMenuPresenter(mContext, null, new IHomeView() {
@@ -84,9 +84,9 @@ public class HomePageUnitTest {
     @Test
     public void testActiveState() throws Exception {
         UserModel model = new UserModel();
-        model.defeated_at = null;
-        model.under_buyout_threat = false;
-        model.user_notice_id = UserModel.NOTICE_DEFAULT;
+        model.defeatedAt = null;
+        model.isUnderBuyoutThreat = false;
+        model.userNoticeId = UserModel.NOTICE_DEFAULT;
         AppPreference.getInstance().getSession().updateActiveUser(model);
 
         MainMenuPresenter presenter = new MainMenuPresenter(mContext, null, new IHomeView() {
@@ -107,9 +107,9 @@ public class HomePageUnitTest {
     @Test
     public void testUpdateUserNoticeId() throws Exception {
         UserModel model = new UserModel();
-        model.defeated_at = null;
-        model.under_buyout_threat = false;
-        model.user_notice_id = UserModel.NOTICE_GETTING_STARTED;
+        model.defeatedAt = null;
+        model.isUnderBuyoutThreat = false;
+        model.userNoticeId = UserModel.NOTICE_GETTING_STARTED;
         AppPreference.getInstance().getSession().updateActiveUser(model);
 
         final int expectedNoticeId = UserModel.NOTICE_ENABLE_PUSH_NOTIFICATION;
@@ -132,8 +132,8 @@ public class HomePageUnitTest {
     @Test
     public void testAttackedState() {
         UserModel model = new UserModel();
-        model.defeated_at = null;
-        model.under_buyout_threat = true;
+        model.defeatedAt = null;
+        model.isUnderBuyoutThreat = true;
         AppPreference.getInstance().getSession().updateActiveUser(model);
 
         MainMenuPresenter presenter = new MainMenuPresenter(mContext, null, new IHomeView() {
@@ -153,8 +153,8 @@ public class HomePageUnitTest {
     @Test
     public void testSuspendedUser() {
         UserModel model = new UserModel();
-        model.defeated_at = new Date();
-        model.under_buyout_threat = false;
+        model.defeatedAt = new Date();
+        model.isUnderBuyoutThreat = false;
         AppPreference.getInstance().getSession().updateActiveUser(model);
 
         MainMenuPresenter presenter = new MainMenuPresenter(mContext, null, new IHomeView() {

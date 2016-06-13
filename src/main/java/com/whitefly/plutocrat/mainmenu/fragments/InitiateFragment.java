@@ -73,7 +73,7 @@ public class InitiateFragment extends DialogFragment {
      * @return A new instance of fragment LoginFragment.
      */
     public static InitiateFragment newInstance(TargetModel target, NewBuyoutModel newBuyout) {
-        Gson gson = new Gson();
+        Gson gson = AppPreference.getInstance().getGson();
         InitiateFragment fragment = new InitiateFragment();
         fragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogTheme);
 
@@ -197,7 +197,7 @@ public class InitiateFragment extends DialogFragment {
         mBtnTargetAbort     = (Button) root.findViewById(R.id.btn_target_abort);
         mShareSeekBar       = (SeekBar) root.findViewById(R.id.seekBar);
 
-        Gson gson = new Gson();
+        Gson gson = AppPreference.getInstance().getGson();
         mTarget = gson.fromJson(getArguments().getString(BUNDLE_TARGET), TargetModel.class);
         NewBuyoutModel newBuyout = gson.fromJson(getArguments().getString(BUNDLE_NEW_BUYOUT), NewBuyoutModel.class);
         mFontSpan = new CustomTypefaceSpan("", AppPreference.getInstance().getFont(AppPreference.FontType.Regular));
@@ -280,6 +280,7 @@ public class InitiateFragment extends DialogFragment {
                         }
                     })
                     .into(mImvPlutocrat);
+            mTvPlutocratProfile.setText(mTarget.getNickName());
             mTvPlutocratName.setText(mTarget.name);
             mTvPlutocratBuyouts.setText(String.format(getActivity().getString(R.string.value_plutocrat_buyouts), mTarget.numSuccessfulBuyout));
         } else {
@@ -305,6 +306,7 @@ public class InitiateFragment extends DialogFragment {
                         }
                     })
                     .into(mImvPlutocrat);
+            mTvTargetProfile.setText(mTarget.getNickName());
             mTvTargetName.setText(mTarget.name);
             mTvTargetBuyout.setText(String.format(getActivity().getString(R.string.value_buyouts), mTarget.numSuccessfulBuyout));
             mTvTargetThreat.setText(String.format(getActivity().getString(R.string.value_threats), mTarget.numMatchedBuyout));

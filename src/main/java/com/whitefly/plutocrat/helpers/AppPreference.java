@@ -6,10 +6,12 @@ import android.graphics.Typeface;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.whitefly.plutocrat.models.TargetModel;
 import com.whitefly.plutocrat.models.UserModel;
 
 import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.EnumMap;
 
 /**
@@ -37,6 +39,10 @@ public class AppPreference {
     private TargetModel mCurrentTarget;
 
     // Get/Set Methods
+    public Gson getGson() {
+        return mGson;
+    }
+
     public TargetModel getCurrentTarget() {
         return mCurrentTarget;
     }
@@ -69,8 +75,10 @@ public class AppPreference {
     // Constructor
     public AppPreference(SharedPreferences prefs) {
         mPrefs = prefs;
-        mGson = new Gson();
         mSession = new SessionManager();
+        mGson = new GsonBuilder()
+                .registerTypeAdapter(Date.class, new GSONUTCDateAdapter())
+                .create();
     }
 
     // Static Methods

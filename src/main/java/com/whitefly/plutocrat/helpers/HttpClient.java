@@ -68,6 +68,7 @@ public class HttpClient {
 
     // Methods
     private Request getRequest(String url, HttpMethod method) {
+        Request result = null;
         // Create request
         Request.Builder reqBuilder = new Request.Builder()
                 .header("Content-Type", "application/json");
@@ -76,7 +77,7 @@ public class HttpClient {
             case GET:
                 reqBuilder.get();
 
-                if(mRequestString != null) {
+                if (mRequestString != null) {
                     // Create request parameter
                     try {
                         URI uri = new URI(url);
@@ -102,12 +103,16 @@ public class HttpClient {
                 }
                 break;
             case POST:
-                if(mRequestString != null) {
+                if (mRequestString == null) {
+                    reqBuilder.post(RequestBody.create(null, new byte[0]));
+                } else {
                     reqBuilder.post(RequestBody.create(JSON, mRequestString));
                 }
                 break;
             case PATCH:
-                if(mRequestString != null) {
+                if (mRequestString == null) {
+                    reqBuilder.patch(RequestBody.create(null, new byte[0]));
+                } else {
                     reqBuilder.patch(RequestBody.create(JSON, mRequestString));
                 }
                 break;
@@ -123,7 +128,8 @@ public class HttpClient {
             reqBuilder.headers(mHeaders);
         }
         reqBuilder.url(url);
-        return reqBuilder.build();
+        result = reqBuilder.build();
+        return result;
     }
 
     public HttpClient request(String jsonRequest) {

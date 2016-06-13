@@ -18,6 +18,9 @@ public class TargetModel {
     @SerializedName("display_name")
     public String name;
 
+    @SerializedName("initials")
+    public String nickName;
+
     @SerializedName("profile_image_url")
     public String profileImage;
 
@@ -40,32 +43,14 @@ public class TargetModel {
     public boolean isUnderBuyoutThreat;
 
     @SerializedName("defeated_at")
-    public Date defeatAt;
+    public Date defeatedAt;
 
     @SerializedName("is_plutocrat")
     public boolean isPlutocrat;
 
     // Methods
     public String getNickName() {
-        String result;
-        char firstCh, secondCh;
-
-        if(name == null) {
-            result = "";
-        } else {
-            String[] names = name.split("\\s+");
-            if(names.length > 1) {
-                firstCh = names[0].charAt(0);
-                secondCh = names[1].charAt(0);
-                result = String.format("%s%s", firstCh, secondCh).toUpperCase();
-            } else {
-                firstCh = name.charAt(0);
-                secondCh = name.length() > 1 ? name.charAt(1) : Character.MIN_VALUE;
-                result = String.format("%s%s", firstCh, secondCh).toUpperCase();
-            }
-        }
-
-        return result;
+        return nickName;
     }
 
     public long getDaySurvived() {

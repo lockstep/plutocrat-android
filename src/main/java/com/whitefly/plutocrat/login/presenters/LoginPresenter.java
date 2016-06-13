@@ -95,7 +95,7 @@ public class LoginPresenter {
         @Override
         protected JSONObject doInBackground(RegisterRequestModel... params) {
             // Request api
-            Gson gson = new Gson();
+            Gson gson = AppPreference.getInstance().getGson();
             JSONObject body = null;
 
             modelRequest = params[0];
@@ -120,13 +120,13 @@ public class LoginPresenter {
 
         @Override
         protected void onPostExecute(JSONObject body) {
+            Gson gson = AppPreference.getInstance().getGson();
+
             // Validation
             if(body == null) {
                 mLoginView.toast(String.format("Error: %s", error));
                 return;
             }
-
-            Gson gson = new Gson();
 
             // Deserialize JSON
             try {
@@ -151,13 +151,13 @@ public class LoginPresenter {
         }
     }
 
-    private class LoginCallBack extends AsyncTask<LoginRequestModel, Void, JSONObject> {
+    private class LoginCallBack extends AsyncTask<LoginRequestModel, Void, Boolean> {
         private String error;
         private Gson gson;
 
         // Constructor
         public LoginCallBack() {
-            gson = new Gson();
+            gson = AppPreference.getInstance().getGson();;
         }
 
         // Methods
@@ -167,25 +167,22 @@ public class LoginPresenter {
         }
 
         @Override
-        protected JSONObject doInBackground(LoginRequestModel... params) {
+        protected Boolean doInBackground(LoginRequestModel... params) {
             // Request api
-            JSONObject body = null;
+            boolean result = false;
 
             LoginRequestModel model = params[0];
             try {
                 String strBody = mHttp.request(gson.toJson(model))
                         .post(R.string.api_signin);
 
-                // Get content
-                body = new JSONObject(strBody);
+                JSONObject body = new JSONObject(strBody);
 
-                // Check error before keep header
-                if(body.isNull("meta")) {
-                    // Collect headers and etc.
-                    UserModel modUser = gson.fromJson(body.getString("user"), UserModel.class);
-                    AppPreference.getInstance().getSession()
-                            .save(mHttp.getResponse().headers(), modUser.id);
-                }
+                UserModel modUser = gson.fromJson(body.getString("user"), UserModel.class);
+                AppPreference.getInstance().getSession()
+                        .save(mHttp.getResponse().headers(), modUser.id);
+
+                result = AppPreference.getInstance().getSession().isLogin(mHttp);
             } catch (IOException e) {
                 e.printStackTrace();
                 error = e.getMessage();
@@ -197,37 +194,17 @@ public class LoginPresenter {
                 MetaModel metaModel = new MetaModel(e.getMessage());
                 error = metaModel.getErrors();
             }
-            return body;
+            return result;
         }
 
         @Override
-        protected void onPostExecute(JSONObject body) {
-            if(body == null) {
+        protected void onPostExecute(Boolean b) {
+            if(error != null) {
                 mLoginView.toast(String.format("Error: %s", error));
-                return;
-            }
-            // Deserialize JSON
-            try {
-                // Check for error
-                if(body.isNull("meta")) {
-                    // Save updated user data to session
-                    UserModel modUser = gson.fromJson(body.getString("user"), UserModel.class);
-                    AppPreference.getInstance().getSession().updateActiveUser(modUser);
-                } else {
-                    // Error occurs
-                    JSONObject meta = body.getJSONObject("meta");
-
-                    // Get meta
-                    MetaModel modMeta = new MetaModel(meta);
-                    mLoginView.toast(String.format("Error: %s", modMeta.getErrors()));
-                    return;
-                }
-
+            } else {
+                // Save updated user data to session
                 mLoginView.toast("Sign in complete");
                 mLoginMainView.goToMainMenu();
-            } catch (JSONException e) {
-                e.printStackTrace();
-                mLoginView.toast(e.getMessage());
             }
         }
     }
