@@ -128,7 +128,7 @@ public class MainMenuPresenter {
 
     @Subscribe
     public void onLoadBuyouts(LoadBuyoutsEvent event) {
-        new LoadDummyBuyoutCallback().execute(event);
+        new LoadBuyoutsCallBack().execute(event);
     }
 
     @Subscribe
@@ -268,132 +268,45 @@ public class MainMenuPresenter {
         }
     }
 
-    private class LoadDummyBuyoutCallback extends AsyncTask<LoadBuyoutsEvent, Void, ArrayList<BuyoutModel>> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
+    private class LoadBuyoutsCallBack extends AsyncTask<LoadBuyoutsEvent, Void, ArrayList<BuyoutModel>> {
+        private MetaModel mMetaModel;
+        private String mErrorMessage;
 
         @Override
         protected ArrayList<BuyoutModel> doInBackground(LoadBuyoutsEvent... params) {
+            Gson gson = AppPreference.getInstance().getGson();
             ArrayList<BuyoutModel> result = new ArrayList<>();
-            BuyoutModel model;
-            TargetModel initiate, target;
-            int currentUserId = AppPreference.getInstance().getSession().getActiveUser().id;
-            // Dummy data
-            if(params[0].page == 1) {
+            Headers headers = AppPreference.getInstance().getSession().getHeaders();
+            int page = params[0].page;
+            String requestParam = String.format("{page:%d}", page);
+            String url = String.format(mContext.getString(R.string.api_get_buyouts),
+                    AppPreference.getInstance().getSession().getActiveUser().id);
 
-                initiate = new TargetModel();
-                initiate.id = 20;
-                target = new TargetModel();
-                target.id = currentUserId;
-                target.name = "Aaron Pinchai";
-                target.profileImage = "";
-                model = new BuyoutModel();
-                model.numShares = 23;
-                model.state = "initiated";
-                model.initiatedTimeAgo = "2 hours ago";
-                model.resolvedTimeAgo = null;
-                model.initiatingUser = initiate;
-                model.targetUser = target;
-                result.add(model);
-
-                initiate = new TargetModel();
-                initiate.id = currentUserId;
-                target = new TargetModel();
-                target.id = 22;
-                target.name = "Sara Mayer";
-                target.profileImage = "";
-                model = new BuyoutModel();
-                model.numShares = 21;
-                model.state = "matched";
-                model.initiatedTimeAgo = null;
-                model.resolvedTimeAgo = "48 hours ago";
-                model.initiatingUser = initiate;
-                model.targetUser = target;
-                result.add(model);
-
-                initiate = new TargetModel();
-                initiate.id = 77;
-                target = new TargetModel();
-                target.id = currentUserId;
-                target.name = "Peter Cook";
-                target.profileImage = "";
-                model = new BuyoutModel();
-                model.numShares = 13;
-                model.state = "succeeded";
-                model.initiatedTimeAgo = null;
-                model.resolvedTimeAgo = "96 hours ago";
-                model.initiatingUser = initiate;
-                model.targetUser = target;
-                result.add(model);
-
-                initiate = new TargetModel();
-                initiate.id = currentUserId;
-                target = new TargetModel();
-                target.id = 55;
-                target.name = "M. Dorsey";
-                target.profileImage = "";
-                model = new BuyoutModel();
-                model.numShares = 11;
-                model.state = "succeeded";
-                model.initiatedTimeAgo = null;
-                model.resolvedTimeAgo = "120 hours ago";
-                model.initiatingUser = initiate;
-                model.targetUser = target;
-                result.add(model);
-            } else if(params[0].page == 2) {
-                initiate = new TargetModel();
-                initiate.id = currentUserId;
-                target = new TargetModel();
-                target.id = 90;
-                target.name = "Danielle Steele";
-                target.profileImage = "";
-                model = new BuyoutModel();
-                model.numShares = 21;
-                model.state = "matched";
-                model.initiatedTimeAgo = null;
-                model.resolvedTimeAgo = "190 hours ago";
-                model.initiatingUser = initiate;
-                model.targetUser = target;
-                result.add(model);
-
-                initiate = new TargetModel();
-                initiate.id = currentUserId;
-                target = new TargetModel();
-                target.id = 192;
-                target.name = "Satjapot I.";
-                target.profileImage = "";
-                model = new BuyoutModel();
-                model.numShares = 1;
-                model.state = "matched";
-                model.initiatedTimeAgo = null;
-                model.resolvedTimeAgo = "180 hours ago";
-                model.initiatingUser = initiate;
-                model.targetUser = target;
-                result.add(model);
-
-                initiate = new TargetModel();
-                initiate.id = currentUserId;
-                target = new TargetModel();
-                target.id = 222;
-                target.name = "Amy Sasitorn";
-                target.profileImage = "";
-                model = new BuyoutModel();
-                model.numShares = 12;
-                model.state = "matched";
-                model.initiatedTimeAgo = null;
-                model.resolvedTimeAgo = "250 hours ago";
-                model.initiatingUser = initiate;
-                model.targetUser = target;
-                result.add(model);
-            }
-
-            // Dummy take time
             try {
-                Thread.sleep(2000L);
-            } catch (InterruptedException e) {
+                String jsonBody = mHttp.header(headers).request(requestParam).get(url);
+                JSONObject root = new JSONObject(jsonBody);
+                mMetaModel = new MetaModel("{\"meta\":{\"current_page\":1}}"); // TODO: Fix mock data
+                JSONArray buyouts = root.getJSONArray("buyouts");
+
+                if(buyouts.length() > 0) {
+                    for (int i = 0, n = buyouts.length(); i < n; i++) {
+                        JSONObject row = buyouts.getJSONObject(i);
+
+                        BuyoutModel model = gson.fromJson(row.toString(), BuyoutModel.class);
+                        model.initiatingUser = gson.fromJson(row.getString("initiating_user"), TargetModel.class);
+                        model.targetUser = gson.fromJson(row.getString("target_user"), TargetModel.class);
+
+                        result.add(model);
+                    }
+                }
+            } catch (IOException e) {
                 e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (APIConnectionException e) {
+                e.printStackTrace();
+                MetaModel model = new MetaModel(e.getMessage());
+                mErrorMessage = model.getErrors();
             }
 
             return result;
@@ -401,10 +314,15 @@ public class MainMenuPresenter {
 
         @Override
         protected void onPostExecute(ArrayList<BuyoutModel> buyoutModels) {
-            if(buyoutModels.size() > 0) {
-                buyoutModels.add(null);
+            if (mErrorMessage != null) {
+                mMainMenuView.handleError(mContext.getString(R.string.error_title_cannot_execute_buyout),
+                        mErrorMessage);
+            } else {
+                if(buyoutModels.size() > 0) {
+                    buyoutModels.add(null);
+                }
+                mBuyoutView.setBuyoutList(buyoutModels, mMetaModel);
             }
-            mBuyoutView.setTargetList(buyoutModels);
         }
     }
 

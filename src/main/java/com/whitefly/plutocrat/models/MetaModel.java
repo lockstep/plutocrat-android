@@ -62,15 +62,16 @@ public class MetaModel {
             }
         } else {
             // Get a key
-            do{
+            outerKeys = meta.keys();
+            while (outerKeys.hasNext()) {
+                key = outerKeys.next();
                 try {
                     mMaps.put(key, meta.getString(key));
                 } catch (JSONException e) {
                     e.printStackTrace();
                     // Do nothing. just go to next key
                 }
-                key = outerKeys.next();
-            } while (outerKeys.hasNext());
+            }
         }
     }
 
@@ -98,5 +99,9 @@ public class MetaModel {
 
     public int getInt(String key) {
         return Integer.parseInt(this.getValue(key));
+    }
+
+    public boolean hasKey(String key) {
+        return mMaps.containsKey(key);
     }
 }

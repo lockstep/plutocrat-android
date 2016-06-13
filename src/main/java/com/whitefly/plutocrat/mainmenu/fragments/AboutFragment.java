@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.mainmenu.views.ITabView;
 
 /**
@@ -49,6 +50,9 @@ public class AboutFragment extends Fragment implements ITabView {
         View root = inflater.inflate(R.layout.fragment_about, container, false);
         mWebView = (WebView) root.findViewById(R.id.wv_about);
         mPgbLoading = (ProgressBar) root.findViewById(R.id.pgb_loading);
+
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Light,
+                (TextView) root.findViewById(R.id.tv_title_about));
 
         mWebView.setWebViewClient(new WebViewClient() {
             @Override

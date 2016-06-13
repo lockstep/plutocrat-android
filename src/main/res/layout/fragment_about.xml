@@ -23,8 +23,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/title_about"
-                style="@style/HeaderBigText"
-                android:id="@+id/tv_title_shares" />
+                style="@style/HeaderMediumText"
+                android:id="@+id/tv_title_about" />
         </LinearLayout>
 
     </LinearLayout>

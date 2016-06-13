@@ -73,6 +73,8 @@ public class ShareFragment extends Fragment implements ITabView {
         ShareAdapter adapter = new ShareAdapter(getActivity(), list);
         mRvMain.setAdapter(adapter);
 
+        updateView();
+
         return root;
     }
 
