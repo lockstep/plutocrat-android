@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import com.google.gson.Gson;
 import com.squareup.otto.Subscribe;
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.exception.APIConnectionException;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.HttpClient;
 import com.whitefly.plutocrat.models.MetaModel;
@@ -109,6 +110,10 @@ public class LoginPresenter {
             } catch (JSONException e) {
                 e.printStackTrace();
                 error = e.getMessage();
+            } catch (APIConnectionException e) {
+                e.printStackTrace();
+                MetaModel metaModel = new MetaModel(e.getMessage());
+                error = metaModel.getErrors();
             }
             return body;
         }
@@ -148,7 +153,7 @@ public class LoginPresenter {
 
     private class LoginCallBack extends AsyncTask<LoginRequestModel, Void, JSONObject> {
         private String error;
-        private  Gson gson;
+        private Gson gson;
 
         // Constructor
         public LoginCallBack() {
@@ -187,6 +192,10 @@ public class LoginPresenter {
             } catch (JSONException e) {
                 e.printStackTrace();
                 error = e.getMessage();
+            } catch (APIConnectionException e) {
+                e.printStackTrace();
+                MetaModel metaModel = new MetaModel(e.getMessage());
+                error = metaModel.getErrors();
             }
             return body;
         }

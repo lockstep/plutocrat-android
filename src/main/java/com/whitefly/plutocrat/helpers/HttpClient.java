@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.exception.APIConnectionException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -137,7 +138,7 @@ public class HttpClient {
         return this;
     }
 
-    public String execute(String apiUrl, HttpMethod method) throws IOException {
+    public String execute(String apiUrl, HttpMethod method) throws IOException, APIConnectionException {
         // Input
         String url = String.format("%s%s", mHost, apiUrl);
         Request request = getRequest(url, method);
@@ -158,6 +159,10 @@ public class HttpClient {
                 } else {
                     Log.d(AppPreference.DEBUG_APP, mResponse.message());
                     requestTime--;
+
+                    if(mResponse.code() == 422) {
+                        throw new APIConnectionException(mResponse.body().string());
+                    }
 
                     // If try to to Request more than this times, error should occurs
                     if(requestTime <= 0) {
@@ -185,33 +190,33 @@ public class HttpClient {
     /*
     Helper methods
      */
-    public String execute(int apiId, HttpMethod method) throws IOException {
+    public String execute(int apiId, HttpMethod method) throws IOException, APIConnectionException {
         return execute(mContext.getString(apiId), method);
     }
 
-    public String get(int apiId) throws IOException {
+    public String get(int apiId) throws IOException, APIConnectionException {
         return execute(apiId, HttpMethod.GET);
     }
-    public String post(int apiId) throws IOException {
+    public String post(int apiId) throws IOException, APIConnectionException {
         return execute(apiId, HttpMethod.POST);
     }
-    public String patch(int apiId) throws IOException {
+    public String patch(int apiId) throws IOException, APIConnectionException {
         return execute(apiId, HttpMethod.PATCH);
     }
-    public String delete(int apiId) throws IOException {
+    public String delete(int apiId) throws IOException, APIConnectionException {
         return execute(apiId, HttpMethod.DELETE);
     }
 
-    public String get(String apiUrl) throws IOException {
+    public String get(String apiUrl) throws IOException, APIConnectionException {
         return execute(apiUrl, HttpMethod.GET);
     }
-    public String post(String apiUrl) throws IOException {
+    public String post(String apiUrl) throws IOException, APIConnectionException {
         return execute(apiUrl, HttpMethod.POST);
     }
-    public String patch(String apiUrl) throws IOException {
+    public String patch(String apiUrl) throws IOException, APIConnectionException {
         return execute(apiUrl, HttpMethod.PATCH);
     }
-    public String delete(String apiUrl) throws IOException {
+    public String delete(String apiUrl) throws IOException, APIConnectionException {
         return execute(apiUrl, HttpMethod.DELETE);
     }
 }

@@ -1,10 +1,14 @@
 package com.whitefly.plutocrat.mainmenu;
 
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -57,6 +61,7 @@ import com.whitefly.plutocrat.mainmenu.views.IMainMenuView;
 import com.whitefly.plutocrat.mainmenu.views.ITabView;
 import com.whitefly.plutocrat.mainmenu.views.ITargetView;
 import com.whitefly.plutocrat.models.IAPPurchaseModel;
+import com.whitefly.plutocrat.models.NewBuyoutModel;
 import com.whitefly.plutocrat.models.TargetModel;
 
 import java.util.ArrayList;
@@ -82,6 +87,9 @@ public class MainMenuActivity extends AppCompatActivity
 
     private DialogFragment mFrgAccountSetting;
     private IAPHelper mIAPHelper;
+    private AlertDialog mLoadingDialog;
+    private TextView mTvLoadingMessage;
+    private CustomTypefaceSpan mFontSpan;
 
     private float mTouchXDown, mTouchXUp;
     private int mTouchSlop;
@@ -89,6 +97,18 @@ public class MainMenuActivity extends AppCompatActivity
     // Views
     private CustomViewPager mMainPager;
     private TabLayout mTabLayout;
+
+    // Methods
+    private void createLoadingDialog() {
+        View root = getLayoutInflater().inflate(R.layout.dialog_loading, null, false);
+        mTvLoadingMessage = (TextView) root.findViewById(R.id.tv_loading_message);
+
+        mLoadingDialog = new AlertDialog.Builder(this)
+                .setView(root)
+                .setCancelable(false)
+                .create();
+        mLoadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+    }
 
     public void suspendMenu() {
         mMainPager.setPagingEnabled(false);
@@ -144,14 +164,14 @@ public class MainMenuActivity extends AppCompatActivity
 
         AppPreference.getInstance().getSession().loadPlutocrat();
 
-        CustomTypefaceSpan fontSpan =
+        mFontSpan =
                 new CustomTypefaceSpan("", AppPreference.getInstance().getFont(AppPreference.FontType.Regular));
         Menu menu = navigationView.getMenu();
         for (int i=0, n=menu.size(); i<n; i++) {
             MenuItem menuItem = menu.getItem(i);
 
             SpannableString text = new SpannableString(menuItem.getTitle());
-            text.setSpan(fontSpan, 0, text.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            text.setSpan(mFontSpan, 0, text.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         }
 
         mTouchSlop = SLOP_PERIOD;
@@ -168,6 +188,7 @@ public class MainMenuActivity extends AppCompatActivity
         }
         mMainPager.setAdapter(mAdapter);
         mTabLayout.setupWithViewPager(mMainPager);
+
         // Add title & icon
         ColorStateList tabColorList = ContextCompat.getColorStateList(this, R.color.tab_item);
         for(int i=0, n=mAdapter.getCount(); i<n; i++) {
@@ -193,6 +214,8 @@ public class MainMenuActivity extends AppCompatActivity
         mTabLayout.getTabAt(FRAGMENT_TARGETS_INDEX).select();
         mTabLayout.getTabAt(FRAGMENT_HOME_INDEX).select();
 
+        createLoadingDialog();
+
 
         // Event Handler
         mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -202,6 +225,7 @@ public class MainMenuActivity extends AppCompatActivity
                     mTabLayout.getTabAt(FRAGMENT_HOME_INDEX).select();
                 } else {
                     mMainPager.setCurrentItem(tab.getPosition());
+                    ((ITabView) mAdapter.getItem(tab.getPosition())).updateView();
                 }
             }
 
@@ -364,11 +388,11 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     @Override
-    public void callInitiateDialog(TargetModel model) {
+    public void callInitiateDialog(TargetModel model, NewBuyoutModel newBuyout) {
         android.app.FragmentTransaction t = getFragmentManager().beginTransaction()
                 .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
 
-        InitiateFragment.newInstance(model).show(t, FRAGMENT_INITIATE);
+        InitiateFragment.newInstance(model, newBuyout).show(t, FRAGMENT_INITIATE);
     }
 
     @Override
@@ -385,5 +409,54 @@ public class MainMenuActivity extends AppCompatActivity
         } catch (IAPException e) {
             toast(e.getMessage());
         }
+    }
+
+    @Override
+    public void handleLoadingDialog(boolean isShow) {
+        AlertDialog alertLoading = mLoadingDialog;
+        DialogFragment initiatePage = (DialogFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INITIATE);
+        if(initiatePage != null && initiatePage instanceof InitiateFragment) {
+            alertLoading = ((InitiateFragment) initiatePage).getLoadingDialog(null);
+        }
+
+        if(isShow) {
+            alertLoading.show();
+        } else {
+            alertLoading.hide();
+        }
+    }
+
+    @Override
+    public void closeInitiatePage(boolean isSuccess) {
+        if(isSuccess) {
+            ((DialogFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INITIATE)).dismiss();
+
+            ((TargetFragment) mAdapter.getItem(FRAGMENT_TARGETS_INDEX)).updateList();
+        }
+    }
+
+    @Override
+    public void handleError(String title, String message) {
+
+        SpannableString spanTitle = new SpannableString(title);
+        spanTitle.setSpan(mFontSpan, 0, spanTitle.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+        SpannableString spanMessage = new SpannableString(message);
+        spanMessage.setSpan(mFontSpan, 0, spanMessage.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+        SpannableString negativeText = new SpannableString(getString(R.string.caption_close));
+        negativeText.setSpan(mFontSpan, 0, negativeText.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+
+        new AlertDialog.Builder(this)
+                .setTitle(spanTitle)
+                .setMessage(spanMessage)
+                .setNegativeButton(negativeText, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 }

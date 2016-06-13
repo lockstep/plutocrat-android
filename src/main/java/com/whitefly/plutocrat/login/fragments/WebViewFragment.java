@@ -61,7 +61,7 @@ public class WebViewFragment extends DialogFragment implements View.OnClickListe
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = getActivity().getLayoutInflater().inflate(R.layout.dialog_webview, null, false);
+        View root = inflater.inflate(R.layout.dialog_webview, container, false);
         mTvTitle = (TextView) root.findViewById(R.id.tv_webview_header);
         mWvMain = (WebView) root.findViewById(R.id.web_view);
         mLloBack = (LinearLayout) root.findViewById(R.id.btn_back);

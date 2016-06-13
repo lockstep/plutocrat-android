@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:orientation="vertical"
-        android:layout_weight="50"
+        android:layout_weight="0.9"
         android:layout_marginStart="@dimen/activity_horizontal_margin">
 
         <TextView
@@ -37,7 +37,9 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/tv_player_name"
-            android:text="Aaron Pinchai"/>
+            android:text="Aaron Pinchai"
+            android:ellipsize="end"
+            android:maxLines="1"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -69,7 +71,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_weight="20"
+        android:layout_weight="0.1"
         android:gravity="right"
         android:layout_gravity="center_vertical">
 
@@ -78,7 +80,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/btn_player_engage"
             android:text="@string/caption_engage"
-            style="@style/DefaultButton"/>
+            style="@style/DefaultButton"
+            android:minWidth="80dp"/>
 
         <TextView
             android:layout_width="wrap_content"

@@ -109,6 +109,11 @@ public class BuyoutFragment extends Fragment implements ITabView, IBuyoutView {
     }
 
     @Override
+    public void updateView() {
+
+    }
+
+    @Override
     public void setTargetList(ArrayList<BuyoutModel> items) {
         if(cpage == FIRST_PAGE) {
             mAdapter.getDataSet().clear();

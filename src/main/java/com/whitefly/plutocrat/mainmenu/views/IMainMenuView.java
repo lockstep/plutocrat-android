@@ -1,5 +1,6 @@
 package com.whitefly.plutocrat.mainmenu.views;
 
+import com.whitefly.plutocrat.models.NewBuyoutModel;
 import com.whitefly.plutocrat.models.TargetModel;
 
 /**
@@ -8,7 +9,10 @@ import com.whitefly.plutocrat.models.TargetModel;
 public interface IMainMenuView {
     void goToLogin();
     void goToShareFromInitiate();
-    void callInitiateDialog(TargetModel model);
+    void callInitiateDialog(TargetModel target, NewBuyoutModel newBuyout);
     void toast(String text);
     void buyIAP(String sku, String payload);
+    void handleLoadingDialog(boolean isShow);
+    void handleError(String title, String message);
+    void closeInitiatePage(boolean isSuccess);
 }
