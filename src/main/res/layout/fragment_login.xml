@@ -24,7 +24,8 @@
             android:id="@+id/linearLayout"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_marginTop="@dimen/margin_login">
+            android:layout_marginTop="@dimen/margin_login"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -45,7 +46,8 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
+            android:paddingTop="@dimen/margin_login"
+            android:visibility="visible"
             android:id="@+id/rlo_register"
             android:layout_below="@+id/linearLayout">
 
@@ -88,7 +90,8 @@
                     android:ems="10"
                     android:id="@+id/edt_reg_pw"
                     android:hint="@string/cation_password"
-                    style="@style/LoginEditText" />
+                    style="@style/LoginEditText"
+                    android:imeOptions="actionDone" />
 
                 <Button
                     android:layout_width="wrap_content"
@@ -103,7 +106,8 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="visible"
+            android:paddingTop="@dimen/margin_login"
+            android:visibility="gone"
             android:id="@+id/rlo_signin"
             android:layout_below="@+id/linearLayout">
 
@@ -139,7 +143,8 @@
                     android:ems="10"
                     android:id="@+id/edt_signin_pw"
                     android:hint="@string/cation_password"
-                    style="@style/LoginEditText" />
+                    style="@style/LoginEditText"
+                    android:imeOptions="actionDone" />
 
                 <Button
                     android:layout_width="wrap_content"
@@ -154,7 +159,8 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/rlo_register_button_group">
+            android:id="@+id/rlo_register_button_group"
+            >
 
             <Button
                 android:layout_width="wrap_content"

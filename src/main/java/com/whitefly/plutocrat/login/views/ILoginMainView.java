@@ -8,4 +8,6 @@ public interface ILoginMainView {
     void gotoResetPassword2();
     void backToLogin();
     void goToMainMenu();
+    void handleLoadingDialog(boolean isShow);
+    void handleError(String title, String message);
 }

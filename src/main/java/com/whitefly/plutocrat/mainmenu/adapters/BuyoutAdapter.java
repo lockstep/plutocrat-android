@@ -11,6 +11,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
@@ -20,6 +24,8 @@ import com.whitefly.plutocrat.models.BuyoutModel;
 import com.whitefly.plutocrat.models.TargetModel;
 
 import java.util.ArrayList;
+
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 /**
  * Created by Satjapot on 5/17/16 AD.
@@ -123,7 +129,7 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(BuyoutAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final BuyoutAdapter.ViewHolder holder, int position) {
         // Set value to views
         BuyoutModel model = mDataSet.get(position);
 
@@ -138,10 +144,27 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
             holder.tvGameStatus.setText(mAttackingCaption);
             holder.tvGameStatus.setTextColor(mRedColor);
 
-            // TODO: Change to retrieve from url
-            holder.tvProfile.setVisibility(View.VISIBLE);
-            holder.imvProfile.setVisibility(View.GONE);
-//            holder.imvProfile.setImageDrawable(ContextCompat.getDrawable(mContext, model.picProfile));
+            Glide.with(mContext).load(model.targetUser.profileImage)
+                    .listener(new RequestListener<String, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e, String model,
+                                                   Target<GlideDrawable> target, boolean isFirstResource) {
+                            holder.tvProfile.setVisibility(View.VISIBLE);
+                            holder.imvProfile.setVisibility(View.GONE);
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(GlideDrawable resource,
+                                                       String model, Target<GlideDrawable> target,
+                                                       boolean isFromMemoryCache, boolean isFirstResource) {
+                            holder.tvProfile.setVisibility(View.GONE);
+                            holder.imvProfile.setVisibility(View.VISIBLE);
+                            return false;
+                        }
+                    })
+                    .bitmapTransform(new CropCircleTransformation(mContext))
+                    .into(holder.imvProfile);
 
             if(model.getBuyoutStatus() == BuyoutModel.BuyoutStatus.Initiate) {
                 holder.tvAction.setText(mInitiateCaption);

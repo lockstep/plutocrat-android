@@ -6,9 +6,12 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -19,13 +22,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.exception.FormValidationException;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
+import com.whitefly.plutocrat.helpers.FormValidationHelper;
 import com.whitefly.plutocrat.login.LoginActivity;
 import com.whitefly.plutocrat.login.events.ForgotPasswordEvent;
 import com.whitefly.plutocrat.login.events.RegisterEvent;
 import com.whitefly.plutocrat.login.events.SignInEvent;
 import com.whitefly.plutocrat.login.views.ILoginView;
+import com.whitefly.plutocrat.models.MetaModel;
+import com.whitefly.plutocrat.models.UserPersistenceModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,9 +41,13 @@ import com.whitefly.plutocrat.login.views.ILoginView;
  */
 public class LoginFragment extends Fragment implements ILoginView, View.OnClickListener {
     private static final String FRAGMENT_WEB_VIEW = "frg_web_view";
+    private static final String VALIDATION_PREFIX_REGISTER = "_register";
+    private static final String VALIDATION_PREFIX_SIGNIN = "_sign_in";
 
     // Attributes
     private ILoginView.ViewState mCurrentState;
+    private FormValidationHelper mFormValidator;
+    private String mPrefixValidation;
 
     // Views
     private TextView mTvWelcomeTitle, mTvWelcomeContent, mTvSignInTitle, mTvRegisterTitile;
@@ -70,6 +81,8 @@ public class LoginFragment extends Fragment implements ILoginView, View.OnClickL
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mFormValidator = new FormValidationHelper();
     }
 
     @Override
@@ -106,6 +119,12 @@ public class LoginFragment extends Fragment implements ILoginView, View.OnClickL
                 mEdtRegEmail, mEdtRegPassword, mEdtSignInEmail, mEdtSignInPassword,
                 mTvSignInTitle, mTvRegisterTitile, mBtnEula, mBtnPrivacy);
 
+        mFormValidator.addView("display_name" + VALIDATION_PREFIX_REGISTER, "Display Name", mEdtRegDisplayName);
+        mFormValidator.addView("email" + VALIDATION_PREFIX_REGISTER, "E-mail", mEdtRegEmail);
+        mFormValidator.addView("password" + VALIDATION_PREFIX_REGISTER, "Password", mEdtRegPassword);
+        mFormValidator.addView("email" + VALIDATION_PREFIX_SIGNIN, "E-mail", mEdtSignInEmail);
+        mFormValidator.addView("password" + VALIDATION_PREFIX_SIGNIN, "Password", mEdtSignInPassword);
+
         mTvWelcomeContent.setText(Html.fromHtml(getString(R.string.welcome_content)));
         if(mCurrentState == null) {
             ILoginView.ViewState loginState =
@@ -118,6 +137,11 @@ public class LoginFragment extends Fragment implements ILoginView, View.OnClickL
         }
 
         mFrgWebView = WebViewFragment.newInstance();
+
+        UserPersistenceModel userPersistence = AppPreference.getInstance().getCurrentUserPersistence();
+        if(userPersistence != null) {
+            mEdtSignInEmail.setText(userPersistence.email);
+        }
 
         // Event Handler
         mBtnLoginLink.setOnClickListener(new View.OnClickListener() {
@@ -145,6 +169,12 @@ public class LoginFragment extends Fragment implements ILoginView, View.OnClickL
             @Override
             public void onClick(View v) {
                 // Send event
+                InputMethodManager imm =
+                        (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+
+                mPrefixValidation = VALIDATION_PREFIX_REGISTER;
+
                 String display = mEdtRegDisplayName.getText().toString();
                 String email = mEdtRegEmail.getText().toString();
                 String password = mEdtRegPassword.getText().toString();
@@ -155,9 +185,35 @@ public class LoginFragment extends Fragment implements ILoginView, View.OnClickL
             @Override
             public void onClick(View v) {
                 // Send event
+                InputMethodManager imm =
+                        (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+
+                mPrefixValidation = VALIDATION_PREFIX_SIGNIN;
+
                 String email = mEdtSignInEmail.getText().toString();
                 String password = mEdtSignInPassword.getText().toString();
                 EventBus.getInstance().post(new SignInEvent(email, password));
+            }
+        });
+        mEdtRegPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId == EditorInfo.IME_ACTION_DONE) {
+                    mBtnRegister.performClick();
+                    return true;
+                }
+                return false;
+            }
+        });
+        mEdtSignInPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId == EditorInfo.IME_ACTION_DONE) {
+                    mBtnSigin.performClick();
+                    return true;
+                }
+                return false;
             }
         });
         mBtnPrivacy.setOnClickListener(this);
@@ -202,8 +258,8 @@ public class LoginFragment extends Fragment implements ILoginView, View.OnClickL
     }
 
     /*
-        Implement ILoginView
-         */
+    Implement ILoginView
+     */
     @Override
     public void changeState(ViewState state) {
         if(state == ViewState.Login) {
@@ -223,5 +279,25 @@ public class LoginFragment extends Fragment implements ILoginView, View.OnClickL
     @Override
     public void toast(String text) {
         Toast.makeText(getActivity(), text, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void handleError(MetaModel meta) {
+        try {
+            FormValidationHelper.ValidationRule rules = mFormValidator.begin();
+            for(String key : meta.getKeys()) {
+                rules.ruleRaiseError(key + mPrefixValidation, meta.getValue(key));
+            }
+            rules.validate();
+        } catch (FormValidationException e) {
+            e.printStackTrace();
+
+            for(FormValidationException.ValidationItem item : e.getItems()) {
+                item.raiseError();
+            }
+            if(e.getItems().size() > 0) {
+                e.getItems().get(0).getView().requestFocus();
+            }
+        }
     }
 }

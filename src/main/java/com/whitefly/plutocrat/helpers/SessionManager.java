@@ -37,9 +37,9 @@ public class SessionManager {
     public String uid;
     public int user_id = 0;
 
-    private UserModel mActiveUser = null;
+    private transient UserModel mActiveUser = null;
 
-    private TargetModel mPlutocrat, mInitiatingUser, mTerminalUser;
+    private transient TargetModel mPlutocrat, mInitiatingUser, mTerminalUser;
 
     // Getter Methods
     public UserModel getActiveUser() {
@@ -217,6 +217,7 @@ public class SessionManager {
     public void destroy() {
         // Destroy shared preference
         AppPreference.getInstance().getSharedPreference().edit().remove(PREFKEY_SESSION).commit();
+        AppPreference.getInstance().saveLastLoginId(user_id);
 
         // Clear value
         access_token = "";

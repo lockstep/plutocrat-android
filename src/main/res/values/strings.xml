@@ -132,6 +132,8 @@
     <string name="error_title_cannot_new_buyout">Cannot engage target</string>
     <string name="error_title_cannot_execute_buyout">Cannot execute target</string>
     <string name="error_title_cannot_save_settings">Cannot save settings</string>
+    <string name="error_title_cannot_register">Cannot register</string>
+    <string name="error_title_authenticate_failed">Authentication failed</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

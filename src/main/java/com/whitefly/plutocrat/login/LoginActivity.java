@@ -1,12 +1,22 @@
 package com.whitefly.plutocrat.login;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.view.View;
+import android.widget.TextView;
 
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.mainmenu.MainMenuActivity;
 import com.whitefly.plutocrat.login.fragments.LoginFragment;
@@ -23,8 +33,23 @@ public class LoginActivity extends AppCompatActivity implements ILoginMainView {
     private LoginPresenter presenter;
     private Intent mMainMenuIntent;
 
+    private AlertDialog mLoadingDialog;
+    private TextView mTvLoadingMessage;
+
     // Fragments
     private Fragment mLoginFragment, mReset1Fragment, mReset2Fragment;
+
+    // Methods
+    private void createLoadingDialog() {
+        View root = getLayoutInflater().inflate(R.layout.dialog_loading, null, false);
+        mTvLoadingMessage = (TextView) root.findViewById(R.id.tv_loading_message);
+
+        mLoadingDialog = new AlertDialog.Builder(this)
+                .setView(root)
+                .setCancelable(false)
+                .create();
+        mLoadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +72,8 @@ public class LoginActivity extends AppCompatActivity implements ILoginMainView {
                 .add(R.id.rlo_login_main, mLoginFragment)
                 .commit();
 
+        createLoadingDialog();
+
         // Initialize
         if(presenter == null) {
             presenter = new LoginPresenter(this, this, (ILoginView) mLoginFragment);
@@ -68,9 +95,15 @@ public class LoginActivity extends AppCompatActivity implements ILoginMainView {
         EventBus.getInstance().unregister(presenter);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mLoadingDialog != null) mLoadingDialog.dismiss();
+    }
+
     /*
-    Implement ILoginMain View
-     */
+        Implement ILoginMain View
+         */
     @Override
     public void goToResetPassword1() {
         getSupportFragmentManager().beginTransaction()
@@ -109,5 +142,40 @@ public class LoginActivity extends AppCompatActivity implements ILoginMainView {
         startActivity(mMainMenuIntent);
 
         finish();
+    }
+
+    @Override
+    public void handleLoadingDialog(boolean isShow) {
+        if(isShow) {
+            mLoadingDialog.show();
+        } else {
+            mLoadingDialog.hide();
+        }
+    }
+
+    @Override
+    public void handleError(String title, String message) {
+
+        Typeface font = AppPreference.getInstance().getFont(AppPreference.FontType.Regular);
+
+        SpannableString spanTitle = new SpannableString(title);
+        spanTitle.setSpan(font, 0, spanTitle.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+        SpannableString spanMessage = new SpannableString(message);
+        spanMessage.setSpan(font, 0, spanMessage.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+        SpannableString negativeText = new SpannableString(getString(R.string.caption_close));
+        negativeText.setSpan(font, 0, negativeText.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+        new AlertDialog.Builder(this)
+                .setTitle(spanTitle)
+                .setMessage(spanMessage)
+                .setNegativeButton(negativeText, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 }

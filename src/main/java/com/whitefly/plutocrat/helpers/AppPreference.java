@@ -9,10 +9,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.whitefly.plutocrat.models.TargetModel;
 import com.whitefly.plutocrat.models.UserModel;
+import com.whitefly.plutocrat.models.UserPersistenceModel;
 
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.EnumMap;
+import java.util.HashMap;
 
 /**
  * Created by Satjapot on 5/9/16 AD.
@@ -22,6 +24,10 @@ public class AppPreference {
     public static final String DEBUG_APP = "Plutocrat";
 
     public static final String PREF_NAME = "com.whitefly.plutocat.prefs";
+    public static final String PREFKEY_USER_PERSISTENCE = "com.whitefly.plutocrat.prefs.user_persistence";
+    public static final String PREFKEY_LAST_LOGIN_ID = "com.whitefly.plutocrat.prefs.last_login_id";
+
+    private static final int NO_USER_ID = 0;
 
     public enum FontType {
         Regular, Bold, Italic, BoldItalic, Light, LightItalic
@@ -31,12 +37,16 @@ public class AppPreference {
     private static AppPreference singleton;
     private Gson mGson;
 
+    private Context mContext;
     private SharedPreferences mPrefs;
     private SessionManager mSession;
 
     private EnumMap<FontType, Typeface> mFonts;
 
     private TargetModel mCurrentTarget;
+
+    private int mLastLoginId;
+    private HashMap<String, UserPersistenceModel> mUserPersistences;
 
     // Get/Set Methods
     public Gson getGson() {
@@ -72,18 +82,43 @@ public class AppPreference {
         }
     }
 
+    public UserPersistenceModel getCurrentUserPersistence() {
+        int currentUserId = mSession.user_id;
+        if(currentUserId == NO_USER_ID) {
+            currentUserId = mLastLoginId;
+        }
+        String strCurrentUserId = String.valueOf(currentUserId);
+        UserPersistenceModel model = null;
+        if(mUserPersistences.containsKey(strCurrentUserId)) {
+            model = mUserPersistences.get(strCurrentUserId);
+        } else {
+            if(currentUserId != NO_USER_ID) {
+                model = new UserPersistenceModel();
+                model.userId = currentUserId;
+                model.noticeId = UserModel.NOTICE_GETTING_STARTED;
+                model.email = mSession.uid;
+                mUserPersistences.put(strCurrentUserId, model);
+                saveUserPersistence();
+            }
+        }
+        return model;
+    }
+
     // Constructor
-    public AppPreference(SharedPreferences prefs) {
-        mPrefs = prefs;
+    public AppPreference(Context context) {
+        mContext = context;
+        mPrefs = mContext.getSharedPreferences(PREF_NAME, 0);
         mSession = new SessionManager();
         mGson = new GsonBuilder()
                 .registerTypeAdapter(Date.class, new GSONUTCDateAdapter())
                 .create();
+
+        loadUserPersistence();
     }
 
     // Static Methods
     public static AppPreference createInstance(Context context) {
-        singleton = new AppPreference(context.getSharedPreferences(PREF_NAME, 0));
+        singleton = new AppPreference(context);
         return singleton;
     }
 
@@ -92,6 +127,32 @@ public class AppPreference {
     }
 
     // Methods
+    public void loadUserPersistence() {
+        mLastLoginId = mPrefs.getInt(PREFKEY_LAST_LOGIN_ID, NO_USER_ID);
+        mUserPersistences = new HashMap<>();
+        if(mPrefs.contains(PREFKEY_USER_PERSISTENCE)) {
+            HashMap<String, String> userJSONPersistence = new HashMap<>();
+            userJSONPersistence = loadPrefs(PREFKEY_USER_PERSISTENCE, userJSONPersistence.getClass());
+
+            for(String key : userJSONPersistence.keySet()) {
+                mUserPersistences.put(key, mGson.fromJson(userJSONPersistence.get(key), UserPersistenceModel.class));
+            }
+        }
+    }
+
+    public void saveUserPersistence() {
+        HashMap<String, String> userJSONPersistence = new HashMap<>();
+        for (String key : mUserPersistences.keySet()) {
+            userJSONPersistence.put(key, mGson.toJson(mUserPersistences.get(key)));
+        }
+        savePrefs(PREFKEY_USER_PERSISTENCE, userJSONPersistence, HashMap.class);
+    }
+
+    public void saveLastLoginId(int id) {
+        mLastLoginId = id;
+        mPrefs.edit().putInt(PREFKEY_LAST_LOGIN_ID, id).apply();
+    }
+
     public void loadFonts(Context context) {
         if(mFonts == null) {
             mFonts = new EnumMap<>(FontType.class);
@@ -107,11 +168,12 @@ public class AppPreference {
     public void savePrefs(String key, Object object, Type type) {
         mPrefs.edit()
                 .putString(key, mGson.toJson(object, type))
-                .commit();
+                .apply();
     }
 
     public <T extends Object> T loadPrefs(String key, Class<T> classType) {
-        T result = mGson.fromJson(mPrefs.getString(key, "{}"), classType);
+        String json = mPrefs.getString(key, "{}");
+        T result = mGson.fromJson(json, classType);
         return result;
     }
 }

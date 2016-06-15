@@ -455,8 +455,8 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
 
         mTvThreatNote.setText(Html.fromHtml(getString(R.string.home_threat_content)));
 
-        // TODO: Delete Debug code
-        AppPreference.getInstance().getSession().getActiveUser().userNoticeId = UserModel.NOTICE_GETTING_STARTED;
+        AppPreference.getInstance().getSession().getActiveUser().userNoticeId =
+                AppPreference.getInstance().getCurrentUserPersistence().noticeId;
 
         updateView();
 
