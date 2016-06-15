@@ -81,7 +81,7 @@
             android:id="@+id/btn_player_engage"
             android:text="@string/caption_engage"
             style="@style/DefaultButton"
-            android:minWidth="80dp"/>
+            android:minWidth="90dp"/>
 
         <TextView
             android:layout_width="wrap_content"

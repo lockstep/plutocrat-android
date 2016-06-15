@@ -71,6 +71,47 @@ public class SessionManager {
     }
 
     // Methods
+    public void updateUserJson(String userResponse, HttpClient http)
+            throws JSONException, IOException, APIConnectionException {
+        Gson gson = AppPreference.getInstance().getGson();
+        Headers headers = this.getHeaders();
+
+        JSONObject body = new JSONObject(userResponse);
+        UserModel activeUser = this.mActiveUser;
+        if(body.getJSONObject("user").has("email")) {
+            activeUser =  gson.fromJson(body.getString("user"), UserModel.class);
+        } else {
+            TargetModel userModel = gson.fromJson(body.getString("user"), TargetModel.class);
+            activeUser.updateTargetData(userModel);
+        }
+
+        JSONObject userJson = body.getJSONObject("user");
+        if(! userJson.isNull("active_inbound_buyout")) {
+            String inboundBuyout = userJson.getString("active_inbound_buyout");
+            activeUser.activeInboundBuyout = gson.fromJson(inboundBuyout, BuyoutModel.class);
+
+            String initiatingUser = http.header(headers)
+                    .get(String.format(http.getContext().getString(R.string.api_profile),
+                            activeUser.activeInboundBuyout.initiatingUserId));
+
+            JSONObject initiatingUserJSON = new JSONObject(initiatingUser);
+            mInitiatingUser = gson.fromJson(initiatingUserJSON.getString("user"), TargetModel.class);
+        }
+
+        if(! userJson.isNull("terminal_buyout")) {
+            String inboundBuyout = userJson.getString("terminal_buyout");
+            activeUser.terminalBuyout = gson.fromJson(inboundBuyout, BuyoutModel.class);
+
+            String terminalUser = http.header(headers)
+                    .get(String.format(http.getContext().getString(R.string.api_profile),
+                            activeUser.terminalBuyout.initiatingUserId));
+
+            JSONObject terminalUserJSON = new JSONObject(terminalUser);
+            mTerminalUser = gson.fromJson(terminalUserJSON.getString("user"), TargetModel.class);
+        }
+
+        updateActiveUser(activeUser);
+    }
 
     /**
      * Check user status and save user data to session.
@@ -78,7 +119,6 @@ public class SessionManager {
      */
     public boolean isLogin(HttpClient http) {
         boolean result = false;
-        Gson gson = AppPreference.getInstance().getGson();
 
         if(AppPreference.getInstance().getSharedPreference().contains(PREFKEY_SESSION)) {
             Headers headers = this.getHeaders();
@@ -86,35 +126,8 @@ public class SessionManager {
                 String strBody = http.header(headers)
                         .get(String.format(http.getContext().getString(R.string.api_profile), user_id));
 
-                JSONObject body = new JSONObject(strBody);
-                UserModel activeUser = gson.fromJson(body.getString("user"), UserModel.class);
+                updateUserJson(strBody, http);
 
-                JSONObject userJson = body.getJSONObject("user");
-                if(! userJson.isNull("active_inbound_buyout")) {
-                    String inboundBuyout = userJson.getString("active_inbound_buyout");
-                    activeUser.activeInboundBuyout = gson.fromJson(inboundBuyout, BuyoutModel.class);
-
-                    String initiatingUser = http.header(headers)
-                            .get(String.format(http.getContext().getString(R.string.api_profile),
-                                    activeUser.activeInboundBuyout.initiatingUserId));
-
-                    JSONObject initiatingUserJSON = new JSONObject(initiatingUser);
-                    mInitiatingUser = gson.fromJson(initiatingUserJSON.getString("user"), TargetModel.class);
-                }
-
-                if(! userJson.isNull("terminal_buyout")) {
-                    String inboundBuyout = userJson.getString("terminal_buyout");
-                    activeUser.terminalBuyout = gson.fromJson(inboundBuyout, BuyoutModel.class);
-
-                    String terminalUser = http.header(headers)
-                            .get(String.format(http.getContext().getString(R.string.api_profile),
-                                    activeUser.terminalBuyout.initiatingUserId));
-
-                    JSONObject terminalUserJSON = new JSONObject(terminalUser);
-                    mTerminalUser = gson.fromJson(terminalUserJSON.getString("user"), TargetModel.class);
-                }
-
-                updateActiveUser(activeUser);
                 result = true;
             } catch (IOException e) {
                 e.printStackTrace();

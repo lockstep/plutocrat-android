@@ -39,6 +39,8 @@ import com.whitefly.plutocrat.models.TargetModel;
 
 import java.lang.reflect.Field;
 
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
+
 /**
  * Created by Satjapot on 5/19/16 AD.
  */
@@ -279,6 +281,7 @@ public class InitiateFragment extends DialogFragment {
                             return false;
                         }
                     })
+                    .bitmapTransform(new CropCircleTransformation(getActivity()))
                     .into(mImvPlutocrat);
             mTvPlutocratProfile.setText(mTarget.getNickName());
             mTvPlutocratName.setText(mTarget.name);
@@ -305,6 +308,7 @@ public class InitiateFragment extends DialogFragment {
                             return false;
                         }
                     })
+                    .bitmapTransform(new CropCircleTransformation(getActivity()))
                     .into(mImvPlutocrat);
             mTvTargetProfile.setText(mTarget.getNickName());
             mTvTargetName.setText(mTarget.name);

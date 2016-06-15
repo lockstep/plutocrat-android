@@ -54,7 +54,7 @@ public class HomePageUnitTest {
             public void handleNotificationEnable(boolean isEnabled) {
 
             }
-        }, null, null);
+        }, null, null, null);
         presenter.onSetHomeState(new SetHomeStateEvent());
     }
 
@@ -77,7 +77,7 @@ public class HomePageUnitTest {
             public void handleNotificationEnable(boolean isEnabled) {
 
             }
-        }, null, null);
+        }, null, null, null);
         presenter.onSetHomeState(new SetHomeStateEvent());
     }
 
@@ -100,7 +100,7 @@ public class HomePageUnitTest {
             public void handleNotificationEnable(boolean isEnabled) {
 
             }
-        }, null, null);
+        }, null, null, null);
         presenter.onSetHomeState(new SetHomeStateEvent());
     }
 
@@ -125,7 +125,7 @@ public class HomePageUnitTest {
             public void handleNotificationEnable(boolean isEnabled) {
 
             }
-        }, null, null);
+        }, null, null, null);
         presenter.onUpdateUserNoticeId(new UpdateUserNoticeIdEvent(expectedNoticeId));
     }
 
@@ -146,7 +146,7 @@ public class HomePageUnitTest {
             public void handleNotificationEnable(boolean isEnabled) {
 
             }
-        }, null, null);
+        }, null, null, null);
         presenter.onSetHomeState(new SetHomeStateEvent());
     }
 
@@ -167,7 +167,7 @@ public class HomePageUnitTest {
             public void handleNotificationEnable(boolean isEnabled) {
 
             }
-        }, null, null);
+        }, null, null, null);
         presenter.onSetHomeState(new SetHomeStateEvent());
     }
 }

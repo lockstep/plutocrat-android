@@ -55,6 +55,7 @@ import com.whitefly.plutocrat.mainmenu.fragments.InitiateFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.ShareFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.TargetFragment;
 import com.whitefly.plutocrat.mainmenu.presenters.MainMenuPresenter;
+import com.whitefly.plutocrat.mainmenu.views.IAccountSettingView;
 import com.whitefly.plutocrat.mainmenu.views.IBuyoutView;
 import com.whitefly.plutocrat.mainmenu.views.IHomeView;
 import com.whitefly.plutocrat.mainmenu.views.IMainMenuView;
@@ -138,6 +139,10 @@ public class MainMenuActivity extends AppCompatActivity
         mTabLayout.getTabAt(index).select();
     }
 
+    public void updateCurrentTab() {
+        ((ITabView) mAdapter.getItem(mTabLayout.getSelectedTabPosition())).updateView();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -184,7 +189,8 @@ public class MainMenuActivity extends AppCompatActivity
             presenter = new MainMenuPresenter(this, this,
                     (IHomeView) mAdapter.getItem(FRAGMENT_HOME_INDEX),
                     (ITargetView) mAdapter.getItem(FRAGMENT_TARGETS_INDEX),
-                    (IBuyoutView) mAdapter.getItem(FRAGMENT_BUYOUTS_INDEX));
+                    (IBuyoutView) mAdapter.getItem(FRAGMENT_BUYOUTS_INDEX),
+                    (IAccountSettingView) mFrgAccountSetting);
         }
         mMainPager.setAdapter(mAdapter);
         mTabLayout.setupWithViewPager(mMainPager);
@@ -280,7 +286,13 @@ public class MainMenuActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            boolean isPopupShowed = getFragmentManager().findFragmentByTag(FRAGMENT_ACCOUNT_SETTINGS) != null
+                    || getFragmentManager().findFragmentByTag(FRAGMENT_FAQ) != null;
+            if(! isPopupShowed && mTabLayout.getSelectedTabPosition() != FRAGMENT_HOME_INDEX) {
+                goToTab(FRAGMENT_HOME_INDEX);
+            } else {
+                super.onBackPressed();
+            }
         }
     }
 
