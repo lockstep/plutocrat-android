@@ -130,11 +130,11 @@ public class BuyoutFragment extends Fragment implements ITabView, IBuyoutView {
     @Override
     public void setBuyoutList(ArrayList<BuyoutModel> items, MetaModel meta) {
         if(meta != null && meta.hasKey("current_page") && meta.getInt("current_page") == FIRST_PAGE) {
-            mAdapter.getDataSet().clear();
             if(items.size() == 0) {
                 mSRLMain.setVisibility(View.GONE);
                 mSRLEmpty.setVisibility(View.VISIBLE);
             } else {
+                mAdapter.getDataSet().clear();
                 mSRLMain.setVisibility(View.VISIBLE);
                 mSRLEmpty.setVisibility(View.GONE);
             }

@@ -106,6 +106,9 @@ public class MainMenuPresenter {
         UserModel userModel = AppPreference.getInstance().getSession().getActiveUser();
         userModel.userNoticeId = event.getNextNoticeId();
 
+        AppPreference.getInstance().getCurrentUserPersistence().noticeId = userModel.userNoticeId;
+        AppPreference.getInstance().saveUserPersistence();
+
         if (userModel.defeatedAt != null) {
             state = HomeFragment.State.Suspend;
         } else if (userModel.isAttackingCurrentUser) {
@@ -185,7 +188,7 @@ public class MainMenuPresenter {
 
         @Override
         protected void onPreExecute() {
-            mMainMenuView.toast("Signing out...");
+            mMainMenuView.handleLoadingDialog(true);
         }
 
         @Override
@@ -209,6 +212,7 @@ public class MainMenuPresenter {
 
         @Override
         protected void onPostExecute(Boolean b) {
+            mMainMenuView.handleLoadingDialog(false);
             if(b) {
                 AppPreference.getInstance().getSession().destroy();
                 mMainMenuView.goToLogin();
@@ -290,7 +294,7 @@ public class MainMenuPresenter {
             try {
                 String jsonBody = mHttp.header(headers).request(requestParam).get(url);
                 JSONObject root = new JSONObject(jsonBody);
-                mMetaModel = new MetaModel("{\"meta\":{\"current_page\":1}}"); // TODO: Fix mock data
+                mMetaModel = new MetaModel(root.getJSONObject("meta"));
                 JSONArray buyouts = root.getJSONArray("buyouts");
 
                 if(buyouts.length() > 0) {

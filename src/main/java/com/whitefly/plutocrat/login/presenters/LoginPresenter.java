@@ -56,9 +56,6 @@ public class LoginPresenter {
 
     @Subscribe
     public void onSignInClicked(SignInEvent event) {
-        // Create requset model
-        mLoginView.toast("Signing in...");
-
         LoginRequestModel model = event.getRequestModel();
         new LoginCallBack().execute(model);
     }
@@ -83,13 +80,13 @@ public class LoginPresenter {
     Request Callback
      */
     private class RegisterCallBack extends AsyncTask<RegisterRequestModel, Void, JSONObject> {
-        private String error;
+        private String mErrorMessage;
         private RegisterRequestModel modelRequest;
+        private MetaModel mMetaError;
 
         @Override
         protected void onPreExecute() {
-            // Call loading dialog
-            mLoginView.toast("Registering...");
+            mLoginMainView.handleLoadingDialog(true);
         }
 
         @Override
@@ -106,104 +103,93 @@ public class LoginPresenter {
                 body = new JSONObject(strBody);
             } catch (IOException e) {
                 e.printStackTrace();
-                error = e.getMessage();
+                mErrorMessage = e.getMessage();
             } catch (JSONException e) {
                 e.printStackTrace();
-                error = e.getMessage();
+                mErrorMessage = e.getMessage();
             } catch (APIConnectionException e) {
                 e.printStackTrace();
-                MetaModel metaModel = new MetaModel(e.getMessage());
-                error = metaModel.getErrors();
+                mMetaError = new MetaModel(e.getMessage());
             }
             return body;
         }
 
         @Override
         protected void onPostExecute(JSONObject body) {
-            Gson gson = AppPreference.getInstance().getGson();
+            mLoginMainView.handleLoadingDialog(false);
 
-            // Validation
-            if(body == null) {
-                mLoginView.toast(String.format("Error: %s", error));
-                return;
-            }
-
-            // Deserialize JSON
-            try {
-                // Check for error
-                if(! body.isNull("meta")) {
-                    JSONObject meta = body.getJSONObject("meta");
-
-                    // Get meta
-                    MetaModel modMeta = new MetaModel(meta);
-                    mLoginView.toast(String.format("Error: %s", modMeta.getErrors()));
-                    return;
-                }
-
-                UserModel user = gson.fromJson(body.getJSONObject("user").toString(), UserModel.class);
-
-                // Call login api to go home page
+            if (mMetaError != null) {
+                mLoginView.handleError(mMetaError);
+            } else if(mErrorMessage != null) {
+                mLoginMainView.handleError(mContext.getString(R.string.error_title_cannot_register),
+                        mErrorMessage);
+            } else {
                 new LoginCallBack().execute(new LoginRequestModel(modelRequest.email, modelRequest.password));
-            } catch (JSONException e) {
-                e.printStackTrace();
-                mLoginView.toast(e.getMessage());
             }
         }
     }
 
     private class LoginCallBack extends AsyncTask<LoginRequestModel, Void, Boolean> {
-        private String error;
-        private Gson gson;
+        private String mErrorMessage;
+        private Gson mGson;
+        private MetaModel mMetaError;
 
         // Constructor
         public LoginCallBack() {
-            gson = AppPreference.getInstance().getGson();;
+            mGson = AppPreference.getInstance().getGson();
         }
 
         // Methods
         @Override
         protected void onPreExecute() {
-            // Call loading dialog
+            mLoginMainView.handleLoadingDialog(true);
         }
 
         @Override
         protected Boolean doInBackground(LoginRequestModel... params) {
-            // Request api
             boolean result = false;
 
             LoginRequestModel model = params[0];
             try {
-                String strBody = mHttp.request(gson.toJson(model))
+                String strBody = mHttp.request(mGson.toJson(model))
                         .post(R.string.api_signin);
 
                 JSONObject body = new JSONObject(strBody);
 
-                UserModel modUser = gson.fromJson(body.getString("user"), UserModel.class);
+                UserModel modUser = mGson.fromJson(body.getString("user"), UserModel.class);
                 AppPreference.getInstance().getSession()
                         .save(mHttp.getResponse().headers(), modUser.id);
 
                 result = AppPreference.getInstance().getSession().isLogin(mHttp);
             } catch (IOException e) {
                 e.printStackTrace();
-                error = e.getMessage();
+                mErrorMessage = e.getMessage();
             } catch (JSONException e) {
                 e.printStackTrace();
-                error = e.getMessage();
+                mErrorMessage = e.getMessage();
             } catch (APIConnectionException e) {
                 e.printStackTrace();
-                MetaModel metaModel = new MetaModel(e.getMessage());
-                error = metaModel.getErrors();
+                mMetaError = new MetaModel(e.getMessage());
             }
             return result;
         }
 
         @Override
         protected void onPostExecute(Boolean b) {
-            if(error != null) {
-                mLoginView.toast(String.format("Error: %s", error));
+
+            if (mMetaError != null) {
+                mLoginMainView.handleLoadingDialog(false);
+                if(mMetaError.isError() && mMetaError.getKeys().contains("auth")) {
+                    mLoginMainView.handleError(mContext.getString(R.string.error_title_authenticate_failed),
+                            mMetaError.getValue("auth"));
+                } else {
+                    mLoginView.handleError(mMetaError);
+                }
+            } else if(mErrorMessage != null) {
+                mLoginMainView.handleLoadingDialog(false);
+                mLoginMainView.handleError(mContext.getString(R.string.error_title_authenticate_failed),
+                        mErrorMessage);
             } else {
-                // Save updated user data to session
-                mLoginView.toast("Sign in complete");
                 mLoginMainView.goToMainMenu();
             }
         }

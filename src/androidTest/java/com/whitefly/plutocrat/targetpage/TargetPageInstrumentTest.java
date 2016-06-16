@@ -64,7 +64,7 @@ public class TargetPageInstrumentTest {
             public void setPlutocrat(TargetModel user) {
 
             }
-        }, null);
+        }, null, null);
         presenter.onLoadTargets(new LoadTargetsEvent(expectedPage, 0));
         signal.await();
     }
@@ -86,7 +86,7 @@ public class TargetPageInstrumentTest {
             public void setPlutocrat(TargetModel user) {
 
             }
-        }, null);
+        }, null, null);
         presenter.onLoadTargets(new LoadTargetsEvent(expectedPage, 0));
         signal.await();
     }
@@ -108,7 +108,7 @@ public class TargetPageInstrumentTest {
             public void setPlutocrat(TargetModel user) {
 
             }
-        }, null);
+        }, null, null);
         presenter.onLoadTargets(new LoadTargetsEvent(page, 0));
         signal.await();
     }
@@ -131,7 +131,7 @@ public class TargetPageInstrumentTest {
 
                 signal.countDown();
             }
-        }, null);
+        }, null, null);
         presenter.onGetPlutocratEvent(new GetPlutocratEvent());
         signal.await();
     }
@@ -154,7 +154,7 @@ public class TargetPageInstrumentTest {
 
                 signal.countDown();
             }
-        }, null);
+        }, null, null);
         presenter.onGetPlutocratEvent(new GetPlutocratEvent());
         signal.await();
     }

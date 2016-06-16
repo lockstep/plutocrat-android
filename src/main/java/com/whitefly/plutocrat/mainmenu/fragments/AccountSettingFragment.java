@@ -18,6 +18,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -215,8 +216,6 @@ public class AccountSettingFragment extends DialogFragment
         mFormValidator.addView(FORM_NEW_PASSWORD_ID, "New Password", mEdtNewPassword);
         mFormValidator.addView(FORM_CONFIRM_PASSWORD_ID, "Confirm Password", mEdtConfirmPassword);
         mFormValidator.addView(FORM_CURRENT_PASSWORD_ID, "Current Password", mEdtCurrentPassword);
-
-        mEdtDisplayName.requestFocus();
 
         // Event handler
         mBtnSave.setOnClickListener(this);
