@@ -61,7 +61,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/fix_font_margin"
-            android:paddingEnd="1dp"
+            android:paddingStart="0dp"
+            android:paddingEnd="2dp"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:id="@+id/tv_player_daysurvived"
             android:text="Day survived: 20"/>
@@ -73,11 +74,13 @@
         android:orientation="vertical"
         android:layout_weight="0.1"
         android:gravity="right"
-        android:layout_gravity="center_vertical">
+        android:layout_gravity="center_vertical"
+        android:minWidth="90dp">
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="1dp"
             android:id="@+id/btn_player_engage"
             android:text="@string/caption_engage"
             style="@style/DefaultButton"
@@ -86,9 +89,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingEnd="1dp"
+            android:layout_gravity="center"
+            android:paddingStart="0dp"
+            android:paddingEnd="2dp"
             android:id="@+id/tv_player_game_status"
-            android:text="Under Threat"
+            android:text="@string/caption_under_threat"
             android:visibility="gone"
             android:textColor="@color/colorRed"/>
     </LinearLayout>

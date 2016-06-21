@@ -133,7 +133,7 @@
                         android:id="@+id/btn_match_shares"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
-                        style="@style/WhiteButton" />
+                        style="@style/DefaultButton" />
                 </RelativeLayout>
 
             </LinearLayout>

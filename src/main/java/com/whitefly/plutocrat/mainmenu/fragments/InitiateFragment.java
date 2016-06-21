@@ -61,12 +61,14 @@ public class InitiateFragment extends DialogFragment {
     private Button mBtnAbort, mBtnExecute, mBtnTargetAbort, mBtnPlutocratAbort;
     private ImageView mImvPlutocrat, mImvTarget;
     private TextView mTvPlutocratProfile, mTvTargetProfile;
-    private TextView mTvLoadingMessage;
 
     private SeekBar mShareSeekBar;
     private NumberPicker mPicker;
-    private AlertDialog mShareDialog, mBuyMoreDialog, mLoadingDialog;
+    private AlertDialog mShareDialog, mBuyMoreDialog;
     private CustomTypefaceSpan mFontSpan;
+
+    private AlertDialog mLoadingDialog;
+    private TextView mTvLoadingMessage;
 
     /**
      * Use this factory method to create a new instance of

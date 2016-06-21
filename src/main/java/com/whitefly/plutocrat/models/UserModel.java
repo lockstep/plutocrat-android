@@ -39,6 +39,9 @@ public class UserModel {
     @SerializedName("available_shares_count")
     public int numAvailableShares;
 
+    @SerializedName("buyouts_until_plutocrat_count")
+    public int numBuyoutUntilPlutocrat;
+
     @SerializedName("under_buyout_threat")
     public boolean isUnderBuyoutThreat;
 

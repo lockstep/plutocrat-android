@@ -13,6 +13,8 @@ import java.util.Set;
  * The key is get by only use a word.
  */
 public class MetaModel {
+    public static final int ERROR_CAST_INTEGER_VALUE = -999;
+
     // Attributes
     private HashMap<String, String> mMaps;
     private boolean mIsError;
@@ -98,7 +100,17 @@ public class MetaModel {
     }
 
     public int getInt(String key) {
-        return Integer.parseInt(this.getValue(key));
+        return getInt(key, ERROR_CAST_INTEGER_VALUE);
+    }
+
+    public int getInt(String key, int defValue) {
+        int result = defValue;
+        try{
+            result = Integer.parseInt(this.getValue(key));
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     public boolean hasKey(String key) {

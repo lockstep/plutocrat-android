@@ -2,17 +2,13 @@ package com.whitefly.plutocrat.mainmenu;
 
 import android.app.AlertDialog;
 import android.app.DialogFragment;
-import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -31,15 +27,15 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.vending.billing.IInAppBillingService;
-import com.google.gson.Gson;
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.exception.IAPException;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
+import com.whitefly.plutocrat.helpers.FormValidationHelper;
 import com.whitefly.plutocrat.helpers.IAPHelper;
 import com.whitefly.plutocrat.helpers.text.CustomTypefaceSpan;
 import com.whitefly.plutocrat.helpers.view.CustomViewPager;
@@ -56,17 +52,16 @@ import com.whitefly.plutocrat.mainmenu.fragments.ShareFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.TargetFragment;
 import com.whitefly.plutocrat.mainmenu.presenters.MainMenuPresenter;
 import com.whitefly.plutocrat.mainmenu.views.IAccountSettingView;
-import com.whitefly.plutocrat.mainmenu.views.IBuyoutView;
 import com.whitefly.plutocrat.mainmenu.views.IHomeView;
 import com.whitefly.plutocrat.mainmenu.views.IMainMenuView;
 import com.whitefly.plutocrat.mainmenu.views.ITabView;
-import com.whitefly.plutocrat.mainmenu.views.ITargetView;
 import com.whitefly.plutocrat.models.IAPPurchaseModel;
+import com.whitefly.plutocrat.models.MetaModel;
 import com.whitefly.plutocrat.models.NewBuyoutModel;
 import com.whitefly.plutocrat.models.TargetModel;
 
 import java.util.ArrayList;
-import java.util.UUID;
+import java.util.Set;
 
 public class MainMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, IMainMenuView {
@@ -91,6 +86,7 @@ public class MainMenuActivity extends AppCompatActivity
     private AlertDialog mLoadingDialog, mErrorDialog;
     private TextView mTvLoadingMessage;
     private CustomTypefaceSpan mFontSpan;
+    private FormValidationHelper mValidator;
 
     private float mTouchXDown, mTouchXUp;
     private int mTouchSlop;
@@ -113,6 +109,7 @@ public class MainMenuActivity extends AppCompatActivity
 
     public void suspendMenu() {
         mMainPager.setPagingEnabled(false);
+        mTabLayout.setClickable(false);
         mTabLayout.getTabAt(FRAGMENT_TARGETS_INDEX).getCustomView().setVisibility(View.GONE);
         mTabLayout.getTabAt(FRAGMENT_BUYOUTS_INDEX).getCustomView().setVisibility(View.GONE);
         mTabLayout.getTabAt(FRAGMENT_SHARES_INDEX).getCustomView().setVisibility(View.GONE);
@@ -121,6 +118,7 @@ public class MainMenuActivity extends AppCompatActivity
 
     public void activateMenu() {
         mMainPager.setPagingEnabled(true);
+        mTabLayout.setClickable(true);
         mTabLayout.getTabAt(FRAGMENT_TARGETS_INDEX).getCustomView().setVisibility(View.VISIBLE);
         mTabLayout.getTabAt(FRAGMENT_BUYOUTS_INDEX).getCustomView().setVisibility(View.VISIBLE);
         mTabLayout.getTabAt(FRAGMENT_SHARES_INDEX).getCustomView().setVisibility(View.VISIBLE);
@@ -154,6 +152,8 @@ public class MainMenuActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        AppPreference.getInstance().loadFonts(this);
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -168,9 +168,11 @@ public class MainMenuActivity extends AppCompatActivity
                 (TextView) navigationView.findViewById(R.id.tv_nav_license));
 
         AppPreference.getInstance().getSession().loadPlutocrat();
+        AppPreference.getInstance().onLoadInstanceState(savedInstanceState);
 
         mFontSpan =
                 new CustomTypefaceSpan("", AppPreference.getInstance().getFont(AppPreference.FontType.Regular));
+
         Menu menu = navigationView.getMenu();
         for (int i=0, n=menu.size(); i<n; i++) {
             MenuItem menuItem = menu.getItem(i);
@@ -181,6 +183,8 @@ public class MainMenuActivity extends AppCompatActivity
 
         mTouchSlop = SLOP_PERIOD;
         mIAPHelper = new IAPHelper(this);
+        mValidator = new FormValidationHelper();
+        mValidator.addView("number_of_shares", "Number of shares", null);
 
         if(mAdapter == null) {
             mAdapter = new MenuPagerAdapter(getSupportFragmentManager());
@@ -188,11 +192,10 @@ public class MainMenuActivity extends AppCompatActivity
         if(presenter == null) {
             presenter = new MainMenuPresenter(this, this,
                     (IHomeView) mAdapter.getItem(FRAGMENT_HOME_INDEX),
-                    (ITargetView) mAdapter.getItem(FRAGMENT_TARGETS_INDEX),
-                    (IBuyoutView) mAdapter.getItem(FRAGMENT_BUYOUTS_INDEX),
                     (IAccountSettingView) mFrgAccountSetting);
         }
         mMainPager.setAdapter(mAdapter);
+        mMainPager.setOffscreenPageLimit(mAdapter.getCount());
         mTabLayout.setupWithViewPager(mMainPager);
 
         // Add title & icon
@@ -216,6 +219,17 @@ public class MainMenuActivity extends AppCompatActivity
 
             tab.setCustomView(root);
         }
+
+        View.OnTouchListener touchListener = new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return ! mTabLayout.isClickable();
+            }
+        };
+        LinearLayout tabStrip = ((LinearLayout)mTabLayout.getChildAt(0));
+        for(int i = 0; i < tabStrip.getChildCount(); i++) {
+            tabStrip.getChildAt(i).setOnTouchListener(touchListener);
+        }
         // Force to select first item
         mTabLayout.getTabAt(FRAGMENT_TARGETS_INDEX).select();
         mTabLayout.getTabAt(FRAGMENT_HOME_INDEX).select();
@@ -223,37 +237,21 @@ public class MainMenuActivity extends AppCompatActivity
         createLoadingDialog();
 
         // Event Handler
-        mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                if(tab.getCustomView().getVisibility() == View.GONE) {
-                    mTabLayout.getTabAt(FRAGMENT_HOME_INDEX).select();
-                } else {
-                    mMainPager.setCurrentItem(tab.getPosition());
-                    ((ITabView) mAdapter.getItem(tab.getPosition())).updateView();
-                }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
         mIAPHelper.setIAPProcessListener(new IAPHelper.IAPProcessListener() {
             @Override
             public void onBuySuccess(int resultCode, IAPPurchaseModel model) {
                 // TODO: Delete Debug
-                mIAPHelper.consume(model.purchaseToken);
+//                mIAPHelper.consume(model.purchaseToken);
             }
 
             @Override
             public void onBuyFailed(int resultCode) {
+                Log.d(AppPreference.DEBUG_APP, "IAP Error Code:" + resultCode);
+            }
 
+            @Override
+            public void onConsumed(int resultCode) {
+                Log.d(AppPreference.DEBUG_APP, "IAP Consumed Code:" + resultCode);
             }
         });
     }
@@ -296,7 +294,6 @@ public class MainMenuActivity extends AppCompatActivity
         }
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -350,11 +347,24 @@ public class MainMenuActivity extends AppCompatActivity
         super.onDestroy();
 
         mIAPHelper.onDestroy();
+        if(presenter != null) {
+            presenter = null;
+        }
+        if(mLoadingDialog != null) {
+            mLoadingDialog.dismiss();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        AppPreference.getInstance().onSaveInstanceState(outState);
+
+        super.onSaveInstanceState(outState);
     }
 
     /*
-    Pager Adapter
-     */
+        Pager Adapter
+         */
     private class MenuPagerAdapter extends FragmentStatePagerAdapter {
         private ArrayList<Fragment> mFragments;
 
@@ -429,6 +439,10 @@ public class MainMenuActivity extends AppCompatActivity
         if(initiatePage != null && initiatePage instanceof InitiateFragment) {
             alertLoading = ((InitiateFragment) initiatePage).getLoadingDialog(null);
         }
+        DialogFragment settingsPage = (DialogFragment) getFragmentManager().findFragmentByTag(FRAGMENT_ACCOUNT_SETTINGS);
+        if(settingsPage != null && settingsPage instanceof AccountSettingFragment) {
+            alertLoading = ((AccountSettingFragment) settingsPage).getLoadingDialog(null);
+        }
 
         if(isShow) {
             alertLoading.show();
@@ -447,7 +461,14 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     @Override
-    public void handleError(String title, String message) {
+    public void handleError(String title, String message, MetaModel meta) {
+        Set<String> keys = meta.getKeys();
+        for(String key : keys) {
+            String name = mValidator.getName(key);
+            if(name != null) {
+                message = String.format("%s %s", name, meta.getValue(key));
+            }
+        }
 
         SpannableString spanTitle = new SpannableString(title);
         spanTitle.setSpan(mFontSpan, 0, spanTitle.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
@@ -457,7 +478,6 @@ public class MainMenuActivity extends AppCompatActivity
 
         SpannableString negativeText = new SpannableString(getString(R.string.caption_close));
         negativeText.setSpan(mFontSpan, 0, negativeText.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-
 
         new AlertDialog.Builder(this)
                 .setTitle(spanTitle)

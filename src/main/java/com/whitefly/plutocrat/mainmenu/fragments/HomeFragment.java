@@ -4,7 +4,9 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -13,7 +15,6 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
-import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.StyleSpan;
@@ -32,19 +33,24 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.squareup.otto.Subscribe;
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.helpers.text.CustomTypefaceSpan;
 import com.whitefly.plutocrat.mainmenu.MainMenuActivity;
+import com.whitefly.plutocrat.mainmenu.events.AttackTimeOutEvent;
 import com.whitefly.plutocrat.mainmenu.events.CheckNotificationEnableEvent;
+import com.whitefly.plutocrat.mainmenu.events.EnablePushNotificationEvent;
 import com.whitefly.plutocrat.mainmenu.events.FailMatchBuyoutEvent;
 import com.whitefly.plutocrat.mainmenu.events.MatchBuyoutEvent;
 import com.whitefly.plutocrat.mainmenu.events.SetHomeStateEvent;
+import com.whitefly.plutocrat.mainmenu.events.SignOutEvent;
 import com.whitefly.plutocrat.mainmenu.events.UpdateUserNoticeIdEvent;
 import com.whitefly.plutocrat.mainmenu.views.IHomeView;
 import com.whitefly.plutocrat.mainmenu.views.ITabView;
-import com.whitefly.plutocrat.models.BuyoutModel;
+import com.whitefly.plutocrat.mainmenu.views.events.MatchBuyoutCompletedEvent;
+import com.whitefly.plutocrat.mainmenu.views.events.UpdateHomeViewEvent;
 import com.whitefly.plutocrat.models.TargetModel;
 import com.whitefly.plutocrat.models.UserModel;
 
@@ -65,18 +71,22 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
     public static final long NO_DELAY = 0L;
     public static final long ONE_SECOND = 1000L;
 
+    private static final int NUMBER_OF_DAY_TO_DEADLINE = 2;
+    private static final int TIME_5_MINUTES = 1000 * 60 * 5;
+    private static final String NO_TIME_PREFIX = "";
+
     public enum State {
         Default, Threat, Suspend
     }
 
     // Attributes
     private State mState;
-    private String mHeaderDefault, mHeaderThreat, mHeaderSuspend;
+    private String mHeaderDefault, mHeaderThreat, mHeaderSuspend, mPrefixTime;
     private String mNoteSuspend, mNoteDefault;
     private Drawable mDefaultBG, mThreatBG;
     private ClickableSpan mClickToBuyouts;
     private StyleSpan mStyleLink;
-    private AlertDialog mNotificationEnableDialog;
+    private AlertDialog mNotificationEnableDialog, mSuspendingErrorDialog;
 
     private Timer mTimer;
     private boolean mIsTimerRunning;
@@ -118,6 +128,7 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
                 .setPositiveButton(positiveText, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        EventBus.getInstance().post(new EnablePushNotificationEvent());
                         EventBus.getInstance().post(new UpdateUserNoticeIdEvent(UserModel.NOTICE_DEFAULT));
                         dialog.dismiss();
                     }
@@ -132,9 +143,43 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
                 .create();
     }
 
+    public void showSuspendErrorDialog() {
+        Typeface typeface = AppPreference.getInstance().getFont(AppPreference.FontType.Regular);
+
+        SpannableString spanTitle = new SpannableString(getString(R.string.error_title_suspending));
+        spanTitle.setSpan(typeface, 0, spanTitle.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+        SpannableString spanMessage = new SpannableString(getString(R.string.error_suspending));
+        spanMessage.setSpan(typeface, 0, spanMessage.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+        SpannableString negativeText = new SpannableString(getString(R.string.menu_sign_out));
+        negativeText.setSpan(typeface, 0, negativeText.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+        if(mSuspendingErrorDialog != null) {
+            mSuspendingErrorDialog.dismiss();
+        }
+
+        mSuspendingErrorDialog = new AlertDialog.Builder(getActivity())
+                .setCancelable(false)
+                .setTitle(spanTitle)
+                .setMessage(spanMessage)
+                .setNegativeButton(negativeText, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        EventBus.getInstance().post(new SignOutEvent());
+                    }
+                })
+                .create();
+
+        mSuspendingErrorDialog.show();
+    }
+
     @Override
     public void changeState(State state, int noticeId) {
         mState = state;
+        UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
+
         switch (mState) {
             case Default:
                 // Change header
@@ -170,7 +215,7 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
                         mLloNote.setVisibility(View.VISIBLE);
 
                         // Set value
-                        Spanned spannedText = Html.fromHtml(String.format(mNoteDefault, 4));
+                        Spanned spannedText = Html.fromHtml(String.format(mNoteDefault, activeUser.numBuyoutUntilPlutocrat));
                         Spannable spanningText = SpannableString.valueOf(spannedText);
                         ClickableSpan[] clickSpans = spanningText.getSpans(0, spannedText.length(), ClickableSpan.class);
 
@@ -243,6 +288,8 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
 
                 setOwnerView();
                 setSuspendView();
+
+                stopTimer();
                 break;
         }
     }
@@ -276,7 +323,20 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
                 })
                 .bitmapTransform(new CropCircleTransformation(getActivity()))
                 .into(mImvOwnerPic);
-        mIssueDate = activeUser.registeredAt;
+        if(activeUser.activeInboundBuyout != null) {
+            if(activeUser.activeInboundBuyout.deadlineAt == null) {
+                Calendar c = Calendar.getInstance();
+                c.setTime(activeUser.activeInboundBuyout.initiatedAt);
+                c.add(Calendar.DATE, NUMBER_OF_DAY_TO_DEADLINE);
+                mIssueDate = c.getTime();
+            } else {
+                mIssueDate = activeUser.activeInboundBuyout.deadlineAt;
+            }
+            mPrefixTime = getString(R.string.caption_deadline_time) + " ";
+        } else {
+            mIssueDate = activeUser.registeredAt;
+            mPrefixTime = NO_TIME_PREFIX;
+        }
     }
 
     private void setInitiatingUserView() {
@@ -329,39 +389,51 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
         long sec = TimeUnit.MILLISECONDS.toSeconds(elapseTime - TimeUnit.DAYS.toMillis(day) - TimeUnit.HOURS.toMillis(hr) - TimeUnit.MINUTES.toMillis(min));
 
         if(day == 0) {
-            return String.format("%dh %dm %ds", hr, min, sec);
+            return String.format("%s%dh %dm %ds", mPrefixTime, hr, min, sec);
         } else {
-            return String.format("%dd %dh %dm %ds", day, hr, min, sec);
+            return String.format("%s%dd %dh %dm %ds", mPrefixTime, day, hr, min, sec);
         }
     }
 
     private void startTimer() {
-        stopTimer();
-
-        if(mIssueDate != null) {
+        if(mIssueDate != null && mTimer == null) {
             mTimer = new Timer();
             mTimer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Date currentTime = Calendar.getInstance().getTime();
-                            long elapseTime = Math.abs(mIssueDate.getTime() - currentTime.getTime());
+                    if(getActivity() != null) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Date currentTime = Calendar.getInstance().getTime();
+                                long elapseTime = mIssueDate.getTime() - currentTime.getTime();
+                                long elapseABSTime = Math.abs(elapseTime);
 
-                            mTvTime.setText(getTimeDurationString(elapseTime));
-                        }
-                    });
+                                mTvTime.setText(getTimeDurationString(elapseABSTime));
+
+                                if (mState == State.Threat && elapseTime < 0L) {
+                                    stopTimer();
+                                    EventBus.getInstance().post(new AttackTimeOutEvent());
+                                }
+                            }
+                        });
+                    }
                 }
             }, NO_DELAY, ONE_SECOND);
-            mIsTimerRunning = true;
         }
     }
 
     private void stopTimer() {
+        stopTimer(false);
+    }
+
+    private void stopTimer(boolean fromPause) {
         if(mTimer != null) {
             mTimer.cancel();
-            mIsTimerRunning = false;
+            mTimer = null;
+            if(! fromPause) {
+                mIsTimerRunning = false;
+            }
         }
     }
 
@@ -406,6 +478,15 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
         };
         mStyleLink = new StyleSpan(R.style.LinkText);
         mIsTimerRunning = false;
+
+        EventBus.getInstance().register(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopTimer();
+        EventBus.getInstance().unregister(this);
     }
 
     @Nullable
@@ -453,7 +534,12 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
                 mTvSuccessValue, mTvFailedValue, mTvDefeatValue);
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Light, mTvHeader, mTvTime);
 
-        mTvThreatNote.setText(Html.fromHtml(getString(R.string.home_threat_content)));
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            mTvThreatNote.setText(Html.fromHtml(getString(R.string.home_threat_content),
+                    Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE));
+        } else {
+            mTvThreatNote.setText(Html.fromHtml(getString(R.string.home_threat_content)));
+        }
 
         AppPreference.getInstance().getSession().getActiveUser().userNoticeId =
                 AppPreference.getInstance().getCurrentUserPersistence().noticeId;
@@ -522,15 +608,59 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
     public void onPause() {
         super.onPause();
         if(mIsTimerRunning) {
-            stopTimer();
+            stopTimer(true);
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
+        updateView();
+
         if(mIsTimerRunning) {
             startTimer();
         }
+    }
+
+    /*
+    Event Bus
+     */
+    @Subscribe
+    public void onMatchBuyOutCompleted(MatchBuyoutCompletedEvent event) {
+        if(mState == State.Threat) {
+            UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
+            Date issueDate = null;
+
+            if (activeUser.activeInboundBuyout.deadlineAt == null) {
+                Calendar c = Calendar.getInstance();
+                c.setTime(activeUser.activeInboundBuyout.initiatedAt);
+                c.add(Calendar.DATE, NUMBER_OF_DAY_TO_DEADLINE);
+                issueDate = c.getTime();
+            } else {
+                issueDate = activeUser.activeInboundBuyout.deadlineAt;
+            }
+
+            Date currentTime = Calendar.getInstance().getTime();
+            long elapseTime = issueDate.getTime() - currentTime.getTime();
+
+            if (mState == State.Threat && elapseTime < 0L) {
+                showSuspendErrorDialog();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSuspendingErrorDialog.dismiss();
+                        EventBus.getInstance().post(new AttackTimeOutEvent());
+                    }
+                }, TIME_5_MINUTES);
+            }
+        } else {
+            EventBus.getInstance().post(new SetHomeStateEvent());
+        }
+    }
+
+    @Subscribe
+    public void onUpdateHomeView(UpdateHomeViewEvent event) {
+        changeState(event.getHomeState(), event.getNoticeId());
     }
 }

@@ -4,13 +4,13 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_profile"
-            android:title="Manage Account"/>
+            android:title="@string/menu_manage_account"/>
         <item
             android:id="@+id/nav_faq"
-            android:title="FAQ" />
+            android:title="@string/menu_faq" />
         <item
             android:id="@+id/nav_signout"
-            android:title="Sign Out" />
+            android:title="@string/menu_sign_out" />
     </group>
 
 </menu>

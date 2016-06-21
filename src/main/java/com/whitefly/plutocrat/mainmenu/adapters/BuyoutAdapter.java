@@ -34,12 +34,14 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
     private static final int VIEW_TYPE_ITEM = 1;
     private static final int VIEW_TYPE_LOADMORE = 2;
 
+    private static final int NUMER_SINGULAR = 1;
+
     // Attributes
     private Context mContext;
     private ArrayList<BuyoutModel> mDataSet;
-    private String mInitiateCaption, mThreatCaption, mPeriodFormat;
+    private String mInitiateCaption, mThreatCaption, mPeriodFormat, mPeriodsFormat;
     private String mPendingCaption, mSucceedCaption, mFailedCaption;
-    private String mAttackingCaption, mEliminatedCaption;
+    private String mAttackingCaption, mEliminatedCaption, mUnderThreatCaption;
     private int mGreyColor, mRedColor, mGreenColor;
     private OnLoadmoreListener mLoadMoreListener;
     private View.OnClickListener mEngageClick;
@@ -62,11 +64,13 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
         mInitiateCaption = mContext.getString(R.string.caption_action_initiate);
         mThreatCaption = mContext.getString(R.string.caption_action_threat);
         mPeriodFormat = mContext.getString(R.string.value_period);
+        mPeriodsFormat = mContext.getString(R.string.values_period);
         mPendingCaption = mContext.getString(R.string.status_pending);
         mSucceedCaption = mContext.getString(R.string.status_succeed);
         mFailedCaption = mContext.getString(R.string.status_failed);
         mAttackingCaption = mContext.getString(R.string.caption_attacking);
         mEliminatedCaption = mContext.getString(R.string.caption_eliminated);
+        mUnderThreatCaption = context.getString(R.string.caption_under_threat);
 
         mGreyColor = ContextCompat.getColor(mContext, R.color.colorGrey);
         mRedColor = ContextCompat.getColor(mContext, R.color.colorRed);
@@ -132,11 +136,14 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
     public void onBindViewHolder(final BuyoutAdapter.ViewHolder holder, int position) {
         // Set value to views
         BuyoutModel model = mDataSet.get(position);
+        String imageProfile = "";
 
         if(model != null) {
-            holder.tvProfile.setText(model.targetUser.getNickName());
-            holder.tvName.setText(model.targetUser.name);
-            holder.tvPeroid.setText(String.format(mPeriodFormat, model.numShares, model.getTimeAgo()));
+            if(model.numShares > NUMER_SINGULAR) {
+                holder.tvPeroid.setText(String.format(mPeriodsFormat, model.numShares, model.getTimeAgo()));
+            } else {
+                holder.tvPeroid.setText(String.format(mPeriodFormat, model.numShares, model.getTimeAgo()));
+            }
 
             holder.tvStatus.setText(mPendingCaption);
             holder.tvStatus.setTextColor(mGreyColor);
@@ -144,7 +151,79 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
             holder.tvGameStatus.setText(mAttackingCaption);
             holder.tvGameStatus.setTextColor(mRedColor);
 
-            Glide.with(mContext).load(model.targetUser.profileImage)
+            if(model.getBuyoutStatus() == BuyoutModel.BuyoutStatus.Initiate) {
+                holder.tvProfile.setText(model.targetUser.getNickName());
+                holder.tvName.setText(model.targetUser.name);
+                holder.tvAction.setText(mInitiateCaption);
+                imageProfile = model.targetUser.profileImage;
+
+                if(model.getGameStatus() == BuyoutModel.GameStatus.Initiated) {
+                    holder.tvStatus.setText(mPendingCaption);
+                    holder.tvStatus.setTextColor(mGreyColor);
+
+                    holder.btnEngage.setVisibility(View.VISIBLE);
+                    holder.tvGameStatus.setVisibility(View.GONE);
+                } else if(model.getGameStatus() == BuyoutModel.GameStatus.Matched) {
+                    holder.tvStatus.setText(mFailedCaption);
+                    holder.tvStatus.setTextColor(mRedColor);
+
+                    holder.btnEngage.setVisibility(View.VISIBLE);
+                    holder.tvGameStatus.setVisibility(View.GONE);
+                } else {
+                    holder.tvStatus.setText(mSucceedCaption);
+                    holder.tvStatus.setTextColor(mGreenColor);
+
+                    holder.btnEngage.setVisibility(View.GONE);
+                    holder.tvGameStatus.setVisibility(View.VISIBLE);
+                    holder.tvGameStatus.setText(mEliminatedCaption);
+                }
+
+                if(holder.btnEngage.getVisibility() == View.VISIBLE) {
+                    if(model.targetUser.isUnderBuyoutThreat) {
+                        holder.btnEngage.setVisibility(View.GONE);
+                        holder.tvGameStatus.setVisibility(View.VISIBLE);
+                        holder.tvGameStatus.setText(mUnderThreatCaption);
+                    } else if(model.targetUser.defeatedAt != null) {
+                        holder.btnEngage.setVisibility(View.GONE);
+                        holder.tvGameStatus.setVisibility(View.VISIBLE);
+                        holder.tvGameStatus.setText(mEliminatedCaption);
+                    }
+                }
+            } else {
+                holder.tvProfile.setText(model.initiatingUser.getNickName());
+                holder.tvName.setText(model.initiatingUser.name);
+                holder.tvAction.setText(mThreatCaption);
+                imageProfile = model.initiatingUser.profileImage;
+
+                if(model.getGameStatus() == BuyoutModel.GameStatus.Initiated) {
+                    holder.tvStatus.setText(mPendingCaption);
+                    holder.tvStatus.setTextColor(mGreyColor);
+
+                    holder.btnEngage.setVisibility(View.GONE);
+                    holder.tvGameStatus.setVisibility(View.VISIBLE);
+                    holder.tvGameStatus.setText(mAttackingCaption);
+                } else if(model.getGameStatus() == BuyoutModel.GameStatus.Matched) {
+                    holder.tvStatus.setText(mFailedCaption);
+                    holder.tvStatus.setTextColor(mGreenColor);
+
+                    holder.btnEngage.setVisibility(View.VISIBLE);
+                    holder.tvGameStatus.setVisibility(View.GONE);
+                }
+
+                if(holder.btnEngage.getVisibility() == View.VISIBLE) {
+                    if(model.initiatingUser.isUnderBuyoutThreat) {
+                        holder.btnEngage.setVisibility(View.GONE);
+                        holder.tvGameStatus.setVisibility(View.VISIBLE);
+                        holder.tvGameStatus.setText(mUnderThreatCaption);
+                    } else if(model.initiatingUser.defeatedAt != null) {
+                        holder.btnEngage.setVisibility(View.GONE);
+                        holder.tvGameStatus.setVisibility(View.VISIBLE);
+                        holder.tvGameStatus.setText(mEliminatedCaption);
+                    }
+                }
+            }
+
+            Glide.with(mContext).load(imageProfile)
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
                         public boolean onException(Exception e, String model,
@@ -165,35 +244,6 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
                     })
                     .bitmapTransform(new CropCircleTransformation(mContext))
                     .into(holder.imvProfile);
-
-            if(model.getBuyoutStatus() == BuyoutModel.BuyoutStatus.Initiate) {
-                holder.tvAction.setText(mInitiateCaption);
-                if(model.getGameStatus() == BuyoutModel.GameStatus.Win) {
-                    holder.tvStatus.setText(mFailedCaption);
-                    holder.tvStatus.setTextColor(mRedColor);
-
-                    holder.btnEngage.setVisibility(View.VISIBLE);
-                    holder.tvGameStatus.setVisibility(View.GONE);
-                } else if(model.getGameStatus() == BuyoutModel.GameStatus.Lose) {
-                    holder.tvStatus.setText(mSucceedCaption);
-                    holder.tvStatus.setTextColor(mGreenColor);
-
-                    holder.btnEngage.setVisibility(View.GONE);
-                    holder.tvGameStatus.setVisibility(View.VISIBLE);
-                    holder.tvGameStatus.setText(mEliminatedCaption);
-                }
-            } else {
-                holder.tvAction.setText(mThreatCaption);
-                if(model.getGameStatus() == BuyoutModel.GameStatus.Win) {
-                    // This case is impossible
-                } else if(model.getGameStatus() == BuyoutModel.GameStatus.Lose) {
-                    holder.tvStatus.setText(mFailedCaption);
-                    holder.tvStatus.setTextColor(mGreenColor);
-
-                    holder.btnEngage.setVisibility(View.VISIBLE);
-                    holder.tvGameStatus.setVisibility(View.GONE);
-                }
-            }
 
             holder.btnEngage.setTag(model);
         } else {

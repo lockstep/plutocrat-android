@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.squareup.otto.Subscribe;
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
@@ -22,7 +23,8 @@ import com.whitefly.plutocrat.mainmenu.events.EngageClickEvent;
 import com.whitefly.plutocrat.mainmenu.events.GetPlutocratEvent;
 import com.whitefly.plutocrat.mainmenu.events.LoadTargetsEvent;
 import com.whitefly.plutocrat.mainmenu.views.ITabView;
-import com.whitefly.plutocrat.mainmenu.views.ITargetView;
+import com.whitefly.plutocrat.mainmenu.views.events.LoadPlutocratCompletedEvent;
+import com.whitefly.plutocrat.mainmenu.views.events.LoadTargetCompletedEvent;
 import com.whitefly.plutocrat.models.MetaModel;
 import com.whitefly.plutocrat.models.TargetModel;
 
@@ -31,8 +33,9 @@ import java.util.ArrayList;
 /**
  * Created by Satjapot on 5/10/16 AD.
  */
-public class TargetFragment extends Fragment implements ITabView, ITargetView {
+public class TargetFragment extends Fragment implements ITabView {
     public static final String TITLE = "Targets";
+    private static final int FIRST_TIME_PAGE = 0;
     private static final int FIRST_PAGE = 1;
     private static final int TARGET_USERS_PER_PAGE = 4;
 
@@ -87,6 +90,20 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
         mAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        EventBus.getInstance().register(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        EventBus.getInstance().unregister(this);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -125,9 +142,7 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
 
         updateView();
 
-        // Get Adapter
-        cpage = FIRST_PAGE;
-        EventBus.getInstance().post(new LoadTargetsEvent(cpage, TARGET_USERS_PER_PAGE));
+        cpage = FIRST_TIME_PAGE;
 
         // Event Handler
         mSRLMain.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -179,27 +194,35 @@ public class TargetFragment extends Fragment implements ITabView, ITargetView {
 
     }
 
-    @Override
-    public void setTargetList(ArrayList<TargetModel> items, MetaModel meta) {
+    /*
+    Bus event
+     */
+    @Subscribe
+    public void onLoadTargetCompleted(LoadTargetCompletedEvent event) {
+        ArrayList<TargetModel> items = event.getItems();
+        MetaModel meta = event.getMeta();
+
+        TargetAdapter adapter = (TargetAdapter) mRvMain.getAdapter();
         if(meta != null && meta.hasKey("current_page") && meta.getInt("current_page") == FIRST_PAGE) {
             if(items.size() == 0) {
                 mSRLMain.setVisibility(View.GONE);
                 mSRLEmpty.setVisibility(View.VISIBLE);
             } else {
-                mAdapter.getDataSet().clear();
+                adapter.getDataSet().clear();
                 mSRLMain.setVisibility(View.VISIBLE);
                 mSRLEmpty.setVisibility(View.GONE);
             }
         }
-        mAdapter.addItems(items);
+        adapter.addItems(items);
 
         // Switch off all loading widget
         mSRLMain.setRefreshing(false);
         mSRLEmpty.setRefreshing(false);
     }
 
-    @Override
-    public void setPlutocrat(TargetModel user) {
+    @Subscribe
+    public void onLoadPlutocratCompleted(LoadPlutocratCompletedEvent event) {
+        TargetModel user = event.getPlutocratUser();
         HeaderState state = user == null ? HeaderState.NoPlutocrat : HeaderState.Plutocrat;
         changeState(state, user);
     }

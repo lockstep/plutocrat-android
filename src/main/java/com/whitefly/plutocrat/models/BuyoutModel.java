@@ -16,7 +16,7 @@ public class BuyoutModel {
     }
 
     public enum GameStatus {
-        Playing, Win, Lose
+        Initiated, Matched, Success
     }
 
     // Attributes
@@ -79,11 +79,11 @@ public class BuyoutModel {
 
     public GameStatus getGameStatus() {
         if(state.equals("initiated")) {
-            return GameStatus.Playing;
-        } else if(state.equals("matched")) {
-            return GameStatus.Lose;
+            return GameStatus.Initiated;
+        } else if(state.equals("matched") || state.equals("failed")) {
+            return GameStatus.Matched;
         }else {
-            return GameStatus.Win;
+            return GameStatus.Success;
         }
     }
 }
