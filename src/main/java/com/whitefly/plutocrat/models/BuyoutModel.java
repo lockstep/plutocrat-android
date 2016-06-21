@@ -68,10 +68,12 @@ public class BuyoutModel {
     public BuyoutStatus getBuyoutStatus() {
         BuyoutStatus result = BuyoutStatus.Initiate;
         UserModel currentUser = AppPreference.getInstance().getSession().getActiveUser();
-        if(currentUser.id == initiatingUser.id) {
-            result = BuyoutStatus.Initiate;
-        } else if(currentUser.id == targetUser.id) {
-            result = BuyoutStatus.Threat;
+        if(currentUser != null) {
+            if (currentUser.id == initiatingUser.id) {
+                result = BuyoutStatus.Initiate;
+            } else if (currentUser.id == targetUser.id) {
+                result = BuyoutStatus.Threat;
+            }
         }
 
         return result;

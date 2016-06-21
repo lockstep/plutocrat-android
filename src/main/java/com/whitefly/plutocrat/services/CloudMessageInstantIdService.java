@@ -28,7 +28,6 @@ public class CloudMessageInstantIdService extends FirebaseInstanceIdService {
     public static final String FIELD_NAME_TOKEN = "token";
     public static final String FIELD_NAME_PLATFORM = "platform";
     public static final String FIELD_NAME_DEVICE_ATTRIBUTES = "devices_attributes";
-    public static final String FIELD_VALUE_PLATFORM = "android";
 
     @Override
     public void onTokenRefresh() {

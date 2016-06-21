@@ -100,6 +100,17 @@
                     android:text="@string/caption_engage"
                     style="@style/DefaultButton"
                     android:minWidth="80dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="4dp"
+                    android:id="@+id/tv_plutocrat_game_status"
+                    android:text="@string/caption_under_threat"
+                    android:visibility="gone"
+                    android:textColor="@color/colorRed"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -125,7 +136,8 @@
             <android.support.v4.widget.SwipeRefreshLayout
                 android:id="@+id/srl_players_empty"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:visibility="gone">
 
                 <ScrollView
                     android:layout_width="match_parent"
@@ -141,7 +153,8 @@
                         android:layout_gravity="center"
                         android:gravity="top|center_horizontal"
                         android:textSize="@dimen/font_medium"
-                        android:textColor="@color/colorLine"/>
+                        android:textColor="@color/colorLine"
+                        android:nestedScrollingEnabled="true"/>
 
                 </ScrollView>
 

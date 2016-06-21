@@ -23,6 +23,7 @@ import java.util.HashMap;
  */
 public class AppPreference {
     public static final String DEBUG_APP = "Plutocrat";
+    public static final String PLATFORM = "android";
 
     public static final String PREF_NAME = "com.whitefly.plutocat.prefs";
     public static final String PREFKEY_USER_PERSISTENCE = "com.whitefly.plutocrat.prefs.user_persistence";
@@ -92,6 +93,7 @@ public class AppPreference {
         if(currentUserId == NO_USER_ID) {
             currentUserId = mLastLoginId;
         }
+
         String strCurrentUserId = String.valueOf(currentUserId);
         UserPersistenceModel model = null;
         if(mUserPersistences.containsKey(strCurrentUserId)) {

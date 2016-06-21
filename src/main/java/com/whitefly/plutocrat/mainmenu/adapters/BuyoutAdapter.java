@@ -79,7 +79,12 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
         mEngageClick = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EventBus.getInstance().post(new EngageClickEvent((BuyoutModel) v.getTag()));
+                BuyoutModel buyout = (BuyoutModel) v.getTag();
+                TargetModel target = buyout.initiatingUser;
+                if(buyout.getBuyoutStatus() == BuyoutModel.BuyoutStatus.Initiate) {
+                    target = buyout.targetUser;
+                }
+                EventBus.getInstance().post(new EngageClickEvent(target));
             }
         };
     }

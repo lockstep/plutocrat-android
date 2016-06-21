@@ -26,6 +26,7 @@ import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -74,7 +75,15 @@ public class HttpClient {
 
     // Constructor
     public HttpClient(Context context) {
-        mClient = new OkHttpClient();
+        mClient = new OkHttpClient.Builder()
+            .addNetworkInterceptor(new Interceptor() {
+                @Override
+                public Response intercept(Chain chain) throws IOException {
+                    Request request = chain.request().newBuilder().addHeader("Connection", "close").build();
+                    return chain.proceed(request);
+                }
+            })
+            .build();
         mContext = context;
         mHost = context.getString(R.string.api_host);
         mMultipartRequest = new HashMap<>();

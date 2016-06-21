@@ -95,7 +95,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minWidth="50dp"
-        android:text="@string/caption_acquire"
+        android:text="@string/caption_check"
         android:id="@+id/btn_acquire"
+        android:clickable="false"
+        android:enabled="false"
         style="@style/DefaultButton"/>
 </LinearLayout>

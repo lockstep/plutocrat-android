@@ -20,6 +20,7 @@ import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.mainmenu.adapters.listeners.OnLoadmoreListener;
 import com.whitefly.plutocrat.mainmenu.events.EngageClickEvent;
 import com.whitefly.plutocrat.models.TargetModel;
+import com.whitefly.plutocrat.models.UserModel;
 
 import java.util.ArrayList;
 
@@ -36,7 +37,7 @@ public class TargetAdapter extends RecyclerView.Adapter<TargetAdapter.ViewHolder
     private Context mContext;
     private ArrayList<TargetModel> mDataSet;
     private String mBuyoutFormat, mThreatFormat, mDaySurvivedFormat;
-    private String mUnderThreatCaption, mEliminatedCaption;
+    private String mUnderThreatCaption, mEliminatedCaption, mAttackingYouCaption;
     private OnLoadmoreListener mLoadMoreListener;
     private View.OnClickListener mEngageClick;
 
@@ -60,6 +61,7 @@ public class TargetAdapter extends RecyclerView.Adapter<TargetAdapter.ViewHolder
         mDaySurvivedFormat = mContext.getString(R.string.value_daysurvived);
         mUnderThreatCaption = mContext.getString(R.string.caption_under_threat);
         mEliminatedCaption = mContext.getString(R.string.caption_eliminated);
+        mAttackingYouCaption = mContext.getString(R.string.caption_attacking);
 
         mEngageClick = new View.OnClickListener() {
             @Override
@@ -118,6 +120,7 @@ public class TargetAdapter extends RecyclerView.Adapter<TargetAdapter.ViewHolder
     @Override
     public void onBindViewHolder(final TargetAdapter.ViewHolder holder, int position) {
         // Set value to views
+        UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
         TargetModel model = mDataSet.get(position);
 
         if(model != null) {
@@ -148,17 +151,25 @@ public class TargetAdapter extends RecyclerView.Adapter<TargetAdapter.ViewHolder
                     .bitmapTransform(new CropCircleTransformation(mContext))
                     .into(holder.imvProfile);
 
-            if (! model.isAttackingCurrentUser && ! model.isUnderBuyoutThreat) {
-                holder.btnEngage.setVisibility(View.VISIBLE);
-                holder.tvGameStatus.setVisibility(View.GONE);
+            if (model.isAttackingCurrentUser) {
+                holder.btnEngage.setVisibility(View.GONE);
+                holder.tvGameStatus.setVisibility(View.VISIBLE);
+                holder.tvGameStatus.setText(mAttackingYouCaption);
+            } else if(model.isUnderBuyoutThreat) {
+                holder.btnEngage.setVisibility(View.GONE);
+                holder.tvGameStatus.setVisibility(View.VISIBLE);
                 holder.tvGameStatus.setText(mUnderThreatCaption);
             } else if(model.defeatedAt != null) {
                 holder.btnEngage.setVisibility(View.VISIBLE);
                 holder.tvGameStatus.setVisibility(View.GONE);
                 holder.tvGameStatus.setText(mEliminatedCaption);
-            } else {
+            } else if(model.id == activeUser.id) {
                 holder.btnEngage.setVisibility(View.GONE);
                 holder.tvGameStatus.setVisibility(View.VISIBLE);
+                holder.tvGameStatus.setText("");
+            } else {
+                holder.btnEngage.setVisibility(View.VISIBLE);
+                holder.tvGameStatus.setVisibility(View.GONE);
             }
 
             holder.btnEngage.setTag(model);

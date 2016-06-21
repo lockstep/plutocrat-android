@@ -19,6 +19,8 @@
     <string name="caption_back">Back</string>
     <string name="caption_save">Save</string>
     <string name="caption_acquire">BUY</string>
+    <string name="caption_get">GET</string>
+    <string name="caption_check">CHECK</string>
     <string name="caption_login_link"><![CDATA[<u>Login</u>]]></string>
     <string name="caption_displayname">Display Name</string>
     <string name="caption_email">E-mail</string>
@@ -136,6 +138,7 @@
     <string name="error_field_required">This field is required.</string>
     <string name="error_profile_picture">Please try again.</string>
     <string name="error_suspending">It may take a few minutes to proceed, please log in again. Sorry for any inconvenience caused.</string>
+    <string name="error_buy_share">Please contact our staff.</string>
 
     <string name="error_connection">Cannot connect to server.</string>
     <string name="error_title_cannot_new_buyout">Cannot engage target</string>
@@ -146,6 +149,10 @@
     <string name="error_title_cannot_match_shares">Cannot match shares</string>
     <string name="error_title_cannot_save_picture">Cannot save profile picture</string>
     <string name="error_title_suspending">Your account is being suspended</string>
+    <string name="error_title_buy_share">Cannot purchase shares</string>
+    <string name="error_title_cannot_load_buyouts">Cannot load buyouts</string>
+    <string name="error_title_cannot_load_targets">Cannot load targets</string>
+    <string name="error_title_cannot_sign_out">Cannot sign out</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -174,4 +181,20 @@
     <string name="api_fail_buyout" translatable="false">/api/v1/buyouts/%1$d/fail_to_match</string>
     <string name="api_get_buyouts" translatable="false">/api/v1/users/%1$d/buyouts</string>
     <string name="api_save_settings" translatable="false">/api/v1/users/%1$d</string>
+    <string name="api_send_receipt" translatable="false">/api/v1/users/%1$d/receipt</string>
+    <string name="api_request_reset_password" translatable="false">/api/v1/users/%1$d/receipt</string>
+    <string name="api_reset_password" translatable="false">/api/v1/users/%1$d/receipt</string>
+
+    <!-- IAP item list -->
+    <string-array name="iap_item_list">
+        <item>com.whiteflyventuresinc.plutocrat.shares.1</item>
+        <item>com.whiteflyventuresinc.plutocrat.shares.5</item>
+        <item>com.whiteflyventuresinc.plutocrat.shares.10</item>
+        <item>com.whiteflyventuresinc.plutocrat.shares.25</item>
+        <item>com.whiteflyventuresinc.plutocrat.shares.50</item>
+        <item>com.whiteflyventuresinc.plutocrat.shares.75</item>
+        <item>com.whiteflyventuresinc.plutocrat.shares.100</item>
+        <item>com.whiteflyventuresinc.plutocrat.shares.200</item>
+        <item>com.whiteflyventuresinc.plutocrat.shares.400</item>
+    </string-array>
 </resources>

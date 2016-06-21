@@ -72,10 +72,9 @@ public class SessionManager {
     }
 
     // Methods
-    public void updateUserJson(String userResponse, HttpClient http)
+    public void updateUserJson(String userResponse)
             throws JSONException, IOException, APIConnectionException {
         Gson gson = AppPreference.getInstance().getGson();
-        Headers headers = this.getHeaders();
 
         JSONObject body = new JSONObject(userResponse);
         UserModel activeUser = this.mActiveUser;
@@ -87,28 +86,30 @@ public class SessionManager {
         }
 
         JSONObject userJson = body.getJSONObject("user");
-        if(! userJson.isNull("active_inbound_buyout")) {
+        if(userJson.isNull("active_inbound_buyout")) {
+            activeUser.activeInboundBuyout = null;
+        } else {
             String inboundBuyout = userJson.getString("active_inbound_buyout");
             activeUser.activeInboundBuyout = gson.fromJson(inboundBuyout, BuyoutModel.class);
 
-            String initiatingUser = http.header(headers)
-                    .get(String.format(http.getContext().getString(R.string.api_profile),
-                            activeUser.activeInboundBuyout.initiatingUserId));
-
-            JSONObject initiatingUserJSON = new JSONObject(initiatingUser);
-            mInitiatingUser = gson.fromJson(initiatingUserJSON.getString("user"), TargetModel.class);
+            String initiatingUserString = userJson.getJSONObject("active_inbound_buyout").getString("initiating_user");
+            String targetUserString = userJson.getJSONObject("active_inbound_buyout").getString("target_user");
+            activeUser.activeInboundBuyout.initiatingUser = gson.fromJson(initiatingUserString, TargetModel.class);
+            activeUser.activeInboundBuyout.targetUser = gson.fromJson(targetUserString, TargetModel.class);
+            mInitiatingUser = gson.fromJson(initiatingUserString, TargetModel.class);
         }
 
-        if(! userJson.isNull("terminal_buyout")) {
+        if(userJson.isNull("terminal_buyout")) {
+            activeUser.terminalBuyout = null;
+        } else {
             String inboundBuyout = userJson.getString("terminal_buyout");
             activeUser.terminalBuyout = gson.fromJson(inboundBuyout, BuyoutModel.class);
 
-            String terminalUser = http.header(headers)
-                    .get(String.format(http.getContext().getString(R.string.api_profile),
-                            activeUser.terminalBuyout.initiatingUserId));
-
-            JSONObject terminalUserJSON = new JSONObject(terminalUser);
-            mTerminalUser = gson.fromJson(terminalUserJSON.getString("user"), TargetModel.class);
+            String initiatingUserString = userJson.getJSONObject("terminal_buyout").getString("initiating_user");
+            String targetUserString = userJson.getJSONObject("terminal_buyout").getString("target_user");
+            activeUser.terminalBuyout.initiatingUser = gson.fromJson(initiatingUserString, TargetModel.class);
+            activeUser.terminalBuyout.targetUser = gson.fromJson(targetUserString, TargetModel.class);
+            mTerminalUser = gson.fromJson(initiatingUserString, TargetModel.class);
         }
 
         updateActiveUser(activeUser);
@@ -127,7 +128,7 @@ public class SessionManager {
                 String strBody = http.header(headers)
                         .get(String.format(http.getContext().getString(R.string.api_profile), user_id));
 
-                updateUserJson(strBody, http);
+                updateUserJson(strBody);
 
                 result = true;
             } catch (IOException e) {
@@ -170,13 +171,11 @@ public class SessionManager {
                     .remove(PREFKEY_SESSION_PLUTOCRAT)
                     .commit();
         } else {
-            if(mPlutocrat == null || mPlutocrat.id != model.id) {
-                mPlutocrat = model;
-                String json = gson.toJson(model);
-                AppPreference.getInstance().getSharedPreference().edit()
-                        .putString(PREFKEY_SESSION_PLUTOCRAT, json)
-                        .apply();
-            }
+            mPlutocrat = model;
+            String json = gson.toJson(model);
+            AppPreference.getInstance().getSharedPreference().edit()
+                    .putString(PREFKEY_SESSION_PLUTOCRAT, json)
+                    .apply();
         }
     }
 
