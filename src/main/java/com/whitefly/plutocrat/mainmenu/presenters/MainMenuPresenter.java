@@ -137,7 +137,7 @@ public class MainMenuPresenter {
 
     @Subscribe
     public void onSiginOut(SignOutEvent event) {
-        AsyncTaskCompat.executeParallel(new SignOutCallback(), null);
+        AsyncTaskCompat.executeParallel(new SignOutCallback(), (Void) null);
     }
 
     @Subscribe
@@ -191,17 +191,17 @@ public class MainMenuPresenter {
 
     @Subscribe
     public void onMatchBuyout(MatchBuyoutEvent event) {
-        AsyncTaskCompat.executeParallel(new MatchBuyoutCallback(), null);
+        AsyncTaskCompat.executeParallel(new MatchBuyoutCallback(), (Void) null);
     }
 
     @Subscribe
     public void onFailMatchBuyout(FailMatchBuyoutEvent event) {
-        AsyncTaskCompat.executeParallel(new FailMatchBuyoutCallback(), null);
+        AsyncTaskCompat.executeParallel(new FailMatchBuyoutCallback(), (Void) null);
     }
 
     @Subscribe
     public void onAttackTimeOut(AttackTimeOutEvent event) {
-        AsyncTaskCompat.executeParallel(new AttackTimeOutCallback(), null);
+        AsyncTaskCompat.executeParallel(new AttackTimeOutCallback(), (Void) null);
     }
 
     /*

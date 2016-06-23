@@ -26,7 +26,7 @@ import java.util.ArrayList;
  */
 public class ShareAdapter extends RecyclerView.Adapter<ShareAdapter.ViewHolder> {
     private static final int AMOUNT_QTY_SMALL = 1;
-    private static final int AMOUNT_QTY_MEDIUM = 10;
+    private static final int AMOUNT_QTY_MEDIUM = 50;
 
     // Attributes
     private Context mContext;

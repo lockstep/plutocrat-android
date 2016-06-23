@@ -2,13 +2,18 @@ package com.whitefly.plutocrat.login.presenters;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.v4.os.AsyncTaskCompat;
 
 import com.google.gson.Gson;
 import com.squareup.otto.Subscribe;
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.exception.APIConnectionException;
 import com.whitefly.plutocrat.helpers.AppPreference;
+import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.helpers.HttpClient;
+import com.whitefly.plutocrat.login.events.ResetPassword1ErrorEvent;
+import com.whitefly.plutocrat.login.events.ResetPassword2ErrorEvent;
+import com.whitefly.plutocrat.login.events.ResetPasswordEvent;
 import com.whitefly.plutocrat.models.MetaModel;
 import com.whitefly.plutocrat.models.UserModel;
 import com.whitefly.plutocrat.login.events.BackToLoginEvent;
@@ -51,13 +56,13 @@ public class LoginPresenter {
     public void onRegisterClicked(RegisterEvent event) {
         // Create request model
         RegisterRequestModel model = event.getRequestModel();
-        new RegisterCallBack().execute(model);
+        AsyncTaskCompat.executeParallel(new RegisterCallBack(), model);
     }
 
     @Subscribe
     public void onSignInClicked(SignInEvent event) {
         LoginRequestModel model = event.getRequestModel();
-        new LoginCallBack().execute(model);
+        AsyncTaskCompat.executeParallel(new LoginCallBack(), model);
     }
 
     @Subscribe
@@ -67,7 +72,16 @@ public class LoginPresenter {
 
     @Subscribe
     public void onRequestResetClicked(RequestResetTokenEvent event) {
-        mLoginMainView.gotoResetPassword2();
+        if(event.isSubmitClick()) {
+            AsyncTaskCompat.executeParallel(new RequestResetPasswordCallback(), event.getEmail());
+        } else {
+            mLoginMainView.gotoResetPassword2();
+        }
+    }
+
+    @Subscribe
+    public void onResetPassword(ResetPasswordEvent event) {
+        AsyncTaskCompat.executeParallel(new ResetPasswordCallback(), event);
     }
 
     @Subscribe
@@ -115,7 +129,7 @@ public class LoginPresenter {
         }
 
         @Override
-        protected void onPostExecute(JSONObject body) {
+        protected void onPostExecute(JSONObject response) {
             mLoginMainView.handleLoadingDialog(false);
 
             if (mMetaError != null) {
@@ -175,7 +189,7 @@ public class LoginPresenter {
         }
 
         @Override
-        protected void onPostExecute(Boolean b) {
+        protected void onPostExecute(Boolean isValid) {
 
             if (mMetaError != null) {
                 mLoginMainView.handleLoadingDialog(false);
@@ -191,6 +205,133 @@ public class LoginPresenter {
                         mErrorMessage);
             } else {
                 mLoginMainView.goToMainMenu();
+            }
+        }
+    }
+
+    private class RequestResetPasswordCallback extends AsyncTask<String, Void, Boolean> {
+        private String mErrorMessage;
+        private MetaModel mMetaError;
+
+        @Override
+        protected void onPreExecute() {
+            mLoginMainView.handleLoadingDialog(true);
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            boolean result = false;
+            String email = params[0];
+
+            try {
+                JSONObject requestJson = new JSONObject();
+                if(!email.trim().equals("")) {
+                    requestJson.put("email", email);
+                }
+
+                mHttp.request(requestJson.toString()).post(R.string.api_reset_password);
+
+                result = mHttp.getResponseCode() == HttpClient.HTTP_CODE_CREATED;
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+                mErrorMessage = e.getMessage();
+            } catch (APIConnectionException e) {
+                e.printStackTrace();
+                mMetaError = new MetaModel(e.getMessage());
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean isValid) {
+            mLoginMainView.handleLoadingDialog(false);
+
+            if(! isValid) {
+                mErrorMessage = mContext.getString(R.string.error_cannot_send_email);
+            }
+
+            if (mMetaError != null) {
+                EventBus.getInstance().post(new ResetPassword1ErrorEvent(mMetaError));
+            } else if(mErrorMessage != null) {
+                mLoginMainView.handleError(mContext.getString(R.string.error_title_cannot_send_email),
+                        mErrorMessage);
+            } else {
+                mLoginMainView.gotoResetPassword2();
+            }
+        }
+    }
+
+    private class ResetPasswordCallback extends AsyncTask<ResetPasswordEvent, Void, Boolean> {
+        private String mErrorMessage;
+        private MetaModel mMetaError;
+
+        @Override
+        protected void onPreExecute() {
+            mLoginMainView.handleLoadingDialog(true);
+        }
+
+        @Override
+        protected Boolean doInBackground(ResetPasswordEvent... params) {
+            boolean result = false;
+            ResetPasswordEvent event = params[0];
+            Gson gson = AppPreference.getInstance().getGson();
+
+            try {
+                JSONObject requestJson = new JSONObject();
+                String value;
+                value = event.getEmail();
+                if(!value.equals("")) {
+                    requestJson.put("email", value);
+                }
+
+                value = event.getToken();
+                if(!value.equals("")) {
+                    requestJson.put("reset_password_token", value);
+                }
+
+                value = event.getNewPassword();
+                if(!value.equals("")) {
+                    requestJson.put("password", value);
+                }
+
+                value = event.getConfirmPassword();
+                if(!value.equals("")) {
+                    requestJson.put("password_confirmation", value);
+                }
+
+                String response = mHttp.request(requestJson.toString()).patch(R.string.api_reset_password);
+                UserModel user = gson.fromJson(response, UserModel.class);
+
+
+                result = user != null;
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+                mErrorMessage = e.getMessage();
+            } catch (APIConnectionException e) {
+                e.printStackTrace();
+                mMetaError = new MetaModel(e.getMessage());
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean isValid) {
+            mLoginMainView.handleLoadingDialog(false);
+
+            if(! isValid) {
+                mErrorMessage = mContext.getString(R.string.error_cannot_send_email);
+            }
+
+            if (mMetaError != null) {
+                EventBus.getInstance().post(new ResetPassword2ErrorEvent(mMetaError));
+            } else if(mErrorMessage != null) {
+                mLoginMainView.handleError(mContext.getString(R.string.error_title_cannot_send_email),
+                        mErrorMessage);
+            } else {
+                mLoginView.changeState(ILoginView.ViewState.Login);
+                mLoginMainView.backToLogin();
             }
         }
     }

@@ -70,6 +70,7 @@
                 android:inputType="textEmailAddress"
                 android:id="@+id/edt_reset2_email"
                 android:hint="@string/caption_email"
+                android:visibility="gone"
                 style="@style/LoginEditText"/>
 
             <EditText
@@ -87,7 +88,8 @@
                 android:id="@+id/edt_reset2_newpw"
                 android:hint="@string/caption_new_password"
                 android:layout_gravity="center_horizontal"
-                style="@style/LoginEditText" />
+                style="@style/LoginEditText"
+                android:imeOptions="actionDone" />
 
             <EditText
                 android:layout_width="match_parent"
@@ -96,8 +98,8 @@
                 android:id="@+id/edt_reset2_confirmpw"
                 android:hint="@string/caption_confirm_password"
                 android:layout_gravity="center_horizontal"
-                android:visibility="gone"
-                style="@style/LoginEditText" />
+                style="@style/LoginEditText"
+                android:visibility="gone" />
 
             <Button
                 android:layout_width="wrap_content"

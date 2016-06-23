@@ -13,17 +13,12 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -33,18 +28,18 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.internal.framed.Header;
 
 /**
  * Created by Satjapot on 5/9/16 AD.
  * Control http task as singleton.
  */
 public class HttpClient {
+    public static final int HTTP_CODE_UNPROCESSABLE_ENTITY = 422;
+    public static final int HTTP_CODE_UNAUTHORIZED = 401;
+    public static final int HTTP_CODE_CREATED = 201;
+
     private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
-    private static final int HTML_CODE_UNPROCESSABLE_ENTITY = 422;
-    private static final int HTML_CODE_UNAUTHORIZED = 401;
 
     private static final int IMAGE_QUALITY_FULL = 100;
 
@@ -60,6 +55,7 @@ public class HttpClient {
     private String mRequestString;
     private Response mResponse;
     private String mResponseBody;
+    private int mResponseCode;
     private HashMap<String, String> mMultipartRequest;
 
     // Getter methods
@@ -71,6 +67,9 @@ public class HttpClient {
     }
     public Response getResponse() {
         return mResponse;
+    }
+    public int getResponseCode() {
+        return mResponseCode;
     }
 
     // Constructor
@@ -217,6 +216,7 @@ public class HttpClient {
             Log.d(AppPreference.DEBUG_APP, String.format("Try to request...%d", requestTime));
             try {
                 mResponse = mClient.newCall(request).execute();
+                mResponseCode = mResponse.code();
                 if(mResponse.isSuccessful()) {
                     // For resolving conflict about thread, get them now.
                     mResponseBody = mResponse.body().string();
@@ -225,9 +225,8 @@ public class HttpClient {
                     Log.d(AppPreference.DEBUG_APP, mResponse.message());
                     requestTime--;
 
-                    int responseCode = mResponse.code();
-                    Log.d(AppPreference.DEBUG_APP, "HTTP Response code: " + responseCode);
-                    if(responseCode == HTML_CODE_UNPROCESSABLE_ENTITY || responseCode == HTML_CODE_UNAUTHORIZED) {
+                    Log.d(AppPreference.DEBUG_APP, "HTTP Response code: " + mResponseCode);
+                    if(mResponseCode == HTTP_CODE_UNPROCESSABLE_ENTITY || mResponseCode == HTTP_CODE_UNAUTHORIZED) {
                         throw new APIConnectionException(mResponse.body().string());
                     }
 
