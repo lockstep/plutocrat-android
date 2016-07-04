@@ -1,5 +1,6 @@
 package com.whitefly.plutocrat.mainmenu.fragments;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -55,6 +56,11 @@ public class BuyoutFragment extends Fragment implements ITabView {
         return fragment;
     }
 
+    public void reload() {
+        cpage = FIRST_PAGE;
+        EventBus.getInstance().post(new LoadBuyoutsEvent(cpage, BUYOUT_USERS_PER_PAGE));
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,12 +93,14 @@ public class BuyoutFragment extends Fragment implements ITabView {
 
         ArrayList<BuyoutModel> dataset = new ArrayList<>();
         dataset.add(null);
+        mAdapter = new BuyoutAdapter(getActivity(), dataset);
 
         mRvMain.setHasFixedSize(true);
         mRvMain.setLayoutManager(new LinearLayoutManager(getContext()));
         mRvMain.setNestedScrollingEnabled(true);
-        mAdapter = new BuyoutAdapter(getActivity(), dataset);
         mRvMain.setAdapter(mAdapter);
+
+        mSRLMain.setVisibility(View.VISIBLE);
 
         updateView();
 
@@ -103,17 +111,13 @@ public class BuyoutFragment extends Fragment implements ITabView {
         mSRLMain.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Loading new list
-                cpage = FIRST_PAGE;
-                EventBus.getInstance().post(new LoadBuyoutsEvent(cpage, BUYOUT_USERS_PER_PAGE));
+                reload();
             }
         });
         mSRLEmpty.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Loading new list
-                cpage = FIRST_PAGE;
-                EventBus.getInstance().post(new LoadBuyoutsEvent(cpage, BUYOUT_USERS_PER_PAGE));
+                reload();
             }
         });
         mAdapter.setOnLoadmoreListener(new OnLoadmoreListener() {

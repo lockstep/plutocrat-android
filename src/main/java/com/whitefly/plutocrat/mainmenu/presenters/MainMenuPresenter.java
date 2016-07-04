@@ -2,6 +2,9 @@ package com.whitefly.plutocrat.mainmenu.presenters;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.support.v4.os.AsyncTaskCompat;
+import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
@@ -24,6 +27,8 @@ import com.whitefly.plutocrat.mainmenu.events.LoadTargetsEvent;
 import com.whitefly.plutocrat.mainmenu.events.MatchBuyoutEvent;
 import com.whitefly.plutocrat.mainmenu.events.MoreShareClickEvent;
 import com.whitefly.plutocrat.mainmenu.events.SaveAccountSettingsEvent;
+import com.whitefly.plutocrat.mainmenu.events.SendReceiptCompleteEvent;
+import com.whitefly.plutocrat.mainmenu.events.SendReceiptEvent;
 import com.whitefly.plutocrat.mainmenu.events.SetHomeStateEvent;
 import com.whitefly.plutocrat.mainmenu.events.SignOutEvent;
 import com.whitefly.plutocrat.mainmenu.events.UpdateUserNoticeIdEvent;
@@ -37,6 +42,7 @@ import com.whitefly.plutocrat.mainmenu.views.events.LoadTargetCompletedEvent;
 import com.whitefly.plutocrat.mainmenu.views.events.MatchBuyoutCompletedEvent;
 import com.whitefly.plutocrat.mainmenu.views.events.UpdateHomeViewEvent;
 import com.whitefly.plutocrat.models.BuyoutModel;
+import com.whitefly.plutocrat.models.IAPPurchaseModel;
 import com.whitefly.plutocrat.models.MetaModel;
 import com.whitefly.plutocrat.models.NewBuyoutModel;
 import com.whitefly.plutocrat.models.ShareBundleModel;
@@ -95,8 +101,7 @@ public class MainMenuPresenter {
 
         if (userModel.defeatedAt != null) {
             state = HomeFragment.State.Suspend;
-//        } else if (userModel.isUnderBuyoutThreat) {
-        } else if (userModel.activeInboundBuyout != null) {
+        } else if (userModel.isUnderBuyoutThreat && userModel.activeInboundBuyout != null) {
             state = HomeFragment.State.Threat;
         }
 
@@ -105,20 +110,13 @@ public class MainMenuPresenter {
 
     @Subscribe
     public void onUpdateUserNoticeId(UpdateUserNoticeIdEvent event) {
-        HomeFragment.State state = HomeFragment.State.Default;
         UserModel userModel = AppPreference.getInstance().getSession().getActiveUser();
         userModel.userNoticeId = event.getNextNoticeId();
 
         AppPreference.getInstance().getCurrentUserPersistence().noticeId = userModel.userNoticeId;
         AppPreference.getInstance().saveUserPersistence();
 
-        if (userModel.defeatedAt != null) {
-            state = HomeFragment.State.Suspend;
-        } else if (userModel.isAttackingCurrentUser) {
-            state = HomeFragment.State.Threat;
-        }
-
-        mHomeView.changeState(state, userModel.userNoticeId);
+        onSetHomeState(new SetHomeStateEvent());
     }
 
     @Subscribe
@@ -127,6 +125,7 @@ public class MainMenuPresenter {
                 AppPreference.PREFKEY_FCM_TOKEN, FirebaseInstanceId.getInstance().getToken());
         if(fcmToken != null) {
             new SaveRegisterTokenCallback().execute(fcmToken);
+            AsyncTaskCompat.executeParallel(new SaveRegisterTokenCallback(), fcmToken);
         }
     }
 
@@ -138,23 +137,23 @@ public class MainMenuPresenter {
 
     @Subscribe
     public void onSiginOut(SignOutEvent event) {
-        new SignOutCallback().execute();
+        AsyncTaskCompat.executeParallel(new SignOutCallback(), null);
     }
 
     @Subscribe
     public void onLoadTargets(LoadTargetsEvent event) {
-        new LoadTargetBuyoutCallBack().execute(event);
+        AsyncTaskCompat.executeParallel(new LoadTargetBuyoutCallBack(), event);
     }
 
     @Subscribe
     public void onLoadBuyouts(LoadBuyoutsEvent event) {
-        new LoadBuyoutsCallBack().execute(event);
+        AsyncTaskCompat.executeParallel(new LoadBuyoutsCallBack(), event);
     }
 
     @Subscribe
     public void onEngageClick(EngageClickEvent event) {
         AppPreference.getInstance().setCurrentTarget(event.getTargetModel());
-        new GetNewBuyoutCallback().execute(event.getTargetModel());
+        AsyncTaskCompat.executeParallel(new GetNewBuyoutCallback(), event.getTargetModel());
     }
 
     @Subscribe
@@ -165,36 +164,44 @@ public class MainMenuPresenter {
     @Subscribe
     public void onBuyShares(BuySharesEvent event) {
         ShareBundleModel model = event.getBundleDetail();
-        String payload = null; // TODO: connect to server for get developerPayload
 
-        mMainMenuView.toast(
-                String.format("You are buying %d shares of %f each", model.qty, model.price));
-        mMainMenuView.buyIAP(model.sku, payload);
+        if(model.state == ShareBundleModel.State.Get) {
+            if(event.getBundleDetail().purchaseData != null) {
+                EventBus.getInstance().post(new SendReceiptEvent(event.getBundleDetail().purchaseData));
+            }
+        } else if(model.state == ShareBundleModel.State.Buy) {
+            mMainMenuView.buyIAP(model.sku, null);
+        }
+    }
+
+    @Subscribe
+    public void onSendReceipt(SendReceiptEvent event) {
+        AsyncTaskCompat.executeParallel(new SendReceiptCallback(), event.getPurchasedItem());
     }
 
     @Subscribe
     public void onSaveAccountSettings(SaveAccountSettingsEvent event) {
-        new SaveAccountSettingCallback().execute(event);
+        AsyncTaskCompat.executeParallel(new SaveAccountSettingCallback(), event);
     }
 
     @Subscribe
     public void onExecuteBuyout(ExecuteShareEvent event) {
-        new ExecuteBuyoutCallback().execute(event);
+        AsyncTaskCompat.executeParallel(new ExecuteBuyoutCallback(), event);
     }
 
     @Subscribe
     public void onMatchBuyout(MatchBuyoutEvent event) {
-        new MatchBuyoutCallback().execute();
+        AsyncTaskCompat.executeParallel(new MatchBuyoutCallback(), null);
     }
 
     @Subscribe
     public void onFailMatchBuyout(FailMatchBuyoutEvent event) {
-        new FailMatchBuyoutCallback().execute();
+        AsyncTaskCompat.executeParallel(new FailMatchBuyoutCallback(), null);
     }
 
     @Subscribe
     public void onAttackTimeOut(AttackTimeOutEvent event) {
-        new AttackTimeOutCallback().execute();
+        AsyncTaskCompat.executeParallel(new AttackTimeOutCallback(), null);
     }
 
     /*
@@ -219,6 +226,7 @@ public class MainMenuPresenter {
                 result = mHttp.getResponse().isSuccessful();
             } catch (IOException e) {
                 e.printStackTrace();
+                mErrorMessage = mContext.getString(R.string.error_connection);
             } catch (APIConnectionException e) {
                 e.printStackTrace();
                 MetaModel model = new MetaModel(e.getMessage());
@@ -234,7 +242,8 @@ public class MainMenuPresenter {
                 AppPreference.getInstance().getSession().destroy();
                 mMainMenuView.goToLogin();
             } else {
-                mMainMenuView.toast("Error: Cannot sign out");
+                mMainMenuView.handleError(mContext.getString(R.string.error_title_cannot_sign_out),
+                        mErrorMessage, null);
             }
         }
     }
@@ -268,10 +277,9 @@ public class MainMenuPresenter {
                         }
                     }
                 }
-            } catch (IOException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
+                mErrorMessage = mContext.getString(R.string.error_connection);
             } catch (APIConnectionException e) {
                 e.printStackTrace();
                 mMetaModel = new MetaModel(e.getMessage());
@@ -286,12 +294,19 @@ public class MainMenuPresenter {
             if(targetModels.size() > 0) {
                 targetModels.add(null);
             }
-            EventBus.getInstance().post(new LoadTargetCompletedEvent(targetModels, mMetaModel));
 
-            if(mMetaModel.getInt("current_page") == FIRST_PAGE) {
+            if(mMetaModel != null && mMetaModel.getInt("current_page") == FIRST_PAGE) {
                 TargetModel plutocrat = AppPreference.getInstance().getSession().getPlutocrat();
+                if(plutocrat != null) {
+                    targetModels.remove(0);
+                }
                 EventBus.getInstance().post(new LoadPlutocratCompletedEvent(plutocrat));
+            } else if(mErrorMessage != null) {
+                mMainMenuView.handleError(mContext.getString(R.string.error_title_cannot_load_targets),
+                        mErrorMessage, null);
             }
+
+            EventBus.getInstance().post(new LoadTargetCompletedEvent(targetModels, mMetaModel));
         }
     }
 
@@ -326,14 +341,13 @@ public class MainMenuPresenter {
                         result.add(model);
                     }
                 }
-            } catch (IOException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
+                mErrorMessage = mContext.getString(R.string.error_connection);
             } catch (APIConnectionException e) {
                 e.printStackTrace();
-                MetaModel model = new MetaModel(e.getMessage());
-                mErrorMessage = model.getErrors();
+                mMetaModel = new MetaModel(e.getMessage());
+                mErrorMessage = mMetaModel.getErrors();
             }
 
             return result;
@@ -341,14 +355,14 @@ public class MainMenuPresenter {
 
         @Override
         protected void onPostExecute(ArrayList<BuyoutModel> buyoutModels) {
+            if(buyoutModels.size() > 0) {
+                buyoutModels.add(null);
+            }
+            EventBus.getInstance().post(new LoadBuyoutCompletedEvent(buyoutModels, mMetaModel));
+
             if (mErrorMessage != null) {
-                mMainMenuView.handleError(mContext.getString(R.string.error_title_cannot_execute_buyout),
+                mMainMenuView.handleError(mContext.getString(R.string.error_title_cannot_load_buyouts),
                         mErrorMessage, mMetaModel);
-            } else {
-                if(buyoutModels.size() > 0) {
-                    buyoutModels.add(null);
-                }
-                EventBus.getInstance().post(new LoadBuyoutCompletedEvent(buyoutModels, mMetaModel));
             }
         }
     }
@@ -372,7 +386,7 @@ public class MainMenuPresenter {
             UserModel currentUser = AppPreference.getInstance().getSession().getActiveUser();
             Headers headers = AppPreference.getInstance().getSession().getHeaders();
 
-            String url = String.format(mContext.getString(R.string.api_newbuyout), currentUser.id);
+            String url = String.format(mContext.getString(R.string.api_newbuyout), mTarget.id);
             String requestParam = String.format("{\"initiating_user_id\":%d}", mTarget.id);
 
             try {
@@ -412,7 +426,7 @@ public class MainMenuPresenter {
         private MetaModel mMetaError = null;
 
         public ExecuteBuyoutCallback() {
-            mGson = new Gson();
+            mGson = AppPreference.getInstance().getGson();
         }
 
         @Override
@@ -425,8 +439,10 @@ public class MainMenuPresenter {
             ExecuteShareEvent param = params[0];
             String result = null;
             Headers headers = AppPreference.getInstance().getSession().getHeaders();
+            UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
 
             String url = String.format(mContext.getString(R.string.api_execute_buyout), param.getInitiateUserId());
+            String getProfileURL = String.format(mContext.getString(R.string.api_profile), activeUser.id);
 
             try {
                 JSONObject requestJson = new JSONObject();
@@ -434,6 +450,9 @@ public class MainMenuPresenter {
                 String requestString = requestJson.toString();
 
                 result = mHttp.header(headers).request(requestString).post(url);
+
+                String userUpdateResponse = mHttp.header(headers).get(getProfileURL);
+                AppPreference.getInstance().getSession().updateUserJson(userUpdateResponse);
             } catch (IOException e) {
                 e.printStackTrace();
                 mErrorMessage = mContext.getString(R.string.error_connection);
@@ -459,15 +478,8 @@ public class MainMenuPresenter {
                 try {
                     JSONObject rootJson = new JSONObject(response);
                     JSONObject buyoutJson = rootJson.getJSONObject("buyout");
-                    TargetModel initiatingUser = mGson.fromJson(buyoutJson.getString("initiating_user"),
-                            TargetModel.class);
                     TargetModel targetUser = mGson.fromJson(buyoutJson.getString("target_user"),
                             TargetModel.class);
-
-                    UserModel currentUser = AppPreference.getInstance().getSession().getActiveUser();
-                    currentUser.numSuccessfulBuyout = initiatingUser.numSuccessfulBuyout;
-                    currentUser.numMatchedBuyout = initiatingUser.numMatchedBuyout;
-                    currentUser.numAvailableShares = initiatingUser.numAvailableShares;
 
                     TargetModel currentTarget = AppPreference.getInstance().getCurrentTarget();
                     currentTarget.isUnderBuyoutThreat = targetUser.isUnderBuyoutThreat;
@@ -540,7 +552,7 @@ public class MainMenuPresenter {
         }
     }
 
-    private class FailMatchBuyoutCallback extends AsyncTask<Void, Void, TargetModel> {
+    private class FailMatchBuyoutCallback extends AsyncTask<Void, Void, Void> {
         private String mErrorMessage = null;
         private MetaModel mMetaError = null;
 
@@ -550,9 +562,7 @@ public class MainMenuPresenter {
         }
 
         @Override
-        protected TargetModel doInBackground(Void... params) {
-            TargetModel result = null;
-            Gson gson = AppPreference.getInstance().getGson();
+        protected Void doInBackground(Void... params) {
             UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
             Headers headers = AppPreference.getInstance().getSession().getHeaders();
 
@@ -561,42 +571,28 @@ public class MainMenuPresenter {
             try {
                 String response = mHttp.header(headers).patch(url);
 
-                JSONObject rootJson = new JSONObject(response);
+                AppPreference.getInstance().getSession().updateUserJson(response);
 
-                result = gson.fromJson(rootJson.getString("user"), TargetModel.class);
-
-                JSONObject userJson = new JSONObject(rootJson.getString("user"));
-                if(userJson.isNull("terminal_buyout")) {
+                activeUser = AppPreference.getInstance().getSession().getActiveUser();
+                if(activeUser.terminalBuyout == null) {
                     mErrorMessage = "Cannot get terminal buyout";
                 } else {
-                    activeUser.terminalBuyout =
-                            gson.fromJson(userJson.getString("terminal_buyout"), BuyoutModel.class);
-
-                    String terminalUser = mHttp.header(headers)
-                            .get(String.format(mHttp.getContext().getString(R.string.api_profile),
-                                    activeUser.terminalBuyout.initiatingUserId));
-
-                    JSONObject terminalUserJSON = new JSONObject(terminalUser);
-                    TargetModel terminalTarget = gson.fromJson(terminalUserJSON.getString("user"), TargetModel.class);
-                    AppPreference.getInstance().getSession().updateTerminalUser(terminalTarget);
+                    AppPreference.getInstance().getSession().updateTerminalUser(activeUser.terminalBuyout.initiatingUser);
                 }
-            } catch (IOException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
                 mErrorMessage = mContext.getString(R.string.error_connection);
             } catch (APIConnectionException e) {
                 e.printStackTrace();
                 mMetaError = new MetaModel(e.getMessage());
                 mErrorMessage = mMetaError.getErrors();
-            } catch (JSONException e) {
-                e.printStackTrace();
-                mErrorMessage = mContext.getString(R.string.error_connection);
             }
 
-            return result;
+            return null;
         }
 
         @Override
-        protected void onPostExecute(TargetModel user) {
+        protected void onPostExecute(Void v) {
             mMainMenuView.handleLoadingDialog(false);
 
             if (mErrorMessage != null) {
@@ -604,16 +600,13 @@ public class MainMenuPresenter {
                         mErrorMessage, mMetaError);
             } else {
                 AppPreference.getInstance().getSession().updateInitiatingUser(null);
-                UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
-                activeUser.updateTargetData(user);
-                activeUser.activeInboundBuyout = null;
 
                 EventBus.getInstance().post(new MatchBuyoutCompletedEvent(MatchBuyoutCompletedEvent.Result.Failed));
             }
         }
     }
 
-    private class AttackTimeOutCallback extends AsyncTask<Void, Void, TargetModel> {
+    private class AttackTimeOutCallback extends AsyncTask<Void, Void, Void> {
         private String mErrorMessage = null;
         private MetaModel mMetaError = null;
 
@@ -623,8 +616,7 @@ public class MainMenuPresenter {
         }
 
         @Override
-        protected TargetModel doInBackground(Void... params) {
-            TargetModel result = null;
+        protected Void doInBackground(Void... params) {
             UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
             Headers headers = AppPreference.getInstance().getSession().getHeaders();
 
@@ -633,7 +625,7 @@ public class MainMenuPresenter {
             try {
                 String response = mHttp.header(headers).get(url);
 
-                AppPreference.getInstance().getSession().updateUserJson(response, mHttp);
+                AppPreference.getInstance().getSession().updateUserJson(response);
             } catch (IOException e) {
                 e.printStackTrace();
                 mErrorMessage = mContext.getString(R.string.error_connection);
@@ -645,11 +637,11 @@ public class MainMenuPresenter {
                 mErrorMessage = mContext.getString(R.string.error_connection);
             }
 
-            return result;
+            return null;
         }
 
         @Override
-        protected void onPostExecute(TargetModel user) {
+        protected void onPostExecute(Void v) {
             mMainMenuView.handleLoadingDialog(false);
 
             if (mErrorMessage != null) {
@@ -700,7 +692,7 @@ public class MainMenuPresenter {
                     throw new APIConnectionException(response);
                 }
 
-                AppPreference.getInstance().getSession().updateUserJson(response, mHttp);
+                AppPreference.getInstance().getSession().updateUserJson(response);
                 activeUser.email = param.getEmail();
                 activeUser.isTransactionalEmailsEnabled = param.isTransactionEmailEnabled();
                 activeUser.isProductEmailsEnabled = param.isProductEmailEnabled();
@@ -749,8 +741,7 @@ public class MainMenuPresenter {
                 JSONArray dataArrayJson = new JSONArray();
                 JSONObject dataTokenJson = new JSONObject();
                 dataTokenJson.put(CloudMessageInstantIdService.FIELD_NAME_TOKEN, token);
-                dataTokenJson.put(CloudMessageInstantIdService.FIELD_NAME_PLATFORM,
-                        CloudMessageInstantIdService.FIELD_VALUE_PLATFORM);
+                dataTokenJson.put(CloudMessageInstantIdService.FIELD_NAME_PLATFORM, AppPreference.PLATFORM);
                 dataArrayJson.put(dataTokenJson);
                 requestJson.put(CloudMessageInstantIdService.FIELD_NAME_DEVICE_ATTRIBUTES, dataArrayJson);
 
@@ -760,6 +751,88 @@ public class MainMenuPresenter {
             }
 
             return null;
+        }
+    }
+
+    private class SendReceiptCallback extends AsyncTask<IAPPurchaseModel, Void, IAPPurchaseModel> {
+        private String mErrorMessage = null;
+        private MetaModel mMetaError = null;
+
+        @Override
+        protected void onPreExecute() {
+            mMainMenuView.handleLoadingDialog(true);
+        }
+
+        @Override
+        protected IAPPurchaseModel doInBackground(IAPPurchaseModel... params) {
+            Headers headers = AppPreference.getInstance().getSession().getHeaders();
+            int userId = AppPreference.getInstance().getSession().getActiveUser().id;
+            String apiUrl = String.format(mContext.getString(R.string.api_send_receipt), userId);
+
+            IAPPurchaseModel param = params[0];
+
+            try {
+                JSONObject requestJson = new JSONObject();
+                requestJson.put("type", AppPreference.PLATFORM);
+                requestJson.put("purchase_token", param.purchaseToken);
+                requestJson.put("product_identifier", param.productId);
+                requestJson.put("transaction_identifier", param.orderId);
+
+                Log.d(AppPreference.DEBUG_APP, "Request query: " + requestJson.toString());
+
+                String response = mHttp.header(headers).request(requestJson.toString()).post(apiUrl);
+
+                JSONObject bodyJson = new JSONObject(response);
+                if(! bodyJson.isNull("meta")) {
+                    throw new APIConnectionException(response);
+                }
+
+                AppPreference.getInstance().getSession().updateUserJson(response);
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+                mErrorMessage = mContext.getString(R.string.error_buy_share);
+            } catch (APIConnectionException e) {
+                e.printStackTrace();
+                mMetaError = new MetaModel(e.getMessage());
+                mErrorMessage = mMetaError.getErrors();
+            }
+
+            return param;
+        }
+
+        @Override
+        protected void onPostExecute(IAPPurchaseModel purchasedItem) {
+            mMainMenuView.handleLoadingDialog(false);
+
+            if (mMetaError != null) {
+                if(mMetaError.getKeys().contains("")) { // TODO: Set correct key to check duplication error
+                    EventBus.getInstance().post(
+                            new SendReceiptCompleteEvent(SendReceiptCompleteEvent.State.Duplicated, purchasedItem, mMetaError));
+                } else {
+                    EventBus.getInstance().post(
+                            new SendReceiptCompleteEvent(SendReceiptCompleteEvent.State.Failed, purchasedItem, mMetaError));
+                }
+            } else if(mErrorMessage != null) {
+                JSONObject errorJSON = new JSONObject();
+                try {
+                    JSONArray errorMessageJSON =  new JSONArray();
+                    errorMessageJSON.put(mErrorMessage);
+
+                    JSONObject errorTypeJSON = new JSONObject();
+                    errorTypeJSON.put("", errorMessageJSON);
+
+                    errorJSON.put("errors", errorTypeJSON);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                mMetaError = new MetaModel(errorJSON);
+                EventBus.getInstance().post(
+                        new SendReceiptCompleteEvent(SendReceiptCompleteEvent.State.Failed, purchasedItem, mMetaError));
+            } else {
+                EventBus.getInstance().post(
+                        new SendReceiptCompleteEvent(SendReceiptCompleteEvent.State.Succeed, purchasedItem, null));
+            }
         }
     }
 }

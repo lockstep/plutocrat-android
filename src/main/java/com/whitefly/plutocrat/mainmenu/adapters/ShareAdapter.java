@@ -14,7 +14,9 @@ import android.widget.TextView;
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
+import com.whitefly.plutocrat.helpers.IAPHelper;
 import com.whitefly.plutocrat.mainmenu.events.BuySharesEvent;
+import com.whitefly.plutocrat.models.IAPPurchaseModel;
 import com.whitefly.plutocrat.models.ShareBundleModel;
 
 import java.util.ArrayList;
@@ -23,8 +25,6 @@ import java.util.ArrayList;
  * Created by Satjapot on 5/17/16 AD.
  */
 public class ShareAdapter extends RecyclerView.Adapter<ShareAdapter.ViewHolder> {
-    public static final String CURRENCY_FLOATING_FORMAT = "$%.2f";
-    public static final String CURRENCY_INTEGER_FORMAT = "$%.0f";
     private static final int AMOUNT_QTY_SMALL = 1;
     private static final int AMOUNT_QTY_MEDIUM = 10;
 
@@ -32,6 +32,7 @@ public class ShareAdapter extends RecyclerView.Adapter<ShareAdapter.ViewHolder> 
     private Context mContext;
     private ArrayList<ShareBundleModel> mDataSet;
     private String mShareCaption, mSharesCaption;
+    private String mCheckCaption, mGetCaption, mBuyCaption;
     private Drawable mBundleSmall, mBundleMedium, mBundleLarge;
     private View.OnClickListener mBuyClick;
 
@@ -47,6 +48,9 @@ public class ShareAdapter extends RecyclerView.Adapter<ShareAdapter.ViewHolder> 
 
         mShareCaption = mContext.getString(R.string.caption_share);
         mSharesCaption = mContext.getString(R.string.caption_shares);
+        mGetCaption = mContext.getString(R.string.caption_get);
+        mCheckCaption = mContext.getString(R.string.caption_check);
+        mBuyCaption = mContext.getString(R.string.caption_acquire);
 
         mBundleSmall = ContextCompat.getDrawable(context, R.drawable.single_share);
         mBundleMedium = ContextCompat.getDrawable(context, R.drawable.small_batch_share);
@@ -62,15 +66,6 @@ public class ShareAdapter extends RecyclerView.Adapter<ShareAdapter.ViewHolder> 
     }
 
     // Methods
-    public String getPriceString(float value) {
-        String result = "";
-        if(value == (int) value) {
-            result = String.format(CURRENCY_INTEGER_FORMAT, value);
-        } else {
-            result = String.format(CURRENCY_FLOATING_FORMAT, value);
-        }
-        return result;
-    }
 
     @Override
     public ShareAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -102,8 +97,8 @@ public class ShareAdapter extends RecyclerView.Adapter<ShareAdapter.ViewHolder> 
 
         if(model != null) {
             holder.tvQty.setText(String.valueOf(model.qty));
-            holder.tvPrice.setText(getPriceString(model.price));
-            holder.tvTotal.setText(getPriceString(model.getTotal()));
+            holder.tvPrice.setText(model.getPrice());
+            holder.tvTotal.setText(model.getTotalPrice());
 
             if(model.qty > AMOUNT_QTY_MEDIUM) {
                 holder.tvShareCaption.setText(mSharesCaption);
@@ -114,6 +109,20 @@ public class ShareAdapter extends RecyclerView.Adapter<ShareAdapter.ViewHolder> 
             } else {
                 holder.tvShareCaption.setText(mShareCaption);
                 holder.rloBundle.setBackground(mBundleSmall);
+            }
+
+            if(model.state == ShareBundleModel.State.Checking) {
+                holder.btnBuy.setText(mCheckCaption);
+                holder.btnBuy.setClickable(false);
+                holder.btnBuy.setEnabled(false);
+            } else if(model.state == ShareBundleModel.State.Get) {
+                holder.btnBuy.setText(mGetCaption);
+                holder.btnBuy.setClickable(true);
+                holder.btnBuy.setEnabled(true);
+            } else if(model.state == ShareBundleModel.State.Buy) {
+                holder.btnBuy.setText(mBuyCaption);
+                holder.btnBuy.setClickable(true);
+                holder.btnBuy.setEnabled(true);
             }
 
             holder.btnBuy.setTag(model);

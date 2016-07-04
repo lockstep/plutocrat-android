@@ -6,7 +6,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -56,7 +55,6 @@ import com.whitefly.plutocrat.models.UserModel;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -72,7 +70,6 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
     public static final long ONE_SECOND = 1000L;
 
     private static final int NUMBER_OF_DAY_TO_DEADLINE = 2;
-    private static final int TIME_5_MINUTES = 1000 * 60 * 5;
     private static final String NO_TIME_PREFIX = "";
 
     public enum State {
@@ -99,6 +96,7 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
     private TextView mTvHeader, mTvTime;
     private TextView mTvOwnerNickName, mTvOwnerName, mTvOwnerEmail;
     private TextView mTvThreatNickName, mTvThreatName, mTvThreatMatch, mTvThreatNote;
+    private TextView mTvSuccessCaption, mTvFailedCaption, mTvDefeatCaption;
     private TextView mTvSuccessValue, mTvFailedValue, mTvDefeatValue;
     private TextView mTvNote;
     private ImageView mImvOwnerPic, mImvThreatPic;
@@ -184,7 +182,6 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
             case Default:
                 // Change header
                 mTvHeader.setText(mHeaderDefault);
-                mTvTime.setText("3d 14h 11s");
                 mLloHeader.setBackground(mDefaultBG);
 
                 // Change layout
@@ -242,7 +239,6 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
             case Threat:
                 // Change header
                 mTvHeader.setText(mHeaderThreat);
-                mTvTime.setText("Deadline: 3d 14h 11s");
                 mLloHeader.setBackground(mThreatBG);
 
                 // Change layout
@@ -266,7 +262,6 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
             case Suspend:
                 // Change header
                 mTvHeader.setText(mHeaderSuspend);
-                mTvTime.setText("3d 14h 11s");
                 mLloHeader.setBackground(mThreatBG);
 
                 // Change layout
@@ -521,15 +516,16 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
         mBtnAcceptDefeat    = (Button) root.findViewById(R.id.btn_accept_defeat);
         mBtnFindTarget      = (Button) root.findViewById(R.id.btn_find_target);
         mBtnEnableNotification = (Button) root.findViewById(R.id.btn_enable_notice);
+        mTvSuccessCaption   = (TextView) root.findViewById(R.id.tv_home_success);
+        mTvFailedCaption    = (TextView) root.findViewById(R.id.tv_home_failed);
+        mTvDefeatCaption    = (TextView) root.findViewById(R.id.tv_home_defeat);
 
         // Initiate
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
                 mTvOwnerName, mTvOwnerEmail, mBtnOwnerPosition,
                 mTvThreatName, mTvThreatMatch, mTvThreatNote, mTvNote,
                 mBtnOwnerPosition, mBtnMatchShares, mBtnAcceptDefeat, mTvThreatNickName,
-                (TextView) root.findViewById(R.id.tv_home_success),
-                (TextView) root.findViewById(R.id.tv_home_failed),
-                (TextView) root.findViewById(R.id.tv_home_defeat));
+                mTvSuccessCaption, mTvFailedCaption, mTvDefeatCaption);
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Bold,
                 mTvSuccessValue, mTvFailedValue, mTvDefeatValue);
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Light, mTvHeader, mTvTime);
@@ -541,9 +537,10 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
             mTvThreatNote.setText(Html.fromHtml(getString(R.string.home_threat_content)));
         }
 
-        AppPreference.getInstance().getSession().getActiveUser().userNoticeId =
-                AppPreference.getInstance().getCurrentUserPersistence().noticeId;
-
+        if(AppPreference.getInstance().getCurrentUserPersistence() != null) {
+            AppPreference.getInstance().getSession().getActiveUser().userNoticeId =
+                    AppPreference.getInstance().getCurrentUserPersistence().noticeId;
+        }
         updateView();
 
         // Event Handler
@@ -628,8 +625,10 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
      */
     @Subscribe
     public void onMatchBuyOutCompleted(MatchBuyoutCompletedEvent event) {
-        if(mState == State.Threat) {
-            UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
+        UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
+
+        if(event.getResult() == MatchBuyoutCompletedEvent.Result.Failed
+                && activeUser.activeInboundBuyout != null) {
             Date issueDate = null;
 
             if (activeUser.activeInboundBuyout.deadlineAt == null) {
@@ -645,14 +644,9 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
             long elapseTime = issueDate.getTime() - currentTime.getTime();
 
             if (mState == State.Threat && elapseTime < 0L) {
-                showSuspendErrorDialog();
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mSuspendingErrorDialog.dismiss();
-                        EventBus.getInstance().post(new AttackTimeOutEvent());
-                    }
-                }, TIME_5_MINUTES);
+                EventBus.getInstance().post(new FailMatchBuyoutEvent());
+            } else {
+                EventBus.getInstance().post(new SetHomeStateEvent());
             }
         } else {
             EventBus.getInstance().post(new SetHomeStateEvent());

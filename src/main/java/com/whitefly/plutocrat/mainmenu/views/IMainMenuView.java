@@ -1,5 +1,7 @@
 package com.whitefly.plutocrat.mainmenu.views;
 
+import android.support.annotation.Nullable;
+
 import com.whitefly.plutocrat.models.MetaModel;
 import com.whitefly.plutocrat.models.NewBuyoutModel;
 import com.whitefly.plutocrat.models.TargetModel;
@@ -12,7 +14,7 @@ public interface IMainMenuView {
     void goToShareFromInitiate();
     void callInitiateDialog(TargetModel target, NewBuyoutModel newBuyout);
     void toast(String text);
-    void buyIAP(String sku, String payload);
+    void buyIAP(String sku, @Nullable String payload);
     void handleLoadingDialog(boolean isShow);
     void handleError(String title, String message, MetaModel meta);
     void closeInitiatePage(boolean isSuccess);

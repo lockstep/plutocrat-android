@@ -24,6 +24,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -90,7 +91,7 @@ public class AccountSettingFragment extends DialogFragment
     private Button mBtnSave;
     private LinearLayout mLloBack;
 
-    private AlertDialog mLoadingDialog;
+    private Dialog mLoadingDialog;
     private TextView mTvLoadingMessage;
 
     /**
@@ -159,7 +160,7 @@ public class AccountSettingFragment extends DialogFragment
         mIsCreateView = false;
     }
 
-    public AlertDialog getLoadingDialog(String message) {
+    public Dialog getLoadingDialog(String message) {
         if(message == null) {
             mTvLoadingMessage.setText(getString(R.string.loading_default));
         } else {
@@ -172,11 +173,11 @@ public class AccountSettingFragment extends DialogFragment
         View root = inflater.inflate(R.layout.dialog_loading, parent, false);
         mTvLoadingMessage = (TextView) root.findViewById(R.id.tv_loading_message);
 
-        mLoadingDialog = new AlertDialog.Builder(getActivity())
-                .setView(root)
-                .setCancelable(false)
-                .create();
+        mLoadingDialog = new Dialog(getActivity());
+        mLoadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mLoadingDialog.setContentView(root);
         mLoadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        mLoadingDialog.setCancelable(false);
     }
 
     private void showErrorDialog(String title, String message) {

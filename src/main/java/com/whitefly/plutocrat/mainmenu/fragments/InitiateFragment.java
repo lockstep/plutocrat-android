@@ -15,6 +15,7 @@ import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -67,7 +68,7 @@ public class InitiateFragment extends DialogFragment {
     private AlertDialog mShareDialog, mBuyMoreDialog;
     private CustomTypefaceSpan mFontSpan;
 
-    private AlertDialog mLoadingDialog;
+    private Dialog mLoadingDialog;
     private TextView mTvLoadingMessage;
 
     /**
@@ -91,7 +92,7 @@ public class InitiateFragment extends DialogFragment {
     }
 
     // Methods
-    public AlertDialog getLoadingDialog(String message) {
+    public Dialog getLoadingDialog(String message) {
         if(message == null) {
             mTvLoadingMessage.setText(getString(R.string.loading_default));
         } else {
@@ -158,11 +159,12 @@ public class InitiateFragment extends DialogFragment {
         View root = inflater.inflate(R.layout.dialog_loading, parent, false);
         mTvLoadingMessage = (TextView) root.findViewById(R.id.tv_loading_message);
 
-        mLoadingDialog = new AlertDialog.Builder(getActivity())
-                .setView(root)
-                .setCancelable(false)
-                .create();
+
+        mLoadingDialog = new Dialog(getActivity());
+        mLoadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mLoadingDialog.setContentView(root);
         mLoadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        mLoadingDialog.setCancelable(false);
     }
 
     @Override

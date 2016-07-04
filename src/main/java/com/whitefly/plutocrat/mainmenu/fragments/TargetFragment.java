@@ -1,5 +1,6 @@
 package com.whitefly.plutocrat.mainmenu.fragments;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -27,6 +28,7 @@ import com.whitefly.plutocrat.mainmenu.views.events.LoadPlutocratCompletedEvent;
 import com.whitefly.plutocrat.mainmenu.views.events.LoadTargetCompletedEvent;
 import com.whitefly.plutocrat.models.MetaModel;
 import com.whitefly.plutocrat.models.TargetModel;
+import com.whitefly.plutocrat.models.UserModel;
 
 import java.util.ArrayList;
 
@@ -54,6 +56,7 @@ public class TargetFragment extends Fragment implements ITabView {
     private LinearLayout mLloPlutocrat, mLloNoPlutocrat;
     private Button mBtnEngage;
     private TextView mTvPlutocratNickname, mTvPlutocratName, mTvPlutocratBuyouts, mTvEmpty;
+    private TextView mTvPlutocratGameStatus;
 
     /**
      * Use this factory method to create a new instance of
@@ -68,6 +71,7 @@ public class TargetFragment extends Fragment implements ITabView {
 
     // Methods
     private void changeState(HeaderState state, TargetModel user) {
+        UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
         mState = state;
         switch (mState) {
             case Plutocrat:
@@ -78,6 +82,22 @@ public class TargetFragment extends Fragment implements ITabView {
                 mTvPlutocratName.setText(user.name);
                 mTvPlutocratBuyouts.setText(
                         String.format(getString(R.string.value_plutocrat_buyouts), user.numSuccessfulBuyout));
+
+                if(activeUser.id == user.id) {
+                    mBtnEngage.setVisibility(View.GONE);
+                    mTvPlutocratGameStatus.setVisibility(View.GONE);
+                } else {
+                    mBtnEngage.setVisibility(View.VISIBLE);
+                    mTvPlutocratGameStatus.setVisibility(View.VISIBLE);
+                }
+
+                if(mBtnEngage.getVisibility() == View.VISIBLE && user.isUnderBuyoutThreat) {
+                    mBtnEngage.setVisibility(View.GONE);
+                    mTvPlutocratGameStatus.setVisibility(View.VISIBLE);
+                } else {
+                    mBtnEngage.setVisibility(View.VISIBLE);
+                    mTvPlutocratGameStatus.setVisibility(View.GONE);
+                }
                 break;
             case NoPlutocrat:
                 mLloPlutocrat.setVisibility(View.GONE);
@@ -87,21 +107,28 @@ public class TargetFragment extends Fragment implements ITabView {
     }
 
     public void updateList() {
+        EventBus.getInstance().post(new GetPlutocratEvent());
         mAdapter.notifyDataSetChanged();
+    }
+
+
+    public void reload() {
+        cpage = FIRST_PAGE;
+        EventBus.getInstance().post(new LoadTargetsEvent(cpage, TARGET_USERS_PER_PAGE));
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        EventBus.getInstance().register(this);
+        EventBus.register(this);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
 
-        EventBus.getInstance().unregister(this);
+        EventBus.unregister(this);
     }
 
     @Nullable
@@ -118,6 +145,7 @@ public class TargetFragment extends Fragment implements ITabView {
         mTvPlutocratNickname = (TextView) root.findViewById(R.id.tv_plutocrat_profile_nickname);
         mTvPlutocratName = (TextView) root.findViewById(R.id.tv_plutocrat_name);
         mTvPlutocratBuyouts = (TextView) root.findViewById(R.id.tv_plutocrat_buyouts);
+        mTvPlutocratGameStatus = (TextView) root.findViewById(R.id.tv_plutocrat_game_status);
         mTvEmpty = (TextView) root.findViewById(R.id.tv_empty);
         mBtnEngage = (Button) root.findViewById(R.id.btn_player_engage);
 
@@ -126,23 +154,23 @@ public class TargetFragment extends Fragment implements ITabView {
                 mTvPlutocratNickname, mTvPlutocratName, mTvPlutocratBuyouts, mBtnEngage,
                 (TextView) root.findViewById(R.id.tv_plutocrat_caption));
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Bold, mTvEmpty);
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Italic, mTvPlutocratGameStatus);
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Light,
                 (TextView) root.findViewById(R.id.tv_no_plutocrat));
 
         ArrayList<TargetModel> dataset = new ArrayList<>();
         dataset.add(null);
+        mAdapter = new TargetAdapter(getActivity(), dataset);
 
         mRvMain.setHasFixedSize(true);
         mRvMain.setLayoutManager(new LinearLayoutManager(getContext()));
         mRvMain.setNestedScrollingEnabled(true);
-        mAdapter = new TargetAdapter(getActivity(), dataset);
         mRvMain.setAdapter(mAdapter);
 
-        EventBus.getInstance().post(new GetPlutocratEvent());
-
-        updateView();
+        mSRLMain.setVisibility(View.VISIBLE);
 
         cpage = FIRST_TIME_PAGE;
+        EventBus.getInstance().post(new GetPlutocratEvent());
 
         // Event Handler
         mSRLMain.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

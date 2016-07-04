@@ -1,6 +1,7 @@
 package com.whitefly.plutocrat.mainmenu;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,11 +27,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.squareup.otto.Subscribe;
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.exception.IAPException;
 import com.whitefly.plutocrat.helpers.AppPreference;
@@ -41,6 +45,8 @@ import com.whitefly.plutocrat.helpers.text.CustomTypefaceSpan;
 import com.whitefly.plutocrat.helpers.view.CustomViewPager;
 import com.whitefly.plutocrat.login.LoginActivity;
 import com.whitefly.plutocrat.login.views.ILoginView;
+import com.whitefly.plutocrat.mainmenu.events.SendReceiptEvent;
+import com.whitefly.plutocrat.mainmenu.events.SetHomeStateEvent;
 import com.whitefly.plutocrat.mainmenu.events.SignOutEvent;
 import com.whitefly.plutocrat.mainmenu.fragments.AboutFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.AccountSettingFragment;
@@ -55,6 +61,8 @@ import com.whitefly.plutocrat.mainmenu.views.IAccountSettingView;
 import com.whitefly.plutocrat.mainmenu.views.IHomeView;
 import com.whitefly.plutocrat.mainmenu.views.IMainMenuView;
 import com.whitefly.plutocrat.mainmenu.views.ITabView;
+import com.whitefly.plutocrat.mainmenu.views.events.MatchBuyoutCompletedEvent;
+import com.whitefly.plutocrat.models.IAPItemDetailModel;
 import com.whitefly.plutocrat.models.IAPPurchaseModel;
 import com.whitefly.plutocrat.models.MetaModel;
 import com.whitefly.plutocrat.models.NewBuyoutModel;
@@ -83,7 +91,8 @@ public class MainMenuActivity extends AppCompatActivity
 
     private DialogFragment mFrgAccountSetting;
     private IAPHelper mIAPHelper;
-    private AlertDialog mLoadingDialog, mErrorDialog;
+    private AlertDialog mErrorDialog;
+    private Dialog mLoadingDialog;
     private TextView mTvLoadingMessage;
     private CustomTypefaceSpan mFontSpan;
     private FormValidationHelper mValidator;
@@ -100,11 +109,11 @@ public class MainMenuActivity extends AppCompatActivity
         View root = getLayoutInflater().inflate(R.layout.dialog_loading, null, false);
         mTvLoadingMessage = (TextView) root.findViewById(R.id.tv_loading_message);
 
-        mLoadingDialog = new AlertDialog.Builder(this)
-                .setView(root)
-                .setCancelable(false)
-                .create();
+        mLoadingDialog = new Dialog(this);
+        mLoadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mLoadingDialog.setContentView(root);
         mLoadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        mLoadingDialog.setCancelable(false);
     }
 
     public void suspendMenu() {
@@ -146,6 +155,13 @@ public class MainMenuActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
+        AppPreference.getInstance().getSession().loadPlutocrat();
+        AppPreference.getInstance().onLoadInstanceState(savedInstanceState);
+
+        Log.d(AppPreference.DEBUG_APP, "FCM ID: " + FirebaseInstanceId.getInstance().getToken());
+
+        EventBus.getInstance().register(this);
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -166,9 +182,6 @@ public class MainMenuActivity extends AppCompatActivity
         // Initialize
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
                 (TextView) navigationView.findViewById(R.id.tv_nav_license));
-
-        AppPreference.getInstance().getSession().loadPlutocrat();
-        AppPreference.getInstance().onLoadInstanceState(savedInstanceState);
 
         mFontSpan =
                 new CustomTypefaceSpan("", AppPreference.getInstance().getFont(AppPreference.FontType.Regular));
@@ -237,11 +250,10 @@ public class MainMenuActivity extends AppCompatActivity
         createLoadingDialog();
 
         // Event Handler
-        mIAPHelper.setIAPProcessListener(new IAPHelper.IAPProcessListener() {
+        mIAPHelper.addIAPProcessListener(new IAPHelper.IAPProcessListener() {
             @Override
             public void onBuySuccess(int resultCode, IAPPurchaseModel model) {
-                // TODO: Delete Debug
-//                mIAPHelper.consume(model.purchaseToken);
+                EventBus.getInstance().post(new SendReceiptEvent(model));
             }
 
             @Override
@@ -253,7 +265,29 @@ public class MainMenuActivity extends AppCompatActivity
             public void onConsumed(int resultCode) {
                 Log.d(AppPreference.DEBUG_APP, "IAP Consumed Code:" + resultCode);
             }
+
+            @Override
+            public void onPurchasedItemLoaded(int resultCode, ArrayList<IAPPurchaseModel> items) {
+
+            }
+
+            @Override
+            public void onProcessing(int methodId, ProcessState state) {
+
+            }
+
+            @Override
+            public void onItemDetailsLoaded(int resultCode, ArrayList<IAPItemDetailModel> itemDetails) {
+
+            }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        EventBus.getInstance().post(new SetHomeStateEvent());
     }
 
     @Override
@@ -320,19 +354,21 @@ public class MainMenuActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
-        EventBus.getInstance().register(presenter);
+        EventBus.register(presenter);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        EventBus.getInstance().unregister(presenter);
+        EventBus.unregister(presenter);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        EventBus.register(presenter);
 
         mIAPHelper.onActivityResult(requestCode, resultCode, data);
 
@@ -345,6 +381,8 @@ public class MainMenuActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        EventBus.getInstance().unregister(this);
 
         mIAPHelper.onDestroy();
         if(presenter != null) {
@@ -434,7 +472,7 @@ public class MainMenuActivity extends AppCompatActivity
 
     @Override
     public void handleLoadingDialog(boolean isShow) {
-        AlertDialog alertLoading = mLoadingDialog;
+        Dialog alertLoading = mLoadingDialog;
         DialogFragment initiatePage = (DialogFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INITIATE);
         if(initiatePage != null && initiatePage instanceof InitiateFragment) {
             alertLoading = ((InitiateFragment) initiatePage).getLoadingDialog(null);
@@ -457,16 +495,22 @@ public class MainMenuActivity extends AppCompatActivity
             ((DialogFragment) getFragmentManager().findFragmentByTag(FRAGMENT_INITIATE)).dismiss();
 
             ((TargetFragment) mAdapter.getItem(FRAGMENT_TARGETS_INDEX)).updateList();
+            ((BuyoutFragment) mAdapter.getItem(FRAGMENT_BUYOUTS_INDEX)).reload();
+            ((ShareFragment) mAdapter.getItem(FRAGMENT_SHARES_INDEX)).updateView();
         }
     }
 
     @Override
     public void handleError(String title, String message, MetaModel meta) {
-        Set<String> keys = meta.getKeys();
-        for(String key : keys) {
-            String name = mValidator.getName(key);
-            if(name != null) {
-                message = String.format("%s %s", name, meta.getValue(key));
+        if(isDestroyed()) return;
+
+        if(meta != null) {
+            Set<String> keys = meta.getKeys();
+            for (String key : keys) {
+                String name = mValidator.getName(key);
+                if (name != null) {
+                    message = String.format("%s %s", name, meta.getValue(key));
+                }
             }
         }
 
@@ -489,5 +533,16 @@ public class MainMenuActivity extends AppCompatActivity
                     }
                 })
                 .show();
+    }
+
+    /*
+    Event Bus
+     */
+    @Subscribe
+    public void onMatchBuyOutCompleted(MatchBuyoutCompletedEvent event) {
+        if(event.getResult() == MatchBuyoutCompletedEvent.Result.Matched) {
+            ((TargetFragment) mAdapter.getItem(FRAGMENT_TARGETS_INDEX)).reload();
+            ((BuyoutFragment) mAdapter.getItem(FRAGMENT_BUYOUTS_INDEX)).reload();
+        }
     }
 }
