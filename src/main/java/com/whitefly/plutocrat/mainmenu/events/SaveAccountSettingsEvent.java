@@ -3,6 +3,7 @@ package com.whitefly.plutocrat.mainmenu.events;
 import android.graphics.Bitmap;
 
 import com.google.gson.annotations.SerializedName;
+import com.whitefly.plutocrat.mainmenu.views.IAccountSettingView;
 
 /**
  * Created by satjapotiamopas on 5/25/16 AD.
@@ -27,6 +28,8 @@ public class SaveAccountSettingsEvent {
 
     @SerializedName("product_emails_enabled")
     private boolean mIsProductEmailEnabled;
+
+    private transient IAccountSettingView mResponseView;
 
     public Bitmap getProfilePicture() {
         return mProfilePicture;
@@ -56,9 +59,14 @@ public class SaveAccountSettingsEvent {
         return mIsProductEmailEnabled;
     }
 
+    public IAccountSettingView getResponseView() {
+        return mResponseView;
+    }
+
     public SaveAccountSettingsEvent(Bitmap profilePicture, String displayName, String email,
                                     String newPassword, String currentPassword,
-                                    boolean isTransactionEmailEnabled, boolean isProductEmailEnabled) {
+                                    boolean isTransactionEmailEnabled, boolean isProductEmailEnabled,
+                                    IAccountSettingView reponseView) {
         mProfilePicture = profilePicture;
         mDisplayName = displayName;
         mEmail = email;
@@ -66,5 +74,6 @@ public class SaveAccountSettingsEvent {
         mCurrentPassword = currentPassword;
         mIsTransactionEmailEnabled = isTransactionEmailEnabled;
         mIsProductEmailEnabled = isProductEmailEnabled;
+        mResponseView = reponseView;
     }
 }

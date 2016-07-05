@@ -44,16 +44,16 @@ import com.whitefly.plutocrat.helpers.IAPHelper;
 import com.whitefly.plutocrat.helpers.text.CustomTypefaceSpan;
 import com.whitefly.plutocrat.helpers.view.CustomViewPager;
 import com.whitefly.plutocrat.login.LoginActivity;
+import com.whitefly.plutocrat.login.fragments.WebViewFragment;
 import com.whitefly.plutocrat.login.views.ILoginView;
 import com.whitefly.plutocrat.mainmenu.events.SendReceiptEvent;
 import com.whitefly.plutocrat.mainmenu.events.SetHomeStateEvent;
 import com.whitefly.plutocrat.mainmenu.events.SignOutEvent;
-import com.whitefly.plutocrat.mainmenu.fragments.AboutFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.AccountSettingFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.BuyoutFragment;
-import com.whitefly.plutocrat.mainmenu.fragments.FAQFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.HomeFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.InitiateFragment;
+import com.whitefly.plutocrat.mainmenu.fragments.SettingsFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.ShareFragment;
 import com.whitefly.plutocrat.mainmenu.fragments.TargetFragment;
 import com.whitefly.plutocrat.mainmenu.presenters.MainMenuPresenter;
@@ -77,7 +77,7 @@ public class MainMenuActivity extends AppCompatActivity
     public static final int FRAGMENT_TARGETS_INDEX = 1;
     public static final int FRAGMENT_BUYOUTS_INDEX = 2;
     public static final int FRAGMENT_SHARES_INDEX = 3;
-    public static final int FRAGMENT_ABOUT_INDEX = 4;
+    public static final int FRAGMENT_ACCOUNT_INDEX = 4;
 
     private static final int SLOP_PERIOD = 180;
 
@@ -122,7 +122,7 @@ public class MainMenuActivity extends AppCompatActivity
         mTabLayout.getTabAt(FRAGMENT_TARGETS_INDEX).getCustomView().setVisibility(View.GONE);
         mTabLayout.getTabAt(FRAGMENT_BUYOUTS_INDEX).getCustomView().setVisibility(View.GONE);
         mTabLayout.getTabAt(FRAGMENT_SHARES_INDEX).getCustomView().setVisibility(View.GONE);
-        mTabLayout.getTabAt(FRAGMENT_ABOUT_INDEX).getCustomView().setVisibility(View.GONE);
+        mTabLayout.getTabAt(FRAGMENT_ACCOUNT_INDEX).getCustomView().setVisibility(View.GONE);
     }
 
     public void activateMenu() {
@@ -131,7 +131,7 @@ public class MainMenuActivity extends AppCompatActivity
         mTabLayout.getTabAt(FRAGMENT_TARGETS_INDEX).getCustomView().setVisibility(View.VISIBLE);
         mTabLayout.getTabAt(FRAGMENT_BUYOUTS_INDEX).getCustomView().setVisibility(View.VISIBLE);
         mTabLayout.getTabAt(FRAGMENT_SHARES_INDEX).getCustomView().setVisibility(View.VISIBLE);
-        mTabLayout.getTabAt(FRAGMENT_ABOUT_INDEX).getCustomView().setVisibility(View.VISIBLE);
+        mTabLayout.getTabAt(FRAGMENT_ACCOUNT_INDEX).getCustomView().setVisibility(View.VISIBLE);
     }
 
     public void showAccountSettingFragment() {
@@ -204,8 +204,7 @@ public class MainMenuActivity extends AppCompatActivity
         }
         if(presenter == null) {
             presenter = new MainMenuPresenter(this, this,
-                    (IHomeView) mAdapter.getItem(FRAGMENT_HOME_INDEX),
-                    (IAccountSettingView) mFrgAccountSetting);
+                    (IHomeView) mAdapter.getItem(FRAGMENT_HOME_INDEX));
         }
         mMainPager.setAdapter(mAdapter);
         mMainPager.setOffscreenPageLimit(mAdapter.getCount());
@@ -340,7 +339,10 @@ public class MainMenuActivity extends AppCompatActivity
         } else if (id == R.id.nav_faq) {
             android.app.FragmentTransaction t = getFragmentManager().beginTransaction();
 
-            FAQFragment.newInstance().show(t, FRAGMENT_FAQ);
+            WebViewFragment faqFragment = WebViewFragment.newInstance();
+            faqFragment.loadUrl(getString(R.string.about_url));
+            faqFragment.setTitle(getString(R.string.title_faq));
+            faqFragment.show(t, FRAGMENT_FAQ);
         } else if (id == R.id.nav_signout) {
             EventBus.getInstance().post(new SignOutEvent());
 
@@ -415,7 +417,7 @@ public class MainMenuActivity extends AppCompatActivity
             mFragments.add(TargetFragment.newInstance());
             mFragments.add(BuyoutFragment.newInstance());
             mFragments.add(ShareFragment.newInstance());
-            mFragments.add(AboutFragment.newInstance());
+            mFragments.add(SettingsFragment.newInstance());
         }
 
         @Override

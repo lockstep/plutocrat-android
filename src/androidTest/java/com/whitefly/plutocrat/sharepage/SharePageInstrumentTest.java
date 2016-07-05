@@ -101,7 +101,7 @@ public class SharePageInstrumentTest {
             public void closeInitiatePage(boolean isSuccess) {
 
             }
-        }, null, null);
+        }, null);
         Object callback = new Object() {
             @Subscribe
             public void onSendReceiptComplete(SendReceiptCompleteEvent event) {
@@ -169,7 +169,7 @@ public class SharePageInstrumentTest {
             public void closeInitiatePage(boolean isSuccess) {
 
             }
-        }, null, null);
+        }, null);
         Object callback = new Object() {
             @Subscribe
             public void onSendReceiptComplete(SendReceiptCompleteEvent event) {

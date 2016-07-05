@@ -170,5 +170,7 @@ public class BuyoutFragment extends Fragment implements ITabView {
         // Switch off all loading widget
         mSRLMain.setRefreshing(false);
         mSRLEmpty.setRefreshing(false);
+
+        updateView();
     }
 }
