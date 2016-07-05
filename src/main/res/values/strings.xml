@@ -191,12 +191,12 @@
     <string-array name="iap_item_list">
         <item>com.whiteflyventuresinc.plutocrat.shares.1</item>
         <item>com.whiteflyventuresinc.plutocrat.shares.5</item>
+        <item>com.whiteflyventuresinc.plutocrat.shares.11</item>
         <item>com.whiteflyventuresinc.plutocrat.shares.10</item>
         <item>com.whiteflyventuresinc.plutocrat.shares.25</item>
         <item>com.whiteflyventuresinc.plutocrat.shares.50</item>
         <item>com.whiteflyventuresinc.plutocrat.shares.75</item>
         <item>com.whiteflyventuresinc.plutocrat.shares.100</item>
-        <item>com.whiteflyventuresinc.plutocrat.shares.200</item>
-        <item>com.whiteflyventuresinc.plutocrat.shares.400</item>
+        <item>com.whiteflyventuresinc.plutocrat.shares.500</item>
     </string-array>
 </resources>
