@@ -23,6 +23,7 @@ import com.whitefly.plutocrat.models.IAPItemDetailModel;
 import com.whitefly.plutocrat.models.IAPPurchaseModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.UUID;
 
 /**
@@ -193,15 +194,13 @@ public class IAPHelper {
     }
 
     public void getPurchased() {
-        AsyncTaskCompat.executeParallel(new IAP_GetPurchasedCallback(), null);
+        AsyncTaskCompat.executeParallel(new IAP_GetPurchasedCallback(), (String) null);
     }
 
     public void getItemDetails(String[] itemIds) {
         if(itemIds.length == 0) return;
         ArrayList<String> idList = new ArrayList<>();
-        for(String itemId : itemIds) {
-            idList.add(itemId);
-        }
+        Collections.addAll(idList, itemIds);
         Bundle bundle = new Bundle();
         bundle.putStringArrayList(IAP_BUNDLE_GET_ITEM_DETAIL, idList);
 

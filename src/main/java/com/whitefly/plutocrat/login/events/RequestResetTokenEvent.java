@@ -10,7 +10,7 @@ public class RequestResetTokenEvent {
     private boolean mSubmitClick;
 
     // Getter Methods
-    public String getmEmail() {
+    public String getEmail() {
         return mEmail;
     }
 

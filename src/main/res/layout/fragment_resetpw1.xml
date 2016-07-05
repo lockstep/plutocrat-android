@@ -66,9 +66,11 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
                     android:id="@+id/edt_reset1_email"
                     android:hint="@string/caption_email"
-                    style="@style/LoginEditText"/>
+                    style="@style/LoginEditText"
+                    android:imeOptions="actionDone"/>
 
                 <Button
                     android:layout_width="wrap_content"

@@ -14,13 +14,18 @@ public class FormValidationHelper {
     private static final String MESSAGE_DEFAULT_REQUIRED = "%s is required.";
     private static final String MESSAGE_DEFAULT_MATCHED = "%s is not matched.";
     private static final String MESSAGE_DEFAULT_CUSTOM = "%s %s.";
+    private static final String MESSAGE_DEFAULT_CUSTOM_NAME_OMITTED = "%s.";
 
     private HashMap<String, EditText> mWhereViewList;
     private HashMap<String, String> mNameList;
 
+    private String mCustomMessageFormat;
+
     public FormValidationHelper() {
         mWhereViewList = new HashMap<>();
         mNameList = new HashMap<>();
+
+        mCustomMessageFormat = MESSAGE_DEFAULT_CUSTOM;
     }
 
     public FormValidationHelper addView(String id, String name, @Nullable EditText view) {
@@ -28,6 +33,10 @@ public class FormValidationHelper {
         mNameList.put(id, name);
 
         return this;
+    }
+
+    public void omitNameOfCustomMessage() {
+        mCustomMessageFormat = MESSAGE_DEFAULT_CUSTOM_NAME_OMITTED;
     }
 
     public EditText getView(String id) {
@@ -100,7 +109,11 @@ public class FormValidationHelper {
             EditText view = getView(id);
             String name = getName(id);
 
-            mException.addItem(view, String.format(MESSAGE_DEFAULT_CUSTOM, name, message));
+            if(mCustomMessageFormat == MESSAGE_DEFAULT_CUSTOM_NAME_OMITTED) {
+                mException.addItem(view, String.format(mCustomMessageFormat, message));
+            } else {
+                mException.addItem(view, String.format(mCustomMessageFormat, name, message));
+            }
             return this;
         }
 

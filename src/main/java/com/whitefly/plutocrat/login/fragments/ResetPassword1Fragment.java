@@ -10,19 +10,27 @@ import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.StyleSpan;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.squareup.otto.Subscribe;
 import com.whitefly.plutocrat.R;
+import com.whitefly.plutocrat.exception.FormValidationException;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
+import com.whitefly.plutocrat.helpers.FormValidationHelper;
 import com.whitefly.plutocrat.login.events.BackToLoginEvent;
 import com.whitefly.plutocrat.login.events.RequestResetTokenEvent;
+import com.whitefly.plutocrat.login.events.ResetPassword1ErrorEvent;
 import com.whitefly.plutocrat.login.views.ILoginView;
+import com.whitefly.plutocrat.models.MetaModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,6 +38,7 @@ import com.whitefly.plutocrat.login.views.ILoginView;
 public class ResetPassword1Fragment extends Fragment {
 
     // Attributes
+    private FormValidationHelper mFormValidator;
 
     // Views
     private Button mBtnSubmit;
@@ -51,6 +60,17 @@ public class ResetPassword1Fragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mFormValidator = new FormValidationHelper();
+        EventBus.getInstance().register(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        EventBus.getInstance().unregister(this);
+        mEdtEmail.setError(null);
     }
 
     public ResetPassword1Fragment() {
@@ -75,11 +95,15 @@ public class ResetPassword1Fragment extends Fragment {
                 mBtnLoginLink, mEdtEmail, mTvTitle, mTvContent, mTvResetCaption, mTvNote,
                 mBtnLoginLink, mBtnRegisterLink, mBtnSubmit);
 
+        mFormValidator.addView("email", "E-mail", mEdtEmail);
+        mFormValidator.omitNameOfCustomMessage();
+
         Spannable note = SpannableString.valueOf(getString(R.string.havetoken_content));
         ClickableSpan span = new ClickableSpan() {
             @Override
             public void onClick(View widget) {
-                EventBus.getInstance().post(new RequestResetTokenEvent("", false));
+                String email = mEdtEmail.getText().toString();
+                EventBus.getInstance().post(new RequestResetTokenEvent(email, false));
             }
 
             @Override
@@ -97,6 +121,11 @@ public class ResetPassword1Fragment extends Fragment {
         mBtnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                InputMethodManager imm =
+                        (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+
                 String email = mEdtEmail.getText().toString();
                 EventBus.getInstance().post(new RequestResetTokenEvent(email, true));
             }
@@ -113,8 +142,25 @@ public class ResetPassword1Fragment extends Fragment {
                 EventBus.getInstance().post(new BackToLoginEvent(ILoginView.ViewState.Register));
             }
         });
+        mEdtEmail.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId == EditorInfo.IME_ACTION_DONE) {
+                    mBtnSubmit.performClick();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         return root;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        mEdtEmail.setText("");
     }
 
     @Override
@@ -125,6 +171,27 @@ public class ResetPassword1Fragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    @Subscribe
+    public void onResetPassword1Error(ResetPassword1ErrorEvent event) {
+        MetaModel meta = event.getMetaModel();
+        try {
+            FormValidationHelper.ValidationRule rules = mFormValidator.begin();
+            for(String key : meta.getKeys()) {
+                rules.ruleRaiseError(key, meta.getValue(key));
+            }
+            rules.validate();
+        } catch (FormValidationException e) {
+            e.printStackTrace();
+
+            for(FormValidationException.ValidationItem item : e.getItems()) {
+                item.raiseError();
+            }
+            if(e.getItems().size() > 0) {
+                e.getItems().get(0).getView().requestFocus();
+            }
+        }
     }
 
 }
