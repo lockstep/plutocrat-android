@@ -373,12 +373,6 @@ public class SettingsFragment extends Fragment
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        ((MainMenuActivity) getActivity()).updateCurrentTab();
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
 

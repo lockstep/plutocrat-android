@@ -13,7 +13,12 @@
     <string name="welcome_title">Welcome to Plutocrat</string>
     <string name="welcome_content"><![CDATA[Use Shares to buy out other players.<br /> The player with the most buyouts is the Plutocrat.<br /> Match buyout offers to stay in the game.<br /> <br /> Failing to match a buyout within 48 hours results in <strong>permanent account suspension</strong>. Your remaining shares go to victor.]]></string>
     <string name="register_title">Register</string>
-
+    <string name="caption_create_new_member">Create new member</string>
+    <string name="caption_forgot_password">Forgot password?</string>
+    <string name="caption_register_agreement">by registering you agree to:</string>
+    <string name="caption_already_member">Already a member? Login</string>
+    <string name="caption_or">or</string>
+    <string name="caption_accept">Accept</string>
     <string name="caption_enter">Enter</string>
     <string name="caption_login">Login</string>
     <string name="caption_back">Back</string>
@@ -34,7 +39,7 @@
     <string name="caption_requestrstoken">Request Reset Token</string>
     <string name="signin_title">Sign in</string>
     <string name="caption_submit">Submit</string>
-    <string name="havetoken_content">Tab here if you already have a password reset token. Note: Tokens expire after a few hours.</string>
+    <string name="have_token_content">Tab here if you already have a password reset token. Note: Tokens expire after a few hours.</string>
     <string name="caption_pwreset2">Password Reset: Step 2</string>
     <string name="pwreset2_content">Copy and paste the password reset token form your email into the form below and enter a new password.</string>
     <string name="caption_resetpw">Reset Password</string>

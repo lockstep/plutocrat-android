@@ -76,7 +76,9 @@ public class AppPreference {
     }
 
     public Typeface getFont(FontType type) {
-        if(mFonts == null) return null;
+        if(mFonts == null) {
+            loadFonts(mContext);
+        }
         return mFonts.get(type);
     }
 
