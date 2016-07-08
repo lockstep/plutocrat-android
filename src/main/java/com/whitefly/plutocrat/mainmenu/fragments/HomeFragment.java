@@ -26,7 +26,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -39,7 +38,6 @@ import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.helpers.text.CustomTypefaceSpan;
 import com.whitefly.plutocrat.mainmenu.MainMenuActivity;
 import com.whitefly.plutocrat.mainmenu.events.AttackTimeOutEvent;
-import com.whitefly.plutocrat.mainmenu.events.CheckNotificationEnableEvent;
 import com.whitefly.plutocrat.mainmenu.events.EnablePushNotificationEvent;
 import com.whitefly.plutocrat.mainmenu.events.FailMatchBuyoutEvent;
 import com.whitefly.plutocrat.mainmenu.events.MatchBuyoutEvent;
@@ -127,14 +125,14 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         EventBus.getInstance().post(new EnablePushNotificationEvent());
-                        EventBus.getInstance().post(new UpdateUserNoticeIdEvent(UserModel.NOTICE_DEFAULT));
+                        EventBus.getInstance().post(new UpdateUserNoticeIdEvent(UserModel.NOTICE_FIND_TARGET));
                         dialog.dismiss();
                     }
                 })
                 .setNegativeButton(negativeText, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        EventBus.getInstance().post(new UpdateUserNoticeIdEvent(UserModel.NOTICE_DEFAULT));
+                        EventBus.getInstance().post(new UpdateUserNoticeIdEvent(UserModel.NOTICE_FIND_TARGET));
                         dialog.dismiss();
                     }
                 })
@@ -196,7 +194,7 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
                 mLloNote.setBackground(null);
 
                 switch(noticeId) {
-                    case UserModel.NOTICE_GETTING_STARTED:
+                    case UserModel.NOTICE_FIND_TARGET:
                         mLloFindTargetDefaultNote.setVisibility(View.VISIBLE);
                         mLloEnableNotificationNote.setVisibility(View.GONE);
                         mLloNote.setVisibility(View.GONE);
@@ -546,7 +544,11 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
         mBtnEditSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainMenuActivity) getActivity()).goToTab(MainMenuActivity.FRAGMENT_ACCOUNT_INDEX);
+                if(mState == State.Suspend) {
+                    ((MainMenuActivity) getActivity()).showAccountSettingFragment();
+                } else {
+                    ((MainMenuActivity) getActivity()).goToTab(MainMenuActivity.FRAGMENT_ACCOUNT_INDEX);
+                }
             }
         });
         mBtnFindTarget.setOnClickListener(new View.OnClickListener() {
@@ -555,13 +557,13 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
                 ((MainMenuActivity) HomeFragment.this.getActivity())
                         .goToTab(MainMenuActivity.FRAGMENT_TARGETS_INDEX);
 
-                EventBus.getInstance().post(new UpdateUserNoticeIdEvent(UserModel.NOTICE_ENABLE_PUSH_NOTIFICATION));
+                EventBus.getInstance().post(new UpdateUserNoticeIdEvent(UserModel.NOTICE_DEFAULT));
             }
         });
         mBtnEnableNotification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EventBus.getInstance().post(new CheckNotificationEnableEvent());
+                mNotificationEnableDialog.show();
             }
         });
         mBtnMatchShares.setOnClickListener(new View.OnClickListener() {
@@ -593,11 +595,6 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
     @Override
     public void updateView() {
         EventBus.getInstance().post(new SetHomeStateEvent());
-    }
-
-    @Override
-    public void handleNotificationEnable(boolean isEnabled) {
-        mNotificationEnableDialog.show();
     }
 
     @Override

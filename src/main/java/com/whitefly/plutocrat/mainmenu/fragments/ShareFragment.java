@@ -75,11 +75,12 @@ public class ShareFragment extends Fragment implements ITabView {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_share, container, false);
 
-        mTvTitle = (TextView) root.findViewById(R.id.tv_title_shares);
+        mTvTitle = (TextView) root.findViewById(R.id.tv_share_sub_title);
         mRvMain = (RecyclerView) root.findViewById(R.id.rv_share_bundles);
 
         // Initialize
-        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Light, mTvTitle);
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Light, mTvTitle,
+                (TextView) root.findViewById(R.id.tv_share_title));
 
         String[] itemArray = getActivity().getResources().getStringArray(R.array.iap_item_list);
 

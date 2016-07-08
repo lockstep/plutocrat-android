@@ -40,14 +40,14 @@ public class HomePageUnitTest {
         UserModel model = new UserModel();
         model.defeatedAt = null;
         model.isUnderBuyoutThreat = false;
-        model.userNoticeId = UserModel.NOTICE_GETTING_STARTED;
+        model.userNoticeId = UserModel.NOTICE_FIND_TARGET;
         AppPreference.getInstance().getSession().updateActiveUser(model);
 
         MainMenuPresenter presenter = new MainMenuPresenter(mContext, null, new IHomeView() {
             @Override
             public void changeState(HomeFragment.State state, int noticeId) {
                 assertEquals(HomeFragment.State.Default, state);
-                assertEquals(UserModel.NOTICE_GETTING_STARTED, noticeId);
+                assertEquals(UserModel.NOTICE_FIND_TARGET, noticeId);
             }
 
             @Override
@@ -109,7 +109,7 @@ public class HomePageUnitTest {
         UserModel model = new UserModel();
         model.defeatedAt = null;
         model.isUnderBuyoutThreat = false;
-        model.userNoticeId = UserModel.NOTICE_GETTING_STARTED;
+        model.userNoticeId = UserModel.NOTICE_FIND_TARGET;
         AppPreference.getInstance().getSession().updateActiveUser(model);
 
         final int expectedNoticeId = UserModel.NOTICE_ENABLE_PUSH_NOTIFICATION;

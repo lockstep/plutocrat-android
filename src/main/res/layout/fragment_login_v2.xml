@@ -148,7 +148,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginTop="16dp"
-                        android:layout_marginBottom="0dp"
+                        android:layout_marginBottom="4dp"
                         android:id="@+id/tv_register_agreement"
                         android:text="@string/caption_register_agreement"
                         style="@style/NoteText.White"/>
@@ -195,6 +195,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/bottom_login_margin"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:id="@+id/tv_forgot_password_link"
@@ -205,6 +206,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/bottom_login_margin"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:id="@+id/tv_already_member"

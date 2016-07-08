@@ -2,7 +2,6 @@ package com.whitefly.plutocrat.mainmenu.presenters;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.support.v4.os.AsyncTaskCompat;
 import android.util.Log;
 
@@ -16,7 +15,6 @@ import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.helpers.HttpClient;
 import com.whitefly.plutocrat.mainmenu.events.AttackTimeOutEvent;
 import com.whitefly.plutocrat.mainmenu.events.BuySharesEvent;
-import com.whitefly.plutocrat.mainmenu.events.CheckNotificationEnableEvent;
 import com.whitefly.plutocrat.mainmenu.events.EnablePushNotificationEvent;
 import com.whitefly.plutocrat.mainmenu.events.EngageClickEvent;
 import com.whitefly.plutocrat.mainmenu.events.ExecuteShareEvent;
@@ -126,12 +124,6 @@ public class MainMenuPresenter {
             new SaveRegisterTokenCallback().execute(fcmToken);
             AsyncTaskCompat.executeParallel(new SaveRegisterTokenCallback(), fcmToken);
         }
-    }
-
-    @Subscribe
-    public void onCheckNotificationEnable(CheckNotificationEnableEvent event) {
-        UserModel model = AppPreference.getInstance().getSession().getActiveUser();
-        mHomeView.handleNotificationEnable(model.isEnableNotification);
     }
 
     @Subscribe

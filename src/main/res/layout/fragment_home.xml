@@ -17,14 +17,14 @@
             android:layout_height="wrap_content"
             android:text="@string/caption_survival_time"
             android:id="@+id/tv_home_title"
-            style="@style/HeaderMediumText" />
+            style="@style/HeaderBigText.Shadow"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="3 d 14 h 35 s"
             android:id="@+id/tv_home_time"
-            style="@style/HeaderMediumText" />
+            style="@style/HeaderMediumText.Shadow" />
     </LinearLayout>
 
     <ScrollView
@@ -110,9 +110,9 @@
                     android:gravity="left"
                     android:text="@string/home_threat_content"
                     style="@style/NoteText"
-                    android:paddingBottom="@dimen/padding_home_vertical"
                     android:id="@+id/tv_home_threat_note"
-                    android:textSize="@dimen/font_small_x"/>
+                    android:layout_marginTop="@dimen/activity_default_margin"
+                    android:layout_marginBottom="@dimen/activity_default_margin"/>
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -178,7 +178,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
-                        android:layout_marginStart="@dimen/activity_horizontal_margin">
+                        android:layout_marginStart="@dimen/home_profile_margin">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -200,7 +200,7 @@
                         <Button
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
+                            android:layout_marginTop="7dp"
                             android:text="@string/caption_manage_account"
                             android:id="@+id/btn_home_owner_position"
                             style="@style/DefaultButton"
@@ -238,7 +238,7 @@
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:text="@string/caption_success_buyout"
                         android:id="@+id/tv_home_success"
-                        android:gravity="center" />
+                        android:gravity="center"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -312,8 +312,7 @@
                         android:id="@+id/tv_home_note"
                         android:gravity="center"
                         android:text="@string/home_default_content"
-                        style="@style/NoteText"
-                        android:textSize="@dimen/font_small_x"/>
+                        style="@style/NoteText"/>
 
                 </LinearLayout>
 
@@ -331,7 +330,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/caption_getting_started"
-                        android:textSize="@dimen/font_small"/>
+                        android:textSize="@dimen/font_medium_x"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -340,8 +339,7 @@
                         android:id="@+id/tv_getting_start_note"
                         android:gravity="center"
                         android:text="@string/note_getting_started"
-                        style="@style/NoteText"
-                        android:textSize="@dimen/font_small_x"/>
+                        style="@style/NoteText"/>
 
                     <Button
                         android:layout_width="wrap_content"
@@ -367,7 +365,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/caption_getting_started"
-                        android:textSize="@dimen/font_small"/>
+                        android:textSize="@dimen/font_medium_x"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -377,8 +375,7 @@
                         android:id="@+id/tv_enable_notice_note"
                         android:gravity="center"
                         android:text="@string/note_enable_push_notice"
-                        style="@style/NoteText"
-                        android:textSize="@dimen/font_small_x"/>
+                        style="@style/NoteText"/>
 
                     <Button
                         android:layout_width="wrap_content"

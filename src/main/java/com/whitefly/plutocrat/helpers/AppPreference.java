@@ -104,7 +104,7 @@ public class AppPreference {
             if(currentUserId != NO_USER_ID) {
                 model = new UserPersistenceModel();
                 model.userId = currentUserId;
-                model.noticeId = UserModel.NOTICE_GETTING_STARTED;
+                model.noticeId = UserModel.NOTICE_ENABLE_PUSH_NOTIFICATION;
                 model.email = mSession.uid;
                 mUserPersistences.put(strCurrentUserId, model);
                 saveUserPersistence();

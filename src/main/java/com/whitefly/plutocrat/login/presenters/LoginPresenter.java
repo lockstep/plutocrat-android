@@ -11,6 +11,7 @@ import com.whitefly.plutocrat.exception.APIConnectionException;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.helpers.HttpClient;
+import com.whitefly.plutocrat.login.events.ChangeLoginStateEvent;
 import com.whitefly.plutocrat.login.events.ResetPassword1ErrorEvent;
 import com.whitefly.plutocrat.login.events.ResetPassword2ErrorEvent;
 import com.whitefly.plutocrat.login.events.ResetPasswordEvent;
@@ -86,7 +87,7 @@ public class LoginPresenter {
 
     @Subscribe
     public void onBackToLogin(BackToLoginEvent event) {
-        mLoginView.changeState(event.getState());
+        EventBus.getInstance().post(new ChangeLoginStateEvent(event.getState()));
         mLoginMainView.backToLogin();
     }
 
@@ -330,7 +331,7 @@ public class LoginPresenter {
                 mLoginMainView.handleError(mContext.getString(R.string.error_title_cannot_send_email),
                         mErrorMessage);
             } else {
-                mLoginView.changeState(ILoginView.ViewState.Login);
+                EventBus.getInstance().post(new ChangeLoginStateEvent(ILoginView.ViewState.Login));
                 mLoginMainView.backToLogin();
             }
         }

@@ -9,8 +9,8 @@ import java.util.Date;
  */
 public class UserModel {
     public static final int NOTICE_DEFAULT = 0;
-    public static final int NOTICE_GETTING_STARTED = 1;
-    public static final int NOTICE_ENABLE_PUSH_NOTIFICATION = 2;
+    public static final int NOTICE_ENABLE_PUSH_NOTIFICATION = 1;
+    public static final int NOTICE_FIND_TARGET = 2;
 
     // Attributes
     public int id;

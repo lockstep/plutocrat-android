@@ -26,7 +26,7 @@
             android:layout_height="56dp"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:tabBackground="@color/colorMenuBarBg"
+            app:tabBackground="@android:color/white"
             app:tabTextAppearance="@style/TabMainMenuTextAppearance"
             app:tabSelectedTextColor="@color/colorMenuText"
             app:tabIndicatorHeight="0dp"/>

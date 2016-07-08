@@ -8,7 +8,7 @@
         <item name="colorAccent">@color/colorPurpleLink</item>
         <item name="android:textViewStyle">@style/DefaultTextViewStyle</item>
     </style>
-
+    
     <style name="DialogTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -56,7 +56,7 @@
 
     <style name="NoteText" parent="TextAppearance.AppCompat.Small">
         <item name="android:padding">4dp</item>
-        <item name="android:layout_marginBottom">14dp</item>
+        <item name="android:layout_marginBottom">@dimen/activity_vertical_margin</item>
         <item name="android:textColor">@color/colorGrey</item>
         <item name="android:textSize">@dimen/font_small</item>
         <item name="android:lineSpacingMultiplier">1.2</item>
@@ -98,6 +98,13 @@
         <item name="android:fontFamily">sans-serif-thin</item>
     </style>
 
+    <style name="HeaderBigText.Shadow" parent="HeaderBigText">
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">1</item>
+    </style>
+
     <style name="HeaderMediumText" parent="TextAppearance.AppCompat.Medium">
         <item name="android:textSize">@dimen/font_medium</item>
         <item name="android:textColor">@android:color/white</item>
@@ -105,9 +112,23 @@
         <item name="android:fontFamily">sans-serif-thin</item>
     </style>
 
+    <style name="HeaderMediumText.Shadow" parent="HeaderMediumText">
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">1</item>
+    </style>
+
     <style name="HeaderMediumLittleText" parent="TextAppearance.AppCompat.Small">
         <item name="android:textSize">@dimen/font_medium_x</item>
         <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="HeaderMediumLittleText.Shadow" parent="HeaderMediumLittleText">
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">1</item>
     </style>
 
     <style name="HeaderSmallText" parent="TextAppearance.AppCompat.Small">
