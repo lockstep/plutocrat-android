@@ -99,7 +99,7 @@ public class InitialPageInstrumentTest {
             public void handleError(String title, String message, MetaModel meta) {
 
             }
-        }, null, null);
+        }, null);
         presenter.onEngageClick(new EngageClickEvent(model));
 
         signal.await();
@@ -154,7 +154,7 @@ public class InitialPageInstrumentTest {
             public void handleError(String title, String message, MetaModel meta) {
 
             }
-        }, null, null);
+        }, null);
         presenter.onExecuteBuyout(new ExecuteShareEvent(initiate_user_id, amount));
 
         signal.await();

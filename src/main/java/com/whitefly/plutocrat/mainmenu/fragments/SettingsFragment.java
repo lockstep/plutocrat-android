@@ -2,7 +2,6 @@ package com.whitefly.plutocrat.mainmenu.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -38,6 +38,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.squareup.otto.Subscribe;
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.exception.FormValidationException;
 import com.whitefly.plutocrat.helpers.AppPreference;
@@ -46,7 +47,9 @@ import com.whitefly.plutocrat.helpers.FormValidationHelper;
 import com.whitefly.plutocrat.helpers.ImageInputHelper;
 import com.whitefly.plutocrat.mainmenu.MainMenuActivity;
 import com.whitefly.plutocrat.mainmenu.events.SaveAccountSettingsEvent;
+import com.whitefly.plutocrat.mainmenu.events.UpdateSettingsEvent;
 import com.whitefly.plutocrat.mainmenu.views.IAccountSettingView;
+import com.whitefly.plutocrat.mainmenu.views.ITabView;
 import com.whitefly.plutocrat.models.MetaModel;
 import com.whitefly.plutocrat.models.UserModel;
 
@@ -56,11 +59,13 @@ import java.io.IOException;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 /**
- * Created by satjapotiamopas on 5/25/16 AD.
+ * Created by Satjapot on 7/5/16 AD.
  */
-public class AccountSettingFragment extends DialogFragment
+public class SettingsFragment extends Fragment
         implements View.OnClickListener, ImageInputHelper.ImageActionListener, IAccountSettingView,
-        RequestListener<Uri, GlideDrawable>{
+        RequestListener<Uri, GlideDrawable>, ITabView {
+
+    public static final String TITLE = "Account";
 
     private static final int IMAGE_OUTPUT_X = 250;
     private static final int IMAGE_OUTPUT_Y = 250;
@@ -73,10 +78,8 @@ public class AccountSettingFragment extends DialogFragment
     private static final String FORM_CONFIRM_PASSWORD_ID = "confirm_password";
     private static final String FORM_CURRENT_PASSWORD_ID = "current_password";
 
-    private static final String INSTANCE_STATE_CREATED_VIEW = "com.whitefly.plutocrat.account_setting.state.create_view";
-
     // Attributes
-    private AlertDialog mImageDialog, mErrorDialog;
+    private AlertDialog mImageDialog;
     private ImageInputHelper imageInputHelper;
     private Bitmap mSavingPicture;
     private boolean mIsPictureChanged, mIsCreateView;
@@ -92,7 +95,6 @@ public class AccountSettingFragment extends DialogFragment
     private RelativeLayout mRloHeaderBar;
 
     private Dialog mLoadingDialog;
-    private TextView mTvLoadingMessage;
 
     /**
      * Use this factory method to create a new instance of
@@ -100,11 +102,8 @@ public class AccountSettingFragment extends DialogFragment
      *
      * @return A new instance of fragment FAQFragment.
      */
-    public static AccountSettingFragment newInstance() {
-        AccountSettingFragment fragment = new AccountSettingFragment();
-        fragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogTheme);
-        fragment.setRetainInstance(true);
-
+    public static SettingsFragment newInstance() {
+        SettingsFragment fragment = new SettingsFragment();
         return fragment;
     }
 
@@ -160,18 +159,8 @@ public class AccountSettingFragment extends DialogFragment
         mIsCreateView = false;
     }
 
-    public Dialog getLoadingDialog(String message) {
-        if(message == null) {
-            mTvLoadingMessage.setText(getString(R.string.loading_default));
-        } else {
-            mTvLoadingMessage.setText(message);
-        }
-        return mLoadingDialog;
-    }
-
     private void createLoadingDialog(LayoutInflater inflater, ViewGroup parent) {
         View root = inflater.inflate(R.layout.dialog_loading, parent, false);
-        mTvLoadingMessage = (TextView) root.findViewById(R.id.tv_loading_message);
 
         mLoadingDialog = new Dialog(getActivity());
         mLoadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -208,6 +197,8 @@ public class AccountSettingFragment extends DialogFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        EventBus.getInstance().register(this);
+
         if(imageInputHelper == null) {
             imageInputHelper = new ImageInputHelper(this);
             imageInputHelper.setImageActionListener(this);
@@ -215,13 +206,6 @@ public class AccountSettingFragment extends DialogFragment
         captureImageInitialization();
         mIsPictureChanged = false;
         mFormValidator = new FormValidationHelper();
-    }
-
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.getWindow().setWindowAnimations(android.R.style.Animation_Dialog);
-        return dialog;
     }
 
     @Nullable
@@ -263,14 +247,17 @@ public class AccountSettingFragment extends DialogFragment
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.BoldItalic,
                 (TextView) root.findViewById(R.id.tv_tap_to_change));
 
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Light,
+                (TextView) root.findViewById(R.id.tv_title_account));
+
         mFormValidator.addView(FORM_DISPLAY_NAME_ID, "Display name", mEdtDisplayName);
         mFormValidator.addView(FORM_EMAIL_ID, "E-mail", mEdtEmail);
         mFormValidator.addView(FORM_NEW_PASSWORD_ID, "New Password", mEdtNewPassword);
         mFormValidator.addView(FORM_CONFIRM_PASSWORD_ID, "Confirm Password", mEdtConfirmPassword);
         mFormValidator.addView(FORM_CURRENT_PASSWORD_ID, "Current Password", mEdtCurrentPassword);
 
-        mLloHeader.setVisibility(View.GONE);
-        mRloHeaderBar.setVisibility(View.VISIBLE);
+        mLloHeader.setVisibility(View.VISIBLE);
+        mRloHeaderBar.setVisibility(View.GONE);
 
         mIsCreateView = true;
 
@@ -375,8 +362,6 @@ public class AccountSettingFragment extends DialogFragment
                     e.getItems().get(0).getView().requestFocus();
                 }
             }
-        } else if(v == mLloBack) {
-            this.dismiss();
         } else if(v == mTvProfilePicture || v == mImvProfilePicture) {
             mImageDialog.show();
         }
@@ -391,6 +376,13 @@ public class AccountSettingFragment extends DialogFragment
     public void onDestroyView() {
         super.onDestroyView();
         ((MainMenuActivity) getActivity()).updateCurrentTab();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        EventBus.getInstance().unregister(this);
     }
 
     /**
@@ -470,4 +462,25 @@ public class AccountSettingFragment extends DialogFragment
             }
         }
     }
+
+    @Override
+    public int getIcon() {
+        return R.drawable.icon_menu_account;
+    }
+
+    @Override
+    public String getTitle() {
+        return TITLE;
+    }
+
+    @Override
+    public void updateView() {
+
+    }
+
+    @Subscribe
+    public void onUpdateSettings(UpdateSettingsEvent event) {
+        clearView();
+    }
 }
+

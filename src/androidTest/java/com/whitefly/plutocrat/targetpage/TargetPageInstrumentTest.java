@@ -53,7 +53,7 @@ public class TargetPageInstrumentTest {
         final CountDownLatch signal = new CountDownLatch(1);
         final int expectedPage = 1;
 
-        final MainMenuPresenter presenter = new MainMenuPresenter(mContext, null, null, null);
+        final MainMenuPresenter presenter = new MainMenuPresenter(mContext, null, null);
         Object callback = new Object() {
             @Subscribe
             public void onLoadTargetCompletedEvent(LoadTargetCompletedEvent event) {
@@ -81,7 +81,7 @@ public class TargetPageInstrumentTest {
         final CountDownLatch signal = new CountDownLatch(1);
         final int expectedPage = 2;
 
-        final MainMenuPresenter presenter = new MainMenuPresenter(mContext, null, null, null);
+        final MainMenuPresenter presenter = new MainMenuPresenter(mContext, null, null);
         Object callback = new Object() {
             @Subscribe
             public void onLoadTargetCompletedEvent(LoadTargetCompletedEvent event) throws Exception {
@@ -109,7 +109,7 @@ public class TargetPageInstrumentTest {
         final CountDownLatch signal = new CountDownLatch(1);
         int page = 100;
 
-        final MainMenuPresenter presenter = new MainMenuPresenter(mContext, null, null, null);
+        final MainMenuPresenter presenter = new MainMenuPresenter(mContext, null, null);
         Object callback = new Object() {
             @Subscribe
             public void onLoadTargetCompletedEvent(LoadTargetCompletedEvent event) {
@@ -140,7 +140,7 @@ public class TargetPageInstrumentTest {
         TargetModel expectedPlutocrat = new TargetModel();
         AppPreference.getInstance().getSession().savePlutocrat(expectedPlutocrat);
 
-        final MainMenuPresenter presenter = new MainMenuPresenter(mContext, null, null, null);
+        final MainMenuPresenter presenter = new MainMenuPresenter(mContext, null, null);
         Object callback = new Object() {
             @Subscribe
             public void onLoadTargetCompletedEvent(LoadTargetCompletedEvent event) {
@@ -169,7 +169,7 @@ public class TargetPageInstrumentTest {
         TargetModel expectedPlutocrat = null;
         AppPreference.getInstance().getSession().savePlutocrat(expectedPlutocrat);
 
-        final MainMenuPresenter presenter = new MainMenuPresenter(mContext, null, null, null);
+        final MainMenuPresenter presenter = new MainMenuPresenter(mContext, null, null);
         Object callback = new Object() {
             @Subscribe
             public void onLoadTargetCompletedEvent(LoadTargetCompletedEvent event) {

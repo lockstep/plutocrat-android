@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.mainmenu.MainMenuActivity;
@@ -30,6 +32,9 @@ public class MainActivity extends AppCompatActivity implements ISplashView {
             presenter = new SplashPresenter(this, this);
             EventBus.getInstance().register(presenter);
         }
+
+        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        Log.d(AppPreference.DEBUG_APP, "Refreshed token: " + refreshedToken);
 
         // Go to next page for a period
         new Handler().postDelayed(new Runnable() {

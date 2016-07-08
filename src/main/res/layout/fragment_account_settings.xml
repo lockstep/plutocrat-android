@@ -4,56 +4,90 @@
     android:background="@android:color/white"
     android:focusableInTouchMode="true">
 
-    <RelativeLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:paddingStart="@dimen/activity_horizontal_margin"
-        android:paddingEnd="@dimen/activity_horizontal_margin"
-        android:background="@color/colorTitleBar"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        android:id="@+id/relativeLayout">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:id="@+id/tv_account_setting_header"
-            android:text="@string/title_account_settings"
-            android:textSize="@dimen/font_medium_x"
-            android:textColor="@android:color/white"/>
+        android:layout_height="wrap_content"
+        android:id="@+id/llo_header_wrapper">
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:id="@+id/btn_back"
-            android:gravity="center"
-            android:clickable="true">
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/header_height"
+            android:id="@+id/llo_account_header"
+            android:orientation="horizontal"
+            android:background="@drawable/header_bg_default"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:visibility="gone">
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="24dp"
-                android:src="@drawable/back_chevron"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_account"
+                    style="@style/HeaderMediumText"
+                    android:id="@+id/tv_title_account" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:paddingStart="@dimen/activity_horizontal_margin"
+            android:paddingEnd="@dimen/activity_horizontal_margin"
+            android:background="@color/colorTitleBar"
+            android:id="@+id/rlo_account_bar"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/activity_default_margin"
-                android:id="@+id/tv_btn_back"
-                android:text="@string/caption_back"
+                android:layout_centerInParent="true"
+                android:id="@+id/tv_account_setting_header"
+                android:text="@string/title_account_settings"
                 android:textSize="@dimen/font_medium_x"
-                android:textColor="@android:color/white"
-                android:textStyle="normal"/>
-        </LinearLayout>
+                android:textColor="@android:color/white"/>
 
-    </RelativeLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:id="@+id/btn_back"
+                android:gravity="center"
+                android:clickable="true">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:src="@drawable/back_chevron"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/activity_default_margin"
+                    android:id="@+id/tv_btn_back"
+                    android:text="@string/caption_back"
+                    android:textSize="@dimen/font_medium_x"
+                    android:textColor="@android:color/white"
+                    android:textStyle="normal"/>
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="false"
-        android:layout_below="@+id/relativeLayout">
+        android:layout_below="@+id/llo_header_wrapper">
 
         <LinearLayout
             android:orientation="vertical"

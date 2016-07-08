@@ -20,7 +20,7 @@
             <corners android:radius="4dp"/>
             <stroke android:color="@color/colorPurpleLight"
                 android:width="1dp"/>
-            <solid android:color="@color/colorLine"/>
+            <solid android:color="@color/colorPurpleLight"/>
             <padding
                 android:left="8dp"
                 android:top="4dp"

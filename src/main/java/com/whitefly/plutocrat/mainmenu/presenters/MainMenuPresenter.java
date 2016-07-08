@@ -31,6 +31,7 @@ import com.whitefly.plutocrat.mainmenu.events.SendReceiptCompleteEvent;
 import com.whitefly.plutocrat.mainmenu.events.SendReceiptEvent;
 import com.whitefly.plutocrat.mainmenu.events.SetHomeStateEvent;
 import com.whitefly.plutocrat.mainmenu.events.SignOutEvent;
+import com.whitefly.plutocrat.mainmenu.events.UpdateSettingsEvent;
 import com.whitefly.plutocrat.mainmenu.events.UpdateUserNoticeIdEvent;
 import com.whitefly.plutocrat.mainmenu.fragments.HomeFragment;
 import com.whitefly.plutocrat.mainmenu.views.IAccountSettingView;
@@ -72,15 +73,13 @@ public class MainMenuPresenter {
     // Views
     private IMainMenuView mMainMenuView;
     private IHomeView mHomeView;
-    private IAccountSettingView mSettingView;
 
     // Constructor
-    public MainMenuPresenter(Context context, IMainMenuView mmView, IHomeView homeView, IAccountSettingView settingView) {
+    public MainMenuPresenter(Context context, IMainMenuView mmView, IHomeView homeView) {
         mContext = context;
         mHttp = new HttpClient(context);
         mMainMenuView = mmView;
         mHomeView = homeView;
-        mSettingView = settingView;
     }
 
     // Methods
@@ -656,6 +655,7 @@ public class MainMenuPresenter {
     private class SaveAccountSettingCallback extends AsyncTask<SaveAccountSettingsEvent, Void, Boolean> {
         private String mErrorMessage = null;
         private MetaModel mMetaError = null;
+        private IAccountSettingView mResponseView;
 
         @Override
         protected void onPreExecute() {
@@ -669,6 +669,7 @@ public class MainMenuPresenter {
             Gson gson = AppPreference.getInstance().getGson();
             UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
             Headers headers = AppPreference.getInstance().getSession().getHeaders();
+            mResponseView = param.getResponseView();
 
             String url = String.format(mContext.getString(R.string.api_save_settings), activeUser.id);
 
@@ -717,12 +718,14 @@ public class MainMenuPresenter {
             mMainMenuView.handleLoadingDialog(false);
 
             if (mMetaError != null) {
-                mSettingView.handleError(mMetaError);
+                mResponseView.handleError(mMetaError);
             } else if(mErrorMessage != null) {
                 mMainMenuView.handleError(mContext.getString(R.string.error_title_cannot_save_settings),
                         mErrorMessage, mMetaError);
             } else {
-                mMainMenuView.toast("Save successful.");
+                mMainMenuView.toast(mContext.getString(R.string.save_successfully));
+                EventBus.getInstance().post(new SetHomeStateEvent());
+                EventBus.getInstance().post(new UpdateSettingsEvent());
             }
         }
     }

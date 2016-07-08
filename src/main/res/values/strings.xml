@@ -92,6 +92,7 @@
     <string name="header_faq_moreshare">What if I don\'t have enough shares to match a buyout?</string>
     <string name="note_faq_moreshare">Everyone starts with 1 share. If you need more, navigate to the Shares view via the bottom navigation bar to purchase more.</string>
     <string name="title_account_settings">ACCOUNT</string>
+    <string name="title_account">Account</string>
     <string name="note_account_settings_change_profile">tap to change</string>
     <string name="note_account_settings_enable_notification">Enable email notification on Plutocrat events (buyout outcomes, new threats, etc).</string>
     <string name="note_account_settings_enable_updates">Enable emails with general Plutocrat updates.</string>
@@ -117,6 +118,7 @@
     <string name="caption_no_target_list">No Targets</string>
     <string name="caption_no_buyout_list">No Buyouts</string>
     <string name="caption_deadline_time">Deadline:</string>
+    <string name="save_successfully">Save successfully</string>
 
     <string name="menu_manage_account">Manage Account</string>
     <string name="menu_faq">FAQ</string>

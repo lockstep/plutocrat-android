@@ -100,7 +100,7 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
     private TextView mTvSuccessValue, mTvFailedValue, mTvDefeatValue;
     private TextView mTvNote;
     private ImageView mImvOwnerPic, mImvThreatPic;
-    private Button mBtnOwnerPosition, mBtnMatchShares, mBtnAcceptDefeat;
+    private Button mBtnEditSettings, mBtnMatchShares, mBtnAcceptDefeat;
     private Button mBtnFindTarget, mBtnEnableNotification;
 
     // Methods
@@ -462,7 +462,6 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
         mClickToBuyouts = new ClickableSpan() {
             @Override
             public void onClick(View widget) {
-                Toast.makeText(getActivity(), "Another click", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -511,7 +510,7 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
         mTvDefeatValue     = (TextView) root.findViewById(R.id.tv_home_defeat_value);
         mImvOwnerPic        = (ImageView) root.findViewById(R.id.imv_home_owner_pic);
         mImvThreatPic       = (ImageView) root.findViewById(R.id.imv_home_threat_pic);
-        mBtnOwnerPosition   = (Button) root.findViewById(R.id.btn_home_owner_position);
+        mBtnEditSettings = (Button) root.findViewById(R.id.btn_home_owner_position);
         mBtnMatchShares     = (Button) root.findViewById(R.id.btn_match_shares);
         mBtnAcceptDefeat    = (Button) root.findViewById(R.id.btn_accept_defeat);
         mBtnFindTarget      = (Button) root.findViewById(R.id.btn_find_target);
@@ -522,9 +521,9 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
 
         // Initiate
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
-                mTvOwnerName, mTvOwnerEmail, mBtnOwnerPosition,
+                mTvOwnerName, mTvOwnerEmail, mBtnEditSettings,
                 mTvThreatName, mTvThreatMatch, mTvThreatNote, mTvNote,
-                mBtnOwnerPosition, mBtnMatchShares, mBtnAcceptDefeat, mTvThreatNickName,
+                mBtnEditSettings, mBtnMatchShares, mBtnAcceptDefeat, mTvThreatNickName,
                 mTvSuccessCaption, mTvFailedCaption, mTvDefeatCaption);
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Bold,
                 mTvSuccessValue, mTvFailedValue, mTvDefeatValue);
@@ -544,10 +543,10 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
         updateView();
 
         // Event Handler
-        mBtnOwnerPosition.setOnClickListener(new View.OnClickListener() {
+        mBtnEditSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainMenuActivity) HomeFragment.this.getActivity()).showAccountSettingFragment();
+                ((MainMenuActivity) getActivity()).goToTab(MainMenuActivity.FRAGMENT_ACCOUNT_INDEX);
             }
         });
         mBtnFindTarget.setOnClickListener(new View.OnClickListener() {
