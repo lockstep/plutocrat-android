@@ -82,7 +82,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/havetoken_content"
+                    android:text="@string/have_token_content"
                     android:id="@+id/tv_reset1_note"
                     style="@style/NoteText"/>
 

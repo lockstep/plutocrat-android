@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item>
+        <bitmap android:src="@drawable/bg_login"
+            android:gravity="fill_vertical|center_horizontal"/>
+        <scale
+            android:scaleGravity="center"
+            android:scaleWidth="1"
+            android:scaleHeight="1"/>
+    </item>
+
+</layer-list>

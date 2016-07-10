@@ -6,6 +6,7 @@
 
     <color name="colorRed">#b00000</color>
     <color name="colorGrey">#828282</color>
+    <color name="colorGreyTransparent">#55828282</color>
     <color name="colorGreen">#048610</color>
     <color name="colorPurple">#410C5B</color>
     <color name="colorPurpleLight">#613577</color>

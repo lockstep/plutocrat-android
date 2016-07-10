@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
+import com.whitefly.plutocrat.login.fragments.Login2Fragment;
 import com.whitefly.plutocrat.mainmenu.MainMenuActivity;
 import com.whitefly.plutocrat.login.fragments.LoginFragment;
 import com.whitefly.plutocrat.login.fragments.ResetPassword1Fragment;
@@ -61,11 +62,11 @@ public class LoginActivity extends AppCompatActivity implements ILoginMainView {
         ILoginView.ViewState loginState =
                 (ILoginView.ViewState) getIntent().getSerializableExtra(BUNDLE_INITIATE_LOGIN_STATE);
         if(loginState == null) {
-            loginState = ILoginView.ViewState.Register;
+            loginState = ILoginView.ViewState.Login;
         }
 
         // Create Fragments
-        mLoginFragment = LoginFragment.newInstance(loginState);
+        mLoginFragment = Login2Fragment.newInstance(loginState);
         mReset1Fragment = ResetPassword1Fragment.newInstance();
         mReset2Fragment = ResetPassword2Fragment.newInstance();
 

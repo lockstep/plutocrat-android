@@ -3,4 +3,13 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:id="@+id/rlo_login_main">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/bg_login"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
+        android:paddingStart="200dp"
+        android:paddingEnd="0dp" />
+
 </RelativeLayout>

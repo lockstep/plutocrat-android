@@ -13,6 +13,8 @@
     <dimen name="fix_font_margin">-4dp</dimen>
 
     <!-- Layout -->
+    <dimen name="activity_login_padding">24dp</dimen>
+    <dimen name="button_login_margin">24dp</dimen>
     <dimen name="margin_login">40dp</dimen>
     <dimen name="height_reset_note">80dp</dimen>
     <dimen name="margin_home_vertical">24dp</dimen>
@@ -24,6 +26,10 @@
     <dimen name="header_height">120dp</dimen>
     <dimen name="login_height">560dp</dimen>
     <dimen name="help_button_width">180dp</dimen>
+    <dimen name="background_padding_login">200dp</dimen>
+    <dimen name="background_padding_reset_password1">100dp</dimen>
+    <dimen name="background_padding_reset_password2">0dp</dimen>
+    <dimen name="min_height_reset_password">500dp</dimen>
 
     <!-- Utils -->
     <dimen name="font_small_x">11sp</dimen>

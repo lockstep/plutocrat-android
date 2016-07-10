@@ -36,6 +36,10 @@
         <item name="android:textSize">@dimen/font_medium</item>
     </style>
 
+    <style name="HeaderText.White" parent="HeaderText">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
     <style name="HeaderTextWithLine" parent="TextAppearance.AppCompat.Large">
         <item name="android:layout_marginLeft">4dp</item>
         <item name="android:layout_marginRight">4dp</item>
@@ -43,6 +47,11 @@
         <item name="android:paddingBottom">16dp</item>
         <item name="android:background">@drawable/bg_line_bottom</item>
         <item name="android:textColor">@color/colorGrey</item>
+    </style>
+
+    <style name="HeaderTextWithLine.White" parent="HeaderTextWithLine">
+        <item name="android:background">@drawable/bg_line_bottom_white</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
     <style name="NoteText" parent="TextAppearance.AppCompat.Small">
@@ -54,6 +63,10 @@
         <item name="android:singleLine">false</item>
     </style>
 
+    <style name="NoteText.White" parent="NoteText">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
     <style name="RedText" parent="TextAppearance.AppCompat.Small">
         <item name="android:textColor">@color/colorRed</item>
         <item name="android:textStyle">bold</item>
@@ -62,6 +75,11 @@
 
     <style name="LinkText" parent="TextAppearance.AppCompat.Medium">
         <item name="android:textColor">@color/colorPurpleLink</item>
+        <item name="android:linksClickable">true</item>
+    </style>
+
+    <style name="LinkText.White" parent="LinkText">
+        <item name="android:textColor">@android:color/white</item>
         <item name="android:linksClickable">true</item>
     </style>
 
@@ -133,6 +151,12 @@
         <item name="android:textColorHint">@color/colorGrey</item>
     </style>
 
+    <style name="LoginEditText.White" parent="LoginEditText">
+        <item name="android:background">@drawable/bg_line_bottom_white</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textColorHint">@android:color/white</item>
+    </style>
+
     <style name="Checkbox" parent="Widget.AppCompat.CompoundButton.CheckBox">
         <item name="android:textSize">@dimen/font_small</item>
         <item name="android:textColor">@color/colorGrey</item>
@@ -169,6 +193,15 @@
 
     <style name="WhiteButtonThin" parent="WhiteButton">
         <item name="android:fontFamily">sans-serif-thin</item>
+    </style>
+
+    <style name="OutlineButton" parent="DefaultButton">
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_marginBottom">0dp</item>
+        <item name="android:layout_marginStart">5dp</item>
+        <item name="android:layout_marginEnd">5dp</item>
+        <item name="android:textColor">@color/button_outline</item>
+        <item name="android:background">@drawable/bg_button_outline</item>
     </style>
 
     <style name="TabMainMenuTextAppearance" parent="TextAppearance.Design.Tab">

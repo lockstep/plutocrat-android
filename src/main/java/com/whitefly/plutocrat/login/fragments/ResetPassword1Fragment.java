@@ -2,6 +2,7 @@ package com.whitefly.plutocrat.login.fragments;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Spannable;
@@ -9,6 +10,7 @@ import android.text.SpannableString;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -26,6 +28,7 @@ import com.whitefly.plutocrat.exception.FormValidationException;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.helpers.FormValidationHelper;
+import com.whitefly.plutocrat.helpers.text.CustomTypefaceSpan;
 import com.whitefly.plutocrat.login.events.BackToLoginEvent;
 import com.whitefly.plutocrat.login.events.RequestResetTokenEvent;
 import com.whitefly.plutocrat.login.events.ResetPassword1ErrorEvent;
@@ -80,7 +83,7 @@ public class ResetPassword1Fragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_resetpw1, container, false);
+        View root = inflater.inflate(R.layout.fragment_resetpw1_v2, container, false);
         mBtnSubmit      = (Button) root.findViewById(R.id.btn_reset1_submit);
         mEdtEmail       = (EditText) root.findViewById(R.id.edt_reset1_email);
         mTvTitle        = (TextView) root.findViewById(R.id.tv_reset1_title);
@@ -92,13 +95,14 @@ public class ResetPassword1Fragment extends Fragment {
 
         // Initialize
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
-                mBtnLoginLink, mEdtEmail, mTvTitle, mTvContent, mTvResetCaption, mTvNote,
+                mEdtEmail, mTvTitle, mTvContent, mTvResetCaption, mTvNote);
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Bold,
                 mBtnLoginLink, mBtnRegisterLink, mBtnSubmit);
 
         mFormValidator.addView("email", "E-mail", mEdtEmail);
         mFormValidator.omitNameOfCustomMessage();
 
-        Spannable note = SpannableString.valueOf(getString(R.string.havetoken_content));
+        Spannable note = SpannableString.valueOf(getString(R.string.have_token_content));
         ClickableSpan span = new ClickableSpan() {
             @Override
             public void onClick(View widget) {
@@ -113,7 +117,9 @@ public class ResetPassword1Fragment extends Fragment {
             }
         };
         note.setSpan(span, 0, 8, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-        note.setSpan(new StyleSpan(R.style.LinkText), 0, 8, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        note.setSpan(new ForegroundColorSpan(Color.WHITE), 0, 8, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        note.setSpan(new CustomTypefaceSpan("", AppPreference.getInstance().getFont(AppPreference.FontType.Bold)),
+                0, 8, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         mTvNote.setText(note);
         mTvNote.setMovementMethod(LinkMovementMethod.getInstance());
 

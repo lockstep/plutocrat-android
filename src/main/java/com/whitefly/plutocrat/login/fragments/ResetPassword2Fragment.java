@@ -81,7 +81,7 @@ public class ResetPassword2Fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Get Views
-        View root = inflater.inflate(R.layout.fragment_resetpw2, container, false);
+        View root = inflater.inflate(R.layout.fragment_resetpw2_v2, container, false);
         mTvTitle        = (TextView) root.findViewById(R.id.tv_reset2_title);
         mTvContent      = (TextView) root.findViewById(R.id.tv_reset2_content);
         mTvResetCaption = (TextView) root.findViewById(R.id.tv_reset2_caption);
@@ -95,8 +95,10 @@ public class ResetPassword2Fragment extends Fragment {
 
         // Initiate
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Regular,
-                mTvTitle, mTvContent, mTvResetCaption, mBtnLoginLink, mBtnRegisterLink,
-                mEdtEmail, mEdtResetToken, mEdtNewPassword, mEdtConfirmPassword, mBtnReset);
+                mTvTitle, mTvContent, mTvResetCaption, mEdtEmail, mEdtResetToken, mEdtNewPassword,
+                mEdtConfirmPassword);
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Bold,
+                mBtnLoginLink, mBtnRegisterLink, mBtnReset);
 
         mFormValidator.addView(FORM_RESET_PASSWORD_TOKEN, "Reset Token", mEdtResetToken);
         mFormValidator.addView(FORM_NEW_PASSWORD, "New Password", mEdtNewPassword);
