@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements ISplashView {
             intent = new Intent(this, LoginActivity.class);
         }
         startActivity(intent);
-
         finish();
     }
 }
