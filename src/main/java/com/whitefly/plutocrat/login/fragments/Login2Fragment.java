@@ -16,12 +16,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.otto.Subscribe;
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.exception.FormValidationException;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.helpers.FormValidationHelper;
 import com.whitefly.plutocrat.login.LoginActivity;
+import com.whitefly.plutocrat.login.events.ChangeLoginStateEvent;
 import com.whitefly.plutocrat.login.events.ForgotPasswordEvent;
 import com.whitefly.plutocrat.login.events.RegisterEvent;
 import com.whitefly.plutocrat.login.events.SignInEvent;
@@ -77,6 +79,14 @@ public class Login2Fragment extends Fragment implements ILoginView, View.OnClick
         super.onCreate(savedInstanceState);
 
         mFormValidator = new FormValidationHelper();
+        EventBus.getInstance().register(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        EventBus.getInstance().unregister(this);
     }
 
     @Override
@@ -130,6 +140,7 @@ public class Login2Fragment extends Fragment implements ILoginView, View.OnClick
         UserPersistenceModel userPersistence = AppPreference.getInstance().getCurrentUserPersistence();
         if(userPersistence != null) {
             mEdtSignInEmail.setText(userPersistence.email);
+            mEdtSignInEmail.setSelection(userPersistence.email.length());
         }
 
         // Event Handler
@@ -218,6 +229,19 @@ public class Login2Fragment extends Fragment implements ILoginView, View.OnClick
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+
+        if(mEdtSignInEmail != null) {
+            mEdtSignInEmail.setError(null);
+            mEdtSignInPassword.setError(null);
+            mEdtRegisterDisplayName.setError(null);
+            mEdtRegisterEmail.setError(null);
+            mEdtRegisterPassword.setError(null);
+        }
+    }
+
+    @Override
     public void onClick(View v) {
         String url = null;
         String title = null;
@@ -242,11 +266,18 @@ public class Login2Fragment extends Fragment implements ILoginView, View.OnClick
     @Override
     public void changeState(ViewState state) {
         if(state == ViewState.Login) {
+            mEdtSignInEmail.setError(null);
+            mEdtSignInPassword.setError(null);
+
             mRloSignIn.setVisibility(View.VISIBLE);
             mRloRegister.setVisibility(View.GONE);
             mTvForgotPasswordLink.setVisibility(View.VISIBLE);
             mTvAlreadyMemberLink.setVisibility(View.GONE);
         } else {
+            mEdtRegisterDisplayName.setError(null);
+            mEdtRegisterEmail.setError(null);
+            mEdtRegisterPassword.setError(null);
+
             mRloSignIn.setVisibility(View.GONE);
             mRloRegister.setVisibility(View.VISIBLE);
             mTvForgotPasswordLink.setVisibility(View.GONE);
@@ -278,5 +309,13 @@ public class Login2Fragment extends Fragment implements ILoginView, View.OnClick
                 e.getItems().get(0).getView().requestFocus();
             }
         }
+    }
+
+    /*
+    Event bus
+     */
+    @Subscribe
+    public void onChangeState(ChangeLoginStateEvent event) {
+        changeState(event.getState());
     }
 }

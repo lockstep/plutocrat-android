@@ -65,7 +65,7 @@ public class SettingsFragment extends Fragment
         implements View.OnClickListener, ImageInputHelper.ImageActionListener, IAccountSettingView,
         RequestListener<Uri, GlideDrawable>, ITabView {
 
-    public static final String TITLE = "Account";
+    public static final String TITLE = "Settings";
 
     private static final int IMAGE_OUTPUT_X = 250;
     private static final int IMAGE_OUTPUT_Y = 250;
@@ -248,7 +248,8 @@ public class SettingsFragment extends Fragment
                 (TextView) root.findViewById(R.id.tv_tap_to_change));
 
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Light,
-                (TextView) root.findViewById(R.id.tv_title_account));
+                (TextView) root.findViewById(R.id.tv_title_account),
+                (TextView) root.findViewById(R.id.tv_settings_sub_title));
 
         mFormValidator.addView(FORM_DISPLAY_NAME_ID, "Display name", mEdtDisplayName);
         mFormValidator.addView(FORM_EMAIL_ID, "E-mail", mEdtEmail);

@@ -7,5 +7,4 @@ import com.whitefly.plutocrat.mainmenu.fragments.HomeFragment;
  */
 public interface IHomeView {
     void changeState(HomeFragment.State state, int noticeId);
-    void handleNotificationEnable(boolean isEnabled);
 }

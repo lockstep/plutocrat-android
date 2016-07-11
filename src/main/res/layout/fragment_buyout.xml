@@ -19,16 +19,25 @@
             android:paddingRight="@dimen/activity_horizontal_margin">
 
             <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/llo_targets_noplutocrat"
                 android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/caption_buyout_history"
+                    android:id="@+id/tv_buyout_title"
+                    style="@style/HeaderBigText.Shadow"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/title_success_buyout"
-                    style="@style/HeaderMediumText"
-                    android:id="@+id/tv_title_buyout" />
+                    style="@style/HeaderMediumText.Shadow"
+                    android:id="@+id/tv_buyout_sub_title" />
             </LinearLayout>
         </LinearLayout>
 
@@ -71,7 +80,7 @@
                         android:paddingTop="@dimen/activity_vertical_margin"
                         android:layout_gravity="center"
                         android:gravity="top|center_horizontal"
-                        android:textSize="@dimen/font_medium"
+                        android:textSize="@dimen/font_medium_x"
                         android:textColor="@color/colorLine"/>
 
                 </ScrollView>

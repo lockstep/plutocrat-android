@@ -1,6 +1,5 @@
 package com.whitefly.plutocrat.mainmenu.fragments;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -84,11 +83,12 @@ public class BuyoutFragment extends Fragment implements ITabView {
         mRvMain = (RecyclerView) root.findViewById(R.id.rv_players);
         mSRLMain = (SwipeRefreshLayout) root.findViewById(R.id.srl_players);
         mSRLEmpty = (SwipeRefreshLayout) root.findViewById(R.id.srl_players_empty);
-        mTvTitle = (TextView) root.findViewById(R.id.tv_title_buyout);
+        mTvTitle = (TextView) root.findViewById(R.id.tv_buyout_sub_title);
         mTvEmpty = (TextView) root.findViewById(R.id.tv_empty);
 
         // Initiate
-        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Light, mTvTitle);
+        AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Light, mTvTitle,
+                (TextView) root.findViewById(R.id.tv_buyout_title));
         AppPreference.getInstance().setFontsToViews(AppPreference.FontType.Bold, mTvEmpty);
 
         ArrayList<BuyoutModel> dataset = new ArrayList<>();

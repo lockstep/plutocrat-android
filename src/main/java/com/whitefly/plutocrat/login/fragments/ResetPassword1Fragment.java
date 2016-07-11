@@ -170,13 +170,12 @@ public class ResetPassword1Fragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
+    public void onPause() {
+        super.onPause();
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
+        if(mEdtEmail != null) {
+            mEdtEmail.setError(null);
+        }
     }
 
     @Subscribe

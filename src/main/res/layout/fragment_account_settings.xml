@@ -21,6 +21,7 @@
             android:visibility="gone">
 
             <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center">
@@ -28,9 +29,16 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/title_account"
-                    style="@style/HeaderMediumText"
+                    android:text="@string/caption_settings"
+                    style="@style/HeaderBigText.Shadow"
                     android:id="@+id/tv_title_account" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/caption_update_your_preference"
+                    android:id="@+id/tv_settings_sub_title"
+                    style="@style/HeaderMediumText.Shadow" />
 
             </LinearLayout>
 
@@ -212,7 +220,7 @@
                     style="@style/EditTextSingleLine.WithoutLine"
                     android:textSize="@dimen/font_small"
                     android:textColor="@color/colorGrey"
-                    android:textColorHint="@color/colorGrey" />
+                    android:textColorHint="@color/colorGrey"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -243,7 +251,7 @@
                     style="@style/EditTextSingleLine.WithoutLine"
                     android:textSize="@dimen/font_small"
                     android:textColor="@color/colorGrey"
-                    android:textColorHint="@color/colorGrey" />
+                    android:textColorHint="@color/colorGrey"/>
 
                 <TextView
                     android:layout_width="wrap_content"

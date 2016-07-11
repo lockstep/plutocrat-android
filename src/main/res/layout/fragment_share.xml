@@ -14,16 +14,25 @@
         android:paddingRight="@dimen/activity_horizontal_margin">
 
         <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/llo_targets_noplutocrat"
             android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/caption_your_account"
+                android:id="@+id/tv_share_title"
+                style="@style/HeaderBigText.Shadow"/>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/title_unused_shares"
-                style="@style/HeaderMediumText"
-                android:id="@+id/tv_title_shares" />
+                style="@style/HeaderMediumText.Shadow"
+                android:id="@+id/tv_share_sub_title" />
         </LinearLayout>
 
     </LinearLayout>

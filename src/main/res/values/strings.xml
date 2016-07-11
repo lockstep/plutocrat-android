@@ -13,7 +13,7 @@
     <string name="welcome_title">Welcome to Plutocrat</string>
     <string name="welcome_content"><![CDATA[Use Shares to buy out other players.<br /> The player with the most buyouts is the Plutocrat.<br /> Match buyout offers to stay in the game.<br /> <br /> Failing to match a buyout within 48 hours results in <strong>permanent account suspension</strong>. Your remaining shares go to victor.]]></string>
     <string name="register_title">Register</string>
-    <string name="caption_create_new_member">Create new member</string>
+    <string name="caption_create_new_member">Create account</string>
     <string name="caption_forgot_password">Forgot password?</string>
     <string name="caption_register_agreement">by registering you agree to:</string>
     <string name="caption_already_member">Already a member? Login</string>
@@ -47,12 +47,14 @@
     <string name="caption_new_password">New Password</string>
     <string name="caption_reset">Reset</string>
     <string name="caption_manage_account">Manage Account</string>
-    <string name="home_default_content"><![CDATA[You need <a href="">%1$d more buyouts</a> to become the Plutocrat.<br /><br />Swipe right for more controls]]></string>
+    <string name="home_default_content"><![CDATA[You need <a href="">%1$d more buyouts</a> to become<br />the Plutocrat.<br /><br />Swipe right for more controls.]]></string>
     <string name="home_threat_content"><![CDATA[WARNING: Your response to this buyout threat is not reversible. You must match the buyout shares to maintain your account.<br /><br />Failure to match the buyout will result in permanent account suspension. Any shares remaining in your account will transfer to the victor.]]></string>
     <string name="home_suspend_content"><![CDATA[You were bought out by <i>%1$s</i> for<br /><br />%2$s %3$s.<br /><br />Your account is now inactive.]]></string>
     <string name="caption_success_buyout">Successful\nBuyouts</string>
     <string name="caption_failed_buyout">Failed\nBuyouts</string>
     <string name="caption_defeat_threat">Defeated\nThreats</string>
+    <string name="caption_buyout_history">Buyout History</string>
+    <string name="caption_your_account">Your Account</string>
     <string name="caption_survival_time">Survival Time</string>
     <string name="caption_active_threat">Active Buyout Threat</string>
     <string name="caption_you_survived">You Survived</string>
@@ -120,10 +122,12 @@
     <string name="dialog_content_moreshare">Do you want to buy more shares?</string>
     <string name="caption_close">Close</string>
     <string name="caption_share_to_match">Shares to match: %1$d</string>
-    <string name="caption_no_target_list">No Targets</string>
-    <string name="caption_no_buyout_list">No Buyouts</string>
+    <string name="caption_no_target_list">You have no targets</string>
+    <string name="caption_no_buyout_list">You have no buyouts in your history</string>
     <string name="caption_deadline_time">Deadline:</string>
     <string name="save_successfully">Save successfully</string>
+    <string name="caption_settings">Settings</string>
+    <string name="caption_update_your_preference">Update your preference</string>
 
     <string name="menu_manage_account">Manage Account</string>
     <string name="menu_faq">FAQ</string>
