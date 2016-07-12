@@ -66,7 +66,7 @@ public class SaveAccountSettingsEvent {
     public SaveAccountSettingsEvent(Bitmap profilePicture, String displayName, String email,
                                     String newPassword, String currentPassword,
                                     boolean isTransactionEmailEnabled, boolean isProductEmailEnabled,
-                                    IAccountSettingView reponseView) {
+                                    IAccountSettingView responseView) {
         mProfilePicture = profilePicture;
         mDisplayName = displayName;
         mEmail = email;
@@ -74,6 +74,6 @@ public class SaveAccountSettingsEvent {
         mCurrentPassword = currentPassword;
         mIsTransactionEmailEnabled = isTransactionEmailEnabled;
         mIsProductEmailEnabled = isProductEmailEnabled;
-        mResponseView = reponseView;
+        mResponseView = responseView;
     }
 }
