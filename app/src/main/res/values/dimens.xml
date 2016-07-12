@@ -33,6 +33,8 @@
     <dimen name="background_padding_reset_password1">100dp</dimen>
     <dimen name="background_padding_reset_password2">0dp</dimen>
     <dimen name="min_height_reset_password">500dp</dimen>
+    <dimen name="home_note_margin_top_small_text">32dp</dimen>
+    <dimen name="home_note_margin_top_long_text">20dp</dimen>
 
     <!-- Utils -->
     <dimen name="font_small_x">12sp</dimen>

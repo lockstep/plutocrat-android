@@ -112,7 +112,7 @@
     <string name="caption_privacy">PRIVACY</string>
     <string name="caption_getting_started">Getting Started</string>
     <string name="note_getting_started">Buy out other players to become the Plutocrat. You may target any player who is not already under threat.</string>
-    <string name="note_enable_push_notice"><![CDATA[We’ll notify you when your buyouts succeed or fail.]]></string>
+    <string name="note_enable_push_notice"><![CDATA[We’ll notify you when your buyouts\nsucceed or fail.]]></string>
     <string name="caption_find_target">FIND TARGET</string>
     <string name="caption_enable_push_notice">Enable notification</string>
     <string name="dialog_note_enable_push_notice">Are you sure to enable notification?</string>
