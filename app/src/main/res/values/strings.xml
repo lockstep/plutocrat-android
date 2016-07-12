@@ -56,7 +56,7 @@
     <string name="caption_buyout_history">Buyout History</string>
     <string name="caption_your_account">Your Account</string>
     <string name="caption_survival_time">Survival Time</string>
-    <string name="caption_active_threat">Active Buyout Threat</string>
+    <string name="caption_active_threat">Buyout Threat</string>
     <string name="caption_you_survived">You Survived</string>
     <string name="caption_accept_defeat">ACCEPT DEFEAT</string>
     <string name="caption_match_shares">MATCH SHARES</string>
@@ -124,7 +124,7 @@
     <string name="caption_share_to_match">Shares to match: %1$d</string>
     <string name="caption_no_target_list">You have no targets</string>
     <string name="caption_no_buyout_list">You have no buyouts in your history</string>
-    <string name="caption_deadline_time">Deadline:</string>
+    <string name="caption_deadline_time"></string>
     <string name="save_successfully">Save successfully</string>
     <string name="caption_settings">Settings</string>
     <string name="caption_update_your_preference">Update your preference</string>
