@@ -143,11 +143,20 @@
                         style="@style/LoginEditText.White"
                         android:imeOptions="actionDone" />
 
+
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/register_title"
+                        android:id="@+id/btn_register"
+                        style="@style/OutlineButton"
+                        android:layout_marginTop="32dp"/>
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="4dp"
                         android:layout_marginBottom="4dp"
                         android:id="@+id/tv_register_agreement"
                         android:text="@string/caption_register_agreement"
@@ -178,13 +187,6 @@
                             style="@style/OutlineButton"/>
 
                     </LinearLayout>
-
-                    <Button
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/register_title"
-                        android:id="@+id/btn_register"
-                        style="@style/OutlineButton"/>
 
                 </LinearLayout>
 
