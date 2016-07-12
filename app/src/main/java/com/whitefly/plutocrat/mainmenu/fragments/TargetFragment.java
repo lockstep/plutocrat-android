@@ -1,6 +1,5 @@
 package com.whitefly.plutocrat.mainmenu.fragments;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,9 +10,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.squareup.otto.Subscribe;
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.AppPreference;
@@ -31,6 +35,8 @@ import com.whitefly.plutocrat.models.TargetModel;
 import com.whitefly.plutocrat.models.UserModel;
 
 import java.util.ArrayList;
+
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 /**
  * Created by Satjapot on 5/10/16 AD.
@@ -57,6 +63,7 @@ public class TargetFragment extends Fragment implements ITabView {
     private Button mBtnEngage;
     private TextView mTvPlutocratNickname, mTvPlutocratName, mTvPlutocratBuyouts, mTvEmpty;
     private TextView mTvPlutocratGameStatus;
+    private ImageView mImvPlutocratProfile;
 
     /**
      * Use this factory method to create a new instance of
@@ -82,6 +89,28 @@ public class TargetFragment extends Fragment implements ITabView {
                 mTvPlutocratName.setText(user.name);
                 mTvPlutocratBuyouts.setText(
                         String.format(getString(R.string.value_plutocrat_buyouts), user.numSuccessfulBuyout));
+
+
+                Glide.with(getActivity()).load(user.profileImage)
+                        .listener(new RequestListener<String, GlideDrawable>() {
+                            @Override
+                            public boolean onException(Exception e, String model,
+                                                       Target<GlideDrawable> target, boolean isFirstResource) {
+                                mImvPlutocratProfile.setVisibility(View.GONE);
+                                mTvPlutocratNickname.setVisibility(View.VISIBLE);
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(GlideDrawable resource,
+                                                           String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                mImvPlutocratProfile.setVisibility(View.VISIBLE);
+                                mTvPlutocratNickname.setVisibility(View.GONE);
+                                return false;
+                            }
+                        })
+                        .bitmapTransform(new CropCircleTransformation(getActivity()))
+                        .into(mImvPlutocratProfile);
 
                 if(activeUser.id == user.id) {
                     mBtnEngage.setVisibility(View.GONE);
@@ -146,6 +175,7 @@ public class TargetFragment extends Fragment implements ITabView {
         mTvPlutocratName = (TextView) root.findViewById(R.id.tv_plutocrat_name);
         mTvPlutocratBuyouts = (TextView) root.findViewById(R.id.tv_plutocrat_buyouts);
         mTvPlutocratGameStatus = (TextView) root.findViewById(R.id.tv_plutocrat_game_status);
+        mImvPlutocratProfile = (ImageView) root.findViewById(R.id.imv_plutocrat_profile);
         mTvEmpty = (TextView) root.findViewById(R.id.tv_empty);
         mBtnEngage = (Button) root.findViewById(R.id.btn_player_engage);
 

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item>
+        <shape android:shape="oval">
+            <size android:width="@dimen/player_img_size"
+                android:height="@dimen/player_img_size" />
+            <solid android:color="@android:color/black"/>
+        </shape>
+    </item>
+
+    <item android:bottom="2dp"
+        android:width="@dimen/player_img_size"
+        android:height="@dimen/player_img_size">
+        <bitmap android:src="@drawable/empty_profile_image"
+            android:tileMode="disabled"/>
+    </item>
+</layer-list>
