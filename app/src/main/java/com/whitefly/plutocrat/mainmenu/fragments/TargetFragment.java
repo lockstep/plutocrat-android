@@ -92,7 +92,6 @@ public class TargetFragment extends Fragment implements ITabView {
                         user.numSuccessfulBuyout, user.numSuccessfulBuyout);
                 mTvPlutocratBuyouts.setText(valueBuyout);
 
-
                 Glide.with(getActivity()).load(user.profileImage)
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
@@ -118,16 +117,13 @@ public class TargetFragment extends Fragment implements ITabView {
                     mBtnEngage.setVisibility(View.GONE);
                     mTvPlutocratGameStatus.setVisibility(View.GONE);
                 } else {
-                    mBtnEngage.setVisibility(View.VISIBLE);
-                    mTvPlutocratGameStatus.setVisibility(View.VISIBLE);
-                }
-
-                if(mBtnEngage.getVisibility() == View.VISIBLE && user.isUnderBuyoutThreat) {
-                    mBtnEngage.setVisibility(View.GONE);
-                    mTvPlutocratGameStatus.setVisibility(View.VISIBLE);
-                } else {
-                    mBtnEngage.setVisibility(View.VISIBLE);
-                    mTvPlutocratGameStatus.setVisibility(View.GONE);
+                    if(user.isUnderBuyoutThreat) {
+                        mBtnEngage.setVisibility(View.GONE);
+                        mTvPlutocratGameStatus.setVisibility(View.VISIBLE);
+                    } else {
+                        mBtnEngage.setVisibility(View.VISIBLE);
+                        mTvPlutocratGameStatus.setVisibility(View.GONE);
+                    }
                 }
                 break;
             case NoPlutocrat:
