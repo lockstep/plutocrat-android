@@ -150,6 +150,10 @@ public class MainMenuActivity extends AppCompatActivity
         ((ITabView) mAdapter.getItem(mTabLayout.getSelectedTabPosition())).updateView();
     }
 
+    public void updateTab(int position) {
+        ((ITabView) mAdapter.getItem(position)).updateView();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
