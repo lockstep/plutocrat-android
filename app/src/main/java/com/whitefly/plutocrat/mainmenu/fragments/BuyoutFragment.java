@@ -143,7 +143,9 @@ public class BuyoutFragment extends Fragment implements ITabView {
     @Override
     public void updateView() {
         UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
-        mTvTitle.setText(String.format(getActivity().getString(R.string.title_success_buyout), activeUser.numSuccessfulBuyout));
+        String subTitle = getActivity().getResources().getQuantityString(R.plurals.title_success_buyout,
+                activeUser.numSuccessfulBuyout, activeUser.numSuccessfulBuyout);
+        mTvTitle.setText(subTitle);
     }
 
     /*

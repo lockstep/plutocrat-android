@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="title_success_buyout">
+        <item quantity="one">%d Successful Buyout</item>
+        <item quantity="other">%d Successful Buyouts</item>
+    </plurals>
+    <plurals name="value_buyouts">
+        <item quantity="one">%d Buyout</item>
+        <item quantity="other">%d Buyouts</item>
+    </plurals>
+    <plurals name="title_unused_shares">
+        <item quantity="one">%d Unused Share</item>
+        <item quantity="other">%d Unused Shares</item>
+    </plurals>
+    <plurals name="caption_shares">
+        <item quantity="one">Share</item>
+        <item quantity="other">Shares</item>
+    </plurals>
+</resources>

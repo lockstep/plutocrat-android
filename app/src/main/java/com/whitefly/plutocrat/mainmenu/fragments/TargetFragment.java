@@ -87,8 +87,10 @@ public class TargetFragment extends Fragment implements ITabView {
 
                 mTvPlutocratNickname.setText(user.getNickName());
                 mTvPlutocratName.setText(user.name);
-                mTvPlutocratBuyouts.setText(
-                        String.format(getString(R.string.value_plutocrat_buyouts), user.numSuccessfulBuyout));
+
+                String valueBuyout = getActivity().getResources().getQuantityString(R.plurals.value_buyouts,
+                        user.numSuccessfulBuyout, user.numSuccessfulBuyout);
+                mTvPlutocratBuyouts.setText(valueBuyout);
 
 
                 Glide.with(getActivity()).load(user.profileImage)
