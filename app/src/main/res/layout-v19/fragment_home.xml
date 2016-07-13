@@ -32,12 +32,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/llo_home_header"
-        android:scrollbars="none">
+        android:scrollbars="none"
+        android:fillViewport="true">
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin">
 
@@ -142,7 +143,7 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:id="@+id/llo_home_owner"
                 android:background="@drawable/bg_line_bottom">
 
@@ -300,17 +301,18 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="top|center_horizontal"
                 android:id="@+id/llo_home_note_wrapper">
 
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_home_vertical"
+                    android:layout_marginTop="@dimen/home_note_margin_top_small_text"
                     android:paddingBottom="@dimen/padding_home_vertical"
                     android:id="@+id/llo_home_note"
-                    android:gravity="center"
+                    android:gravity="top|center_horizontal"
                     android:visibility="gone">
 
                     <TextView
@@ -329,10 +331,10 @@
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_home_vertical"
+                    android:layout_marginTop="@dimen/home_note_margin_top_long_text"
                     android:paddingBottom="@dimen/padding_home_vertical"
                     android:id="@+id/llo_getting_start_note"
-                    android:gravity="center"
+                    android:gravity="top|center_horizontal"
                     android:visibility="gone">
 
                     <TextView
@@ -367,10 +369,10 @@
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_home_vertical"
+                    android:layout_marginTop="@dimen/home_note_margin_top_long_text"
                     android:paddingBottom="@dimen/padding_home_vertical"
                     android:id="@+id/llo_enable_notice_note"
-                    android:gravity="center">
+                    android:gravity="top|center_horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
