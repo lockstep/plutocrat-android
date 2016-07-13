@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
@@ -46,15 +48,21 @@
 
                     <ImageView
                         android:layout_width="@dimen/player_img_size"
-                        android:layout_height="@dimen/player_img_size"
+                        android:layout_height="@dimen/plutocrat_img_height"
                         android:id="@+id/imv_plutocrat_profile"
+                        android:background="@drawable/empty_profile_image_shadow"
+                        android:paddingBottom="@dimen/plutocrat_img_padding_bottom"
+                        android:paddingTop="@dimen/plutocrat_img_padding"
+                        android:paddingStart="@dimen/plutocrat_img_padding"
+                        android:paddingEnd="@dimen/plutocrat_img_padding"
                         android:visibility="gone"/>
+
                     <TextView
                         android:layout_width="@dimen/player_img_size"
-                        android:layout_height="@dimen/player_img_size"
+                        android:layout_height="@dimen/plutocrat_img_height"
                         android:id="@+id/tv_plutocrat_profile_nickname"
                         android:text="AP"
-                        style="@style/ProfileText"/>
+                        style="@style/ProfileText.Shadow"/>
 
                 </LinearLayout>
 
@@ -103,7 +111,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/btn_player_engage"
                         android:text="@string/caption_engage"
-                        style="@style/DefaultButton"
+                        style="@style/PlutocratEngageButton"
                         android:minWidth="80dp"/>
 
                     <TextView

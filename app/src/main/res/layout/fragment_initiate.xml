@@ -33,15 +33,20 @@
 
                     <ImageView
                         android:layout_width="@dimen/player_img_size"
-                        android:layout_height="@dimen/player_img_size"
+                        android:layout_height="@dimen/plutocrat_img_height"
                         android:id="@+id/imv_plutocrat_profile"
-                        android:visibility="gone"/>
+                        android:background="@drawable/empty_profile_image_shadow"
+                        android:paddingBottom="@dimen/plutocrat_img_padding_bottom"
+                        android:paddingTop="@dimen/plutocrat_img_padding"
+                        android:paddingStart="@dimen/plutocrat_img_padding"
+                        android:paddingEnd="@dimen/plutocrat_img_padding"
+                        android:visibility="gone" />
                     <TextView
                         android:layout_width="@dimen/player_img_size"
-                        android:layout_height="@dimen/player_img_size"
+                        android:layout_height="@dimen/plutocrat_img_height"
                         android:id="@+id/tv_plutocrat_profile_nickname"
                         android:text="AP"
-                        style="@style/ProfileText"/>
+                        style="@style/ProfileText.Shadow"/>
 
                 </LinearLayout>
 
@@ -58,7 +63,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/tv_plutocrat_name"
                         android:text="Aaron Pinchai"
-                        style="@style/HeaderMediumText"
+                        style="@style/HeaderMediumText.Shadow"
                         android:ellipsize="end"
                         android:maxLines="1"/>
 
@@ -68,7 +73,7 @@
                         android:layout_marginTop="@dimen/fix_font_margin"
                         android:id="@+id/tv_plutocrat_threats"
                         android:text="@string/caption_plutocrat"
-                        style="@style/HeaderMediumLittleText"/>
+                        style="@style/HeaderMediumLittleText.Shadow"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -76,7 +81,7 @@
                         android:layout_marginTop="@dimen/fix_font_margin"
                         android:id="@+id/tv_plutocrat_buyouts"
                         android:text="35 Buyouts"
-                        style="@style/HeaderMediumLittleText"/>
+                        style="@style/HeaderMediumLittleText.Shadow"/>
                 </LinearLayout>
 
                 <Button
@@ -84,7 +89,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/btn_plutocrat_abort"
                     android:text="@string/caption_abort"
-                    style="@style/DefaultButton"
+                    style="@style/PlutocratEngageButton"
                     android:visibility="gone"/>
             </LinearLayout>
 

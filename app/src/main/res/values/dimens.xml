@@ -35,11 +35,14 @@
     <dimen name="min_height_reset_password">500dp</dimen>
     <dimen name="home_note_margin_top_small_text">32dp</dimen>
     <dimen name="home_note_margin_top_long_text">20dp</dimen>
+    <dimen name="plutocrat_img_height">82dp</dimen>
+    <dimen name="plutocrat_img_padding">2dp</dimen>
+    <dimen name="plutocrat_img_padding_bottom">4dp</dimen>
 
     <!-- Utils -->
     <dimen name="font_small_x">12sp</dimen>
     <dimen name="font_small">14sp</dimen>
-    <dimen name="font_medium_x">19sp</dimen>
+    <dimen name="font_medium_x">17sp</dimen>
     <dimen name="font_medium">24sp</dimen>
     <dimen name="font_big">32sp</dimen>
     <dimen name="font_big_x">38sp</dimen>

@@ -143,6 +143,10 @@
         <item name="android:textColor">@color/colorPurpleLink</item>
     </style>
 
+    <style name="ProfileText.Shadow" parent="ProfileText">
+        <item name="android:background">@drawable/empty_profile_image_shadow</item>
+    </style>
+
     <style name="EditTextSingleLine" parent="Widget.AppCompat.EditText">
         <item name="android:textSize">@dimen/font_small</item>
         <item name="android:lines">1</item>
@@ -214,6 +218,10 @@
 
     <style name="WhiteButtonThin" parent="WhiteButton">
         <item name="android:fontFamily">sans-serif-thin</item>
+    </style>
+
+    <style name="PlutocratEngageButton" parent="DefaultButton">
+        <item name="android:background">@drawable/bg_button_line_white</item>
     </style>
 
     <style name="OutlineButton" parent="DefaultButton">
