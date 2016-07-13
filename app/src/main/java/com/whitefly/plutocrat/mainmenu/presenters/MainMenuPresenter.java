@@ -479,6 +479,7 @@ public class MainMenuPresenter {
                     currentTarget.numAvailableShares = targetUser.numAvailableShares;
                     AppPreference.getInstance().setCurrentTarget(null);
 
+                    mMainMenuView.toast(mContext.getString(R.string.caption_buyout_initiated));
                     mMainMenuView.closeInitiatePage(response != null);
                 } catch (JSONException e) {
                     e.printStackTrace();
