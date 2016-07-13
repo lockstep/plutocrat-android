@@ -655,6 +655,7 @@ public class MainMenuPresenter {
         private String mErrorMessage = null;
         private MetaModel mMetaError = null;
         private IAccountSettingView mResponseView;
+        private TargetModel mPlutocrat = null;
 
         @Override
         protected void onPreExecute() {
@@ -697,6 +698,11 @@ public class MainMenuPresenter {
                 activeUser.isTransactionalEmailsEnabled = param.isTransactionEmailEnabled();
                 activeUser.isProductEmailsEnabled = param.isProductEmailEnabled();
 
+                if(activeUser.isPlutocrat) {
+                    mPlutocrat = gson.fromJson(bodyJson.getString("user"), TargetModel.class);
+                    AppPreference.getInstance().getSession().setPlutocrat(mPlutocrat);
+                }
+
                 result = true;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -725,6 +731,10 @@ public class MainMenuPresenter {
                 mMainMenuView.toast(mContext.getString(R.string.save_successfully));
                 EventBus.getInstance().post(new SetHomeStateEvent());
                 EventBus.getInstance().post(new UpdateSettingsEvent());
+
+                if(mPlutocrat != null) {
+                    EventBus.getInstance().post(new LoadPlutocratCompletedEvent(mPlutocrat));
+                }
             }
         }
     }
@@ -733,6 +743,7 @@ public class MainMenuPresenter {
         private String mErrorMessage = null;
         private MetaModel mMetaError = null;
         private IAccountSettingView mResponseView;
+        private TargetModel mPlutocrat = null;
 
         @Override
         protected void onPreExecute() {
@@ -765,6 +776,11 @@ public class MainMenuPresenter {
 
                 AppPreference.getInstance().getSession().updateUserJson(response);
 
+                if(activeUser.isPlutocrat) {
+                    mPlutocrat = gson.fromJson(bodyJson.getString("user"), TargetModel.class);
+                    AppPreference.getInstance().getSession().setPlutocrat(mPlutocrat);
+                }
+
                 result = true;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -792,6 +808,10 @@ public class MainMenuPresenter {
             } else {
                 EventBus.getInstance().post(new SetHomeStateEvent());
                 EventBus.getInstance().post(new UpdateSettingsEvent());
+
+                if(mPlutocrat != null) {
+                    EventBus.getInstance().post(new LoadPlutocratCompletedEvent(mPlutocrat));
+                }
             }
         }
     }
