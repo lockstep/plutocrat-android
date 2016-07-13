@@ -25,6 +25,7 @@ import com.whitefly.plutocrat.mainmenu.events.LoadTargetsEvent;
 import com.whitefly.plutocrat.mainmenu.events.MatchBuyoutEvent;
 import com.whitefly.plutocrat.mainmenu.events.MoreShareClickEvent;
 import com.whitefly.plutocrat.mainmenu.events.SaveAccountSettingsEvent;
+import com.whitefly.plutocrat.mainmenu.events.SaveImageProfileEvent;
 import com.whitefly.plutocrat.mainmenu.events.SendReceiptCompleteEvent;
 import com.whitefly.plutocrat.mainmenu.events.SendReceiptEvent;
 import com.whitefly.plutocrat.mainmenu.events.SetHomeStateEvent;
@@ -173,6 +174,11 @@ public class MainMenuPresenter {
     @Subscribe
     public void onSaveAccountSettings(SaveAccountSettingsEvent event) {
         AsyncTaskCompat.executeParallel(new SaveAccountSettingCallback(), event);
+    }
+
+    @Subscribe
+    public void onSaveImageProfile(SaveImageProfileEvent event) {
+        AsyncTaskCompat.executeParallel(new SaveImageProfileCallback(), event);
     }
 
     @Subscribe
@@ -717,6 +723,73 @@ public class MainMenuPresenter {
                         mErrorMessage, mMetaError);
             } else {
                 mMainMenuView.toast(mContext.getString(R.string.save_successfully));
+                EventBus.getInstance().post(new SetHomeStateEvent());
+                EventBus.getInstance().post(new UpdateSettingsEvent());
+            }
+        }
+    }
+
+    private class SaveImageProfileCallback extends AsyncTask<SaveImageProfileEvent, Void, Boolean> {
+        private String mErrorMessage = null;
+        private MetaModel mMetaError = null;
+        private IAccountSettingView mResponseView;
+
+        @Override
+        protected void onPreExecute() {
+            mMainMenuView.handleLoadingDialog(true);
+        }
+
+        @Override
+        protected Boolean doInBackground(SaveImageProfileEvent... params) {
+            Boolean result = false;
+            SaveImageProfileEvent param = params[0];
+            Gson gson = AppPreference.getInstance().getGson();
+            UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
+            Headers headers = AppPreference.getInstance().getSession().getHeaders();
+            mResponseView = param.getResponseView();
+
+            String url = String.format(mContext.getString(R.string.api_save_settings), activeUser.id);
+
+            try {
+                mHttp.header(headers);
+                if(param.getProfilePicture() != null) {
+                    mHttp.addMultipartImage("profile_image", param.getProfilePicture());
+                }
+
+                String response = mHttp.patch(url);
+
+                JSONObject bodyJson = new JSONObject(response);
+                if(! bodyJson.isNull("meta")) {
+                    throw new APIConnectionException(response);
+                }
+
+                AppPreference.getInstance().getSession().updateUserJson(response);
+
+                result = true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                mErrorMessage = mContext.getString(R.string.error_connection);
+            } catch (APIConnectionException e) {
+                e.printStackTrace();
+                mMetaError = new MetaModel(e.getMessage());
+                mErrorMessage = mMetaError.getErrors();
+            } catch (JSONException e) {
+                mErrorMessage = mContext.getString(R.string.error_connection);
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean b) {
+            mMainMenuView.handleLoadingDialog(false);
+
+            if (mMetaError != null) {
+                mResponseView.handleError(mMetaError);
+            } else if(mErrorMessage != null) {
+                mMainMenuView.handleError(mContext.getString(R.string.error_title_cannot_save_settings),
+                        mErrorMessage, mMetaError);
+            } else {
                 EventBus.getInstance().post(new SetHomeStateEvent());
                 EventBus.getInstance().post(new UpdateSettingsEvent());
             }

@@ -12,6 +12,8 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -46,6 +48,7 @@ import com.whitefly.plutocrat.helpers.FormValidationHelper;
 import com.whitefly.plutocrat.helpers.ImageInputHelper;
 import com.whitefly.plutocrat.mainmenu.MainMenuActivity;
 import com.whitefly.plutocrat.mainmenu.events.SaveAccountSettingsEvent;
+import com.whitefly.plutocrat.mainmenu.events.SaveImageProfileEvent;
 import com.whitefly.plutocrat.mainmenu.views.IAccountSettingView;
 import com.whitefly.plutocrat.models.MetaModel;
 import com.whitefly.plutocrat.models.UserModel;
@@ -79,7 +82,7 @@ public class AccountSettingFragment extends DialogFragment
     private AlertDialog mImageDialog, mErrorDialog;
     private ImageInputHelper imageInputHelper;
     private Bitmap mSavingPicture;
-    private boolean mIsPictureChanged, mIsCreateView;
+    private boolean mIsCreateView;
     private FormValidationHelper mFormValidator;
 
     // Views
@@ -213,7 +216,6 @@ public class AccountSettingFragment extends DialogFragment
             imageInputHelper.setImageActionListener(this);
         }
         captureImageInitialization();
-        mIsPictureChanged = false;
         mFormValidator = new FormValidationHelper();
     }
 
@@ -354,7 +356,7 @@ public class AccountSettingFragment extends DialogFragment
                 }
 
                 event = new SaveAccountSettingsEvent(
-                        mIsPictureChanged ? mSavingPicture : null,
+                        null,
                         mEdtDisplayName.getText().toString().trim(),
                         mEdtEmail.getText().toString().trim(),
                         newPassword.equals("") ? null : newPassword,
@@ -428,7 +430,13 @@ public class AccountSettingFragment extends DialogFragment
                     .bitmapTransform(new CropCircleTransformation(getActivity()))
                     .into(mImvProfilePicture);
 
-            mIsPictureChanged = true;
+
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    EventBus.getInstance().post(new SaveImageProfileEvent(mSavingPicture, AccountSettingFragment.this));
+                }
+            });
         } catch (IOException | NullPointerException e) {
             e.printStackTrace();
             showErrorDialog(getString(R.string.error_title_cannot_save_picture),

@@ -11,6 +11,8 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -46,7 +48,11 @@ import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.helpers.FormValidationHelper;
 import com.whitefly.plutocrat.helpers.ImageInputHelper;
 import com.whitefly.plutocrat.mainmenu.MainMenuActivity;
+import com.whitefly.plutocrat.mainmenu.events.LoadBuyoutsEvent;
+import com.whitefly.plutocrat.mainmenu.events.LoadTargetsEvent;
 import com.whitefly.plutocrat.mainmenu.events.SaveAccountSettingsEvent;
+import com.whitefly.plutocrat.mainmenu.events.SaveImageProfileEvent;
+import com.whitefly.plutocrat.mainmenu.events.SetHomeStateEvent;
 import com.whitefly.plutocrat.mainmenu.events.UpdateSettingsEvent;
 import com.whitefly.plutocrat.mainmenu.views.IAccountSettingView;
 import com.whitefly.plutocrat.mainmenu.views.ITabView;
@@ -82,7 +88,7 @@ public class SettingsFragment extends Fragment
     private AlertDialog mImageDialog;
     private ImageInputHelper imageInputHelper;
     private Bitmap mSavingPicture;
-    private boolean mIsPictureChanged, mIsCreateView;
+    private boolean mIsCreateView;
     private FormValidationHelper mFormValidator;
 
     // Views
@@ -197,14 +203,13 @@ public class SettingsFragment extends Fragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        EventBus.getInstance().register(this);
+        EventBus.register(this);
 
         if(imageInputHelper == null) {
             imageInputHelper = new ImageInputHelper(this);
             imageInputHelper.setImageActionListener(this);
         }
         captureImageInitialization();
-        mIsPictureChanged = false;
         mFormValidator = new FormValidationHelper();
     }
 
@@ -342,7 +347,7 @@ public class SettingsFragment extends Fragment
                 }
 
                 event = new SaveAccountSettingsEvent(
-                        mIsPictureChanged ? mSavingPicture : null,
+                        null,
                         mEdtDisplayName.getText().toString().trim(),
                         mEdtEmail.getText().toString().trim(),
                         newPassword.equals("") ? null : newPassword,
@@ -370,6 +375,8 @@ public class SettingsFragment extends Fragment
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        EventBus.register(this);
+
         imageInputHelper.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -377,7 +384,7 @@ public class SettingsFragment extends Fragment
     public void onDestroy() {
         super.onDestroy();
 
-        EventBus.getInstance().unregister(this);
+        EventBus.unregister(this);
     }
 
     /**
@@ -415,7 +422,12 @@ public class SettingsFragment extends Fragment
                     .bitmapTransform(new CropCircleTransformation(getActivity()))
                     .into(mImvProfilePicture);
 
-            mIsPictureChanged = true;
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    EventBus.getInstance().post(new SaveImageProfileEvent(mSavingPicture, SettingsFragment.this));
+                }
+            });
         } catch (IOException | NullPointerException e) {
             e.printStackTrace();
             showErrorDialog(getString(R.string.error_title_cannot_save_picture),

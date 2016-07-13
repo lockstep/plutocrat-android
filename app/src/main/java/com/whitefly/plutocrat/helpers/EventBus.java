@@ -49,4 +49,8 @@ public class EventBus {
             mObjectRegisterdList.remove(object);
         }
     }
+
+    public static int getCurrentBusCount() {
+        return mObjectRegisterdList.size();
+    }
 }
