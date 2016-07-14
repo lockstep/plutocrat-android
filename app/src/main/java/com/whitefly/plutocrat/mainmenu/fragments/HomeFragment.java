@@ -646,6 +646,7 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
             }
         } else {
             EventBus.getInstance().post(new SetHomeStateEvent());
+            ((MainMenuActivity) getActivity()).updateTab(MainMenuActivity.FRAGMENT_SHARES_INDEX);
         }
     }
 
