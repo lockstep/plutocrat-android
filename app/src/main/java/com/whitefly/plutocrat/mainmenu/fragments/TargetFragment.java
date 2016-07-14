@@ -279,7 +279,7 @@ public class TargetFragment extends Fragment implements ITabView {
     @Subscribe
     public void onLoadPlutocratCompleted(LoadPlutocratCompletedEvent event) {
         TargetModel user = event.getPlutocratUser();
-        HeaderState state = user == null ? HeaderState.NoPlutocrat : HeaderState.Plutocrat;
+        HeaderState state = (user == null) ? HeaderState.NoPlutocrat : HeaderState.Plutocrat;
         changeState(state, user);
     }
 }
