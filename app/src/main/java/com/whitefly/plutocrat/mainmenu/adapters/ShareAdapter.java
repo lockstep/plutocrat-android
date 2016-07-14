@@ -100,14 +100,15 @@ public class ShareAdapter extends RecyclerView.Adapter<ShareAdapter.ViewHolder> 
             holder.tvPrice.setText(model.getPrice());
             holder.tvTotal.setText(model.getTotalPrice());
 
+            String valueShare = mContext.getResources().getQuantityString(R.plurals.caption_shares,
+                    model.qty);
+            holder.tvShareCaption.setText(valueShare);
+
             if(model.qty > AMOUNT_QTY_MEDIUM) {
-                holder.tvShareCaption.setText(mSharesCaption);
                 holder.rloBundle.setBackground(mBundleLarge);
             } else if(model.qty > AMOUNT_QTY_SMALL) {
-                holder.tvShareCaption.setText(mSharesCaption);
                 holder.rloBundle.setBackground(mBundleMedium);
             } else {
-                holder.tvShareCaption.setText(mShareCaption);
                 holder.rloBundle.setBackground(mBundleSmall);
             }
 

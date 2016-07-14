@@ -170,8 +170,10 @@ public class ShareFragment extends Fragment implements ITabView {
 
     @Override
     public void updateView() {
-        mTvTitle.setText(String.format(getString(R.string.title_unused_shares),
-                AppPreference.getInstance().getSession().getActiveUser().numAvailableShares));
+        int numAvailableShares = AppPreference.getInstance().getSession().getActiveUser().numAvailableShares;
+        String subTitle = getActivity().getResources().getQuantityString(R.plurals.title_unused_shares,
+                numAvailableShares, numAvailableShares);
+        mTvTitle.setText(subTitle);
     }
 
     @Subscribe
