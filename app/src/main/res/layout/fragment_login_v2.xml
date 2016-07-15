@@ -122,6 +122,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/edt_reg_displayname"
                         android:hint="@string/caption_displayname"
+                        android:inputType="textCapSentences"
                         style="@style/LoginEditText.White"/>
 
                     <EditText

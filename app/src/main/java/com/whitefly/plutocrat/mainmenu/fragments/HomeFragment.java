@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -40,6 +41,7 @@ import com.whitefly.plutocrat.mainmenu.MainMenuActivity;
 import com.whitefly.plutocrat.mainmenu.events.AttackTimeOutEvent;
 import com.whitefly.plutocrat.mainmenu.events.EnablePushNotificationEvent;
 import com.whitefly.plutocrat.mainmenu.events.FailMatchBuyoutEvent;
+import com.whitefly.plutocrat.mainmenu.events.LoadHomeEvent;
 import com.whitefly.plutocrat.mainmenu.events.MatchBuyoutEvent;
 import com.whitefly.plutocrat.mainmenu.events.SetHomeStateEvent;
 import com.whitefly.plutocrat.mainmenu.events.SignOutEvent;
@@ -100,6 +102,7 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
     private ImageView mImvOwnerPic, mImvThreatPic;
     private Button mBtnEditSettings, mBtnMatchShares, mBtnAcceptDefeat;
     private Button mBtnFindTarget, mBtnEnableNotification;
+    private SwipeRefreshLayout mSrlUpdateStatus;
 
     // Methods
     public void setupNotificationEnableDialog() {
@@ -242,12 +245,12 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
                 // Change layout
                 mLloThreat.setVisibility(View.VISIBLE);
                 mLloOwner.setVisibility(View.VISIBLE);
-                mLloShares.setVisibility(View.GONE);
-                mLloNoteWrapper.setVisibility(View.GONE);
+                mLloShares.setVisibility(View.VISIBLE);
+                mLloNoteWrapper.setVisibility(View.VISIBLE);
 
                 mLloThreat.setBackgroundResource(R.drawable.bg_line_bottom);
-                mLloOwner.setBackground(null);
-                mLloShares.setBackground(null);
+                mLloOwner.setBackgroundResource(R.drawable.bg_line_bottom);
+                mLloShares.setBackgroundResource(R.drawable.bg_line_bottom);
                 mLloNote.setBackground(null);
 
                 ((MainMenuActivity) getActivity()).activateMenu();
@@ -485,6 +488,7 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
+        mSrlUpdateStatus    = (SwipeRefreshLayout) root.findViewById(R.id.srl_update_status);
         mLloThreat          = (LinearLayout) root.findViewById(R.id.llo_home_threat);
         mLloOwner           = (LinearLayout) root.findViewById(R.id.llo_home_owner);
         mLloShares          = (RelativeLayout) root.findViewById(R.id.llo_home_shares);
@@ -578,6 +582,12 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
                 EventBus.getInstance().post(new FailMatchBuyoutEvent());
             }
         });
+        mSrlUpdateStatus.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                EventBus.getInstance().post(new LoadHomeEvent());
+            }
+        });
 
         return root;
     }
@@ -652,6 +662,7 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
 
     @Subscribe
     public void onUpdateHomeView(UpdateHomeViewEvent event) {
+        mSrlUpdateStatus.setRefreshing(false);
         changeState(event.getHomeState(), event.getNoticeId());
     }
 }

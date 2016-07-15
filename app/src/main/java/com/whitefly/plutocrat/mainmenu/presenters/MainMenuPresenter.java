@@ -21,6 +21,7 @@ import com.whitefly.plutocrat.mainmenu.events.ExecuteShareEvent;
 import com.whitefly.plutocrat.mainmenu.events.FailMatchBuyoutEvent;
 import com.whitefly.plutocrat.mainmenu.events.GetPlutocratEvent;
 import com.whitefly.plutocrat.mainmenu.events.LoadBuyoutsEvent;
+import com.whitefly.plutocrat.mainmenu.events.LoadHomeEvent;
 import com.whitefly.plutocrat.mainmenu.events.LoadTargetsEvent;
 import com.whitefly.plutocrat.mainmenu.events.MatchBuyoutEvent;
 import com.whitefly.plutocrat.mainmenu.events.MoreShareClickEvent;
@@ -201,6 +202,11 @@ public class MainMenuPresenter {
         AsyncTaskCompat.executeParallel(new AttackTimeOutCallback(), (Void) null);
     }
 
+    @Subscribe
+    public void onLoadHome(LoadHomeEvent event) {
+        AsyncTaskCompat.executeParallel(new LoadHomeCallBack());
+    }
+
     /*
     Request Callback
      */
@@ -263,7 +269,7 @@ public class MainMenuPresenter {
                 mMetaModel = new MetaModel(root.getJSONObject("meta"));
                 JSONArray users = root.getJSONArray("users");
 
-                if(users.length() > 0) {
+                if(users != null && users.length() > 0) {
                     for (int i = 0, n = users.length(); i < n; i++) {
                         TargetModel model = gson.fromJson(users.get(i).toString(), TargetModel.class);
                         result.add(model);
@@ -294,7 +300,7 @@ public class MainMenuPresenter {
 
             if(mMetaModel != null && mMetaModel.getInt("current_page") == FIRST_PAGE) {
                 TargetModel plutocrat = AppPreference.getInstance().getSession().getPlutocrat();
-                if(plutocrat != null) {
+                if(plutocrat != null && targetModels.size() > 0) {
                     targetModels.remove(0);
                 }
                 EventBus.getInstance().post(new LoadPlutocratCompletedEvent(plutocrat));
@@ -327,7 +333,7 @@ public class MainMenuPresenter {
                 mMetaModel = new MetaModel(root.getJSONObject("meta"));
                 JSONArray buyouts = root.getJSONArray("buyouts");
 
-                if(buyouts.length() > 0) {
+                if(buyouts != null && buyouts.length() > 0) {
                     for (int i = 0, n = buyouts.length(); i < n; i++) {
                         JSONObject row = buyouts.getJSONObject(i);
 
@@ -921,6 +927,71 @@ public class MainMenuPresenter {
             } else {
                 EventBus.getInstance().post(
                         new SendReceiptCompleteEvent(SendReceiptCompleteEvent.State.Succeed, purchasedItem, null));
+            }
+        }
+    }
+
+    private class LoadHomeCallBack extends AsyncTask<Void, Void, Boolean> {
+        private String mErrorMessage = null;
+        private MetaModel mMetaError = null;
+        private IAccountSettingView mResponseView;
+        private TargetModel mPlutocrat = null;
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            Boolean result = false;
+            Gson gson = AppPreference.getInstance().getGson();
+            UserModel activeUser = AppPreference.getInstance().getSession().getActiveUser();
+            Headers headers = AppPreference.getInstance().getSession().getHeaders();
+
+            String url = String.format(mContext.getString(R.string.api_profile), activeUser.id);
+
+            try {
+                mHttp.header(headers);
+
+                String response = mHttp.header(headers).get(url);
+
+                JSONObject bodyJson = new JSONObject(response);
+                if(! bodyJson.isNull("meta")) {
+                    throw new APIConnectionException(response);
+                }
+
+                AppPreference.getInstance().getSession().updateUserJson(response);
+
+                if(activeUser.isPlutocrat) {
+                    mPlutocrat = gson.fromJson(bodyJson.getString("user"), TargetModel.class);
+                    AppPreference.getInstance().getSession().setPlutocrat(mPlutocrat);
+                }
+
+                result = true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                mErrorMessage = mContext.getString(R.string.error_connection);
+            } catch (APIConnectionException e) {
+                e.printStackTrace();
+                mMetaError = new MetaModel(e.getMessage());
+                mErrorMessage = mMetaError.getErrors();
+            } catch (JSONException e) {
+                mErrorMessage = mContext.getString(R.string.error_connection);
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean b) {
+            if (mMetaError != null) {
+                mResponseView.handleError(mMetaError);
+            } else if(mErrorMessage != null) {
+                mMainMenuView.handleError(mContext.getString(R.string.error_title_cannot_update_home),
+                        mErrorMessage, mMetaError);
+            } else {
+                EventBus.getInstance().post(new SetHomeStateEvent());
+                EventBus.getInstance().post(new UpdateSettingsEvent());
+
+                if(mPlutocrat != null) {
+                    EventBus.getInstance().post(new LoadPlutocratCompletedEvent(mPlutocrat));
+                }
             }
         }
     }

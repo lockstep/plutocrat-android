@@ -5,7 +5,7 @@
         <shape android:shape="oval">
             <size android:width="@dimen/player_img_size"
                 android:height="@dimen/player_img_size" />
-            <solid android:color="@android:color/black"/>
+            <solid android:color="@color/colorShadow"/>
         </shape>
     </item>
 

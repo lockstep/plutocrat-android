@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,6 +21,7 @@ import android.text.Editable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +46,7 @@ import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.exception.FormValidationException;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
+import com.whitefly.plutocrat.helpers.ExifUtil;
 import com.whitefly.plutocrat.helpers.FormValidationHelper;
 import com.whitefly.plutocrat.helpers.ImageInputHelper;
 import com.whitefly.plutocrat.mainmenu.MainMenuActivity;
@@ -53,8 +56,11 @@ import com.whitefly.plutocrat.mainmenu.views.IAccountSettingView;
 import com.whitefly.plutocrat.models.MetaModel;
 import com.whitefly.plutocrat.models.UserModel;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
@@ -451,7 +457,27 @@ public class AccountSettingFragment extends DialogFragment
 
     @Override
     public void onImageTakenFromCamera(Uri uri, File imageFile) {
-        imageInputHelper.requestCropImage(uri, IMAGE_OUTPUT_X, IMAGE_OUTPUT_Y, IMAGE_ASPECT_X, IMAGE_ASPECT_Y);
+        try {
+            Bitmap bitmap = null;
+            do {
+                bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+            } while (bitmap == null);
+
+            bitmap = ExifUtil.decodeSampledBitmapFromFile(imageFile, IMAGE_OUTPUT_X, IMAGE_OUTPUT_Y);
+            bitmap = ExifUtil.rotateBitmap(imageFile.getAbsolutePath().toString(), bitmap);
+
+            OutputStream fileOutput = new FileOutputStream(imageFile);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutput);
+            fileOutput.flush();
+            fileOutput.close();
+            bitmap.recycle();
+
+            imageInputHelper.requestCropImage(uri, IMAGE_OUTPUT_X, IMAGE_OUTPUT_Y, IMAGE_ASPECT_X, IMAGE_ASPECT_Y);
+        } catch (IOException e) {
+            e.printStackTrace();
+            showErrorDialog(getString(R.string.error_title_cannot_save_picture),
+                    getString(R.string.error_profile_picture));
+        }
     }
 
     @Override

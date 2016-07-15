@@ -34,6 +34,7 @@
                     <ImageView
                         android:layout_width="@dimen/player_img_size"
                         android:layout_height="@dimen/plutocrat_img_height"
+                        android:layout_marginTop="@dimen/plutocrat_img_margin_fix"
                         android:id="@+id/imv_plutocrat_profile"
                         android:background="@drawable/empty_profile_image_shadow"
                         android:paddingBottom="@dimen/plutocrat_img_padding_bottom"
@@ -221,11 +222,33 @@
                 android:text="@string/caption_shares"
                 android:textSize="@dimen/font_medium_x"/>
 
-            <SeekBar
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/seekBar"
-                android:indeterminate="false" />
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text=""
+                    android:visibility="invisible"/>
+
+                <SeekBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:id="@+id/seekBar"
+                    android:indeterminate="false"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text=""
+                    android:visibility="invisible"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 

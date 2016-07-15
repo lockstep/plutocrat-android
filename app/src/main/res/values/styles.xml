@@ -99,7 +99,7 @@
     </style>
 
     <style name="HeaderBigText.Shadow" parent="HeaderBigText">
-        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowColor">@color/colorShadow</item>
         <item name="android:shadowDx">0</item>
         <item name="android:shadowDy">2</item>
         <item name="android:shadowRadius">1</item>
@@ -110,10 +110,11 @@
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:layout_marginTop">-4dp</item>
     </style>
 
     <style name="HeaderMediumText.Shadow" parent="HeaderMediumText">
-        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowColor">@color/colorShadow</item>
         <item name="android:shadowDx">0</item>
         <item name="android:shadowDy">2</item>
         <item name="android:shadowRadius">1</item>
@@ -125,7 +126,7 @@
     </style>
 
     <style name="HeaderMediumLittleText.Shadow" parent="HeaderMediumLittleText">
-        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowColor">@color/colorShadow</item>
         <item name="android:shadowDx">0</item>
         <item name="android:shadowDy">2</item>
         <item name="android:shadowRadius">1</item>
@@ -134,6 +135,13 @@
     <style name="HeaderSmallText" parent="TextAppearance.AppCompat.Small">
         <item name="android:textSize">@dimen/font_small</item>
         <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="HeaderSmallText.Shadow" parent="HeaderSmallText">
+        <item name="android:shadowColor">@color/colorShadow</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">1</item>
     </style>
 
     <style name="ProfileText" parent="TextAppearance.AppCompat.Large">
