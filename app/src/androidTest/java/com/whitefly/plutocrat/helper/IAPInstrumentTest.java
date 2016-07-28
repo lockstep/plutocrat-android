@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
  */
 @RunWith(AndroidJUnit4.class)
 public class IAPInstrumentTest {
-    private static final String DEVELOPER_PAYLOAD = "thisisaniaptest";
+    private static final String DEVELOPER_PAYLOAD = "com.whitefly.plutocrat.iap.developer_payload";
 
     private Context mContext;
     private IAPHelper mIAPHelper;

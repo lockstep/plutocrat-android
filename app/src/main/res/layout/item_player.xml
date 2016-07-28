@@ -49,7 +49,9 @@
             android:layout_marginTop="@dimen/fix_font_margin"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:id="@+id/tv_player_buyouts"
-            android:text="Buyouts: 21"/>
+            android:text="Buyouts: 21"
+            android:textSize="@dimen/font_small_x"
+            android:lineSpacingMultiplier="1.2"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -58,7 +60,9 @@
             android:layout_marginEnd="4dp"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:id="@+id/tv_player_threats"
-            android:text="Threats: 7"/>
+            android:text="Threats: 7"
+            android:textSize="@dimen/font_small_x"
+            android:lineSpacingMultiplier="1.2"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -68,7 +72,9 @@
             android:paddingEnd="4dp"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:id="@+id/tv_player_daysurvived"
-            android:text="Day survived: 20"/>
+            android:text="Day survived: 20"
+            android:textSize="@dimen/font_small_x"
+            android:lineSpacingMultiplier="1.2"/>
     </LinearLayout>
 
     <LinearLayout

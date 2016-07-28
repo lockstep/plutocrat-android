@@ -16,9 +16,10 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
+            android:layout_marginBottom="16dp"
             android:id="@+id/tv_share_caption"
             android:text="@string/caption_share"
+            android:textSize="11sp"
             android:textColor="@color/colorPurpleLight"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"/>

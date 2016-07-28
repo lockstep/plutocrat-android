@@ -45,6 +45,7 @@ import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.exception.FormValidationException;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
+import com.whitefly.plutocrat.helpers.ExifUtil;
 import com.whitefly.plutocrat.helpers.FormValidationHelper;
 import com.whitefly.plutocrat.helpers.ImageInputHelper;
 import com.whitefly.plutocrat.mainmenu.MainMenuActivity;
@@ -60,7 +61,9 @@ import com.whitefly.plutocrat.models.MetaModel;
 import com.whitefly.plutocrat.models.UserModel;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
@@ -442,7 +445,27 @@ public class SettingsFragment extends Fragment
 
     @Override
     public void onImageTakenFromCamera(Uri uri, File imageFile) {
-        imageInputHelper.requestCropImage(uri, IMAGE_OUTPUT_X, IMAGE_OUTPUT_Y, IMAGE_ASPECT_X, IMAGE_ASPECT_Y);
+        try {
+            Bitmap bitmap = null;
+            do {
+                bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+            } while (bitmap == null);
+
+            bitmap = ExifUtil.decodeSampledBitmapFromFile(imageFile, IMAGE_OUTPUT_X, IMAGE_OUTPUT_Y);
+            bitmap = ExifUtil.rotateBitmap(imageFile.getAbsolutePath().toString(), bitmap);
+
+            OutputStream fileOutput = new FileOutputStream(imageFile);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutput);
+            fileOutput.flush();
+            fileOutput.close();
+            bitmap.recycle();
+
+            imageInputHelper.requestCropImage(uri, IMAGE_OUTPUT_X, IMAGE_OUTPUT_Y, IMAGE_ASPECT_X, IMAGE_ASPECT_Y);
+        } catch (IOException e) {
+            e.printStackTrace();
+            showErrorDialog(getString(R.string.error_title_cannot_save_picture),
+                    getString(R.string.error_profile_picture));
+        }
     }
 
     @Override

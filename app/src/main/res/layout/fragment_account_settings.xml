@@ -154,6 +154,7 @@
                     android:id="@+id/edt_display_name"
                     android:gravity="end"
                     android:text="Danielle Steele"
+                    android:inputType="textCapSentences"
                     style="@style/EditTextSingleLine.WithoutLine"
                     android:textSize="@dimen/font_small"
                     android:textColor="@color/colorGrey"

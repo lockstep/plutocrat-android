@@ -117,9 +117,15 @@ public class TargetFragment extends Fragment implements ITabView {
                     mBtnEngage.setVisibility(View.GONE);
                     mTvPlutocratGameStatus.setVisibility(View.GONE);
                 } else {
-                    if(user.isUnderBuyoutThreat) {
+                    if(user.isUnderBuyoutThreat || user.isAttackingCurrentUser) {
                         mBtnEngage.setVisibility(View.GONE);
                         mTvPlutocratGameStatus.setVisibility(View.VISIBLE);
+
+                        if(user.isAttackingCurrentUser) {
+                            mTvPlutocratGameStatus.setText(getString(R.string.caption_attacking));
+                        } else {
+                            mTvPlutocratGameStatus.setText(getString(R.string.caption_under_threat));
+                        }
                     } else {
                         mBtnEngage.setVisibility(View.VISIBLE);
                         mTvPlutocratGameStatus.setVisibility(View.GONE);

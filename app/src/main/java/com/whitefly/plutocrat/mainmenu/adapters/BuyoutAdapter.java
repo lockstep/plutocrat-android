@@ -39,7 +39,7 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
     // Attributes
     private Context mContext;
     private ArrayList<BuyoutModel> mDataSet;
-    private String mInitiateCaption, mThreatCaption, mPeriodFormat, mPeriodsFormat;
+    private String mInitiateCaption, mThreatCaption, mPeriodFormat;
     private String mPendingCaption, mSucceedCaption, mFailedCaption;
     private String mAttackingCaption, mEliminatedCaption, mUnderThreatCaption;
     private int mGreyColor, mRedColor, mGreenColor;
@@ -64,7 +64,6 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
         mInitiateCaption = mContext.getString(R.string.caption_action_initiate);
         mThreatCaption = mContext.getString(R.string.caption_action_threat);
         mPeriodFormat = mContext.getString(R.string.value_period);
-        mPeriodsFormat = mContext.getString(R.string.values_period);
         mPendingCaption = mContext.getString(R.string.status_pending);
         mSucceedCaption = mContext.getString(R.string.status_succeed);
         mFailedCaption = mContext.getString(R.string.status_failed);
@@ -129,6 +128,7 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
             AppPreference.getInstance().setFontsToViews(AppPreference.FontType.BoldItalic, vh.tvStatus);
 
             vh.btnEngage.setOnClickListener(mEngageClick);
+            vh.tvPeroid.setVisibility(View.GONE);
         } else {
             View root = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_loadmore, parent, false);
             vh = new ViewHolder(root);
@@ -144,11 +144,9 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
         String imageProfile = "";
 
         if(model != null) {
-            if(model.numShares > NUMER_SINGULAR) {
-                holder.tvPeroid.setText(String.format(mPeriodsFormat, model.numShares, model.getTimeAgo()));
-            } else {
-                holder.tvPeroid.setText(String.format(mPeriodFormat, model.numShares, model.getTimeAgo()));
-            }
+            String shareValue = mContext.getResources().getQuantityString(R.plurals.value_period,
+                    model.numShares, model.numShares);
+            String shareValueString = String.format(mPeriodFormat, shareValue, model.getTimeAgo());
 
             holder.tvStatus.setText(mPendingCaption);
             holder.tvStatus.setTextColor(mGreyColor);
@@ -159,7 +157,7 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
             if(model.getBuyoutStatus() == BuyoutModel.BuyoutStatus.Initiate) {
                 holder.tvProfile.setText(model.targetUser.getNickName());
                 holder.tvName.setText(model.targetUser.name);
-                holder.tvAction.setText(mInitiateCaption);
+                holder.tvAction.setText(mInitiateCaption + shareValueString);
                 imageProfile = model.targetUser.profileImage;
 
                 if(model.getGameStatus() == BuyoutModel.GameStatus.Initiated) {
@@ -197,7 +195,7 @@ public class BuyoutAdapter extends RecyclerView.Adapter<BuyoutAdapter.ViewHolder
             } else {
                 holder.tvProfile.setText(model.initiatingUser.getNickName());
                 holder.tvName.setText(model.initiatingUser.name);
-                holder.tvAction.setText(mThreatCaption);
+                holder.tvAction.setText(mThreatCaption + shareValueString);
                 imageProfile = model.initiatingUser.profileImage;
 
                 if(model.getGameStatus() == BuyoutModel.GameStatus.Initiated) {

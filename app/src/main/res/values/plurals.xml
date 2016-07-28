@@ -16,4 +16,8 @@
         <item quantity="one">Share</item>
         <item quantity="other">Shares</item>
     </plurals>
+    <plurals name="value_period">
+        <item quantity="one">%d share</item>
+        <item quantity="other">%d shares</item>
+    </plurals>
 </resources>
