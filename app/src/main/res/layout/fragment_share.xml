@@ -30,7 +30,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/title_unused_shares"
+                android:text="0 Unused Shares"
                 style="@style/HeaderMediumText.Shadow"
                 android:id="@+id/tv_share_sub_title" />
         </LinearLayout>

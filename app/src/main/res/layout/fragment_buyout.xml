@@ -35,7 +35,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/title_success_buyout"
+                    android:text="0 Successful Buyouts"
                     style="@style/HeaderMediumText.Shadow"
                     android:id="@+id/tv_buyout_sub_title" />
             </LinearLayout>
