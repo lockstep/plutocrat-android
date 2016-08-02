@@ -151,6 +151,10 @@ public class SessionManager {
         mActiveUser = model;
     }
 
+    public void save() {
+        AppPreference.getInstance().savePrefs(PREFKEY_SESSION, this, SessionManager.class);
+    }
+
     public void save(Headers headers, int userId) {
         access_token = headers.get("Access-token");
         token_type = headers.get("Token-type");
@@ -159,7 +163,7 @@ public class SessionManager {
         uid = headers.get("Uid");
         user_id = userId;
 
-        AppPreference.getInstance().savePrefs(PREFKEY_SESSION, this, SessionManager.class);
+        save();
     }
 
     public void savePlutocrat(TargetModel model) {

@@ -704,6 +704,11 @@ public class MainMenuPresenter {
                 activeUser.isTransactionalEmailsEnabled = param.isTransactionEmailEnabled();
                 activeUser.isProductEmailsEnabled = param.isProductEmailEnabled();
 
+                AppPreference.getInstance().getSession().uid = param.getEmail();
+                AppPreference.getInstance().getSession().save();
+                AppPreference.getInstance().getCurrentUserPersistence().email = param.getEmail();
+                AppPreference.getInstance().saveUserPersistence();
+
                 if(activeUser.isPlutocrat) {
                     mPlutocrat = gson.fromJson(bodyJson.getString("user"), TargetModel.class);
                     AppPreference.getInstance().getSession().setPlutocrat(mPlutocrat);
