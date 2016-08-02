@@ -42,6 +42,7 @@ import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
 import com.whitefly.plutocrat.helpers.FormValidationHelper;
 import com.whitefly.plutocrat.helpers.IAPHelper;
+import com.whitefly.plutocrat.helpers.SessionManager;
 import com.whitefly.plutocrat.helpers.text.CustomTypefaceSpan;
 import com.whitefly.plutocrat.helpers.view.CustomViewPager;
 import com.whitefly.plutocrat.login.LoginActivity;
@@ -70,6 +71,7 @@ import com.whitefly.plutocrat.models.NewBuyoutModel;
 import com.whitefly.plutocrat.models.TargetModel;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Set;
 
 import io.fabric.sdk.android.Fabric;
@@ -102,6 +104,8 @@ public class MainMenuActivity extends AppCompatActivity
 
     private float mTouchXDown, mTouchXUp;
     private int mTouchSlop;
+    private boolean mIsSessionExpired = false;
+    private boolean mIsPassOnStart = false;
 
     // Views
     private CustomViewPager mMainPager;
@@ -295,7 +299,18 @@ public class MainMenuActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
 
-        EventBus.getInstance().post(new SetHomeStateEvent());
+        EventBus.register(presenter);
+        mIsPassOnStart = true;
+        mIsSessionExpired = AppPreference.getInstance().getSession().isSessionExpired();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if(! this.isFinishing()) {
+            AppPreference.getInstance().getSession().saveLastStopTime(new Date());
+        }
     }
 
     @Override
@@ -366,6 +381,17 @@ public class MainMenuActivity extends AppCompatActivity
         super.onResume();
 
         EventBus.register(presenter);
+
+        if(! mIsPassOnStart) return;
+        mIsPassOnStart = false;
+
+        if(mIsSessionExpired) {
+            EventBus.getInstance().post(new SignOutEvent());
+        } else {
+            AppPreference.getInstance().getSession().saveLastStopTime(null);
+            mIsSessionExpired = false;
+            EventBus.getInstance().post(new SetHomeStateEvent());
+        }
     }
 
     @Override

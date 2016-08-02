@@ -1,6 +1,7 @@
 package com.whitefly.plutocrat.helpers;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 
 import com.google.gson.Gson;
 import com.whitefly.plutocrat.R;
@@ -13,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Date;
 
 import okhttp3.Headers;
 
@@ -21,8 +23,11 @@ import okhttp3.Headers;
  * this class manage access token to talk with server.
  */
 public class SessionManager {
+    public static final long SESSION_TIME = 5L * 60L * 1000L;
+
     public static final String PREFKEY_SESSION = "com.whitefly.plutocrat.prefs.session";
     public static final String PREFKEY_SESSION_PLUTOCRAT = "com.whitefly.plutocrat.prefs.session.plutocrat";
+    public static final String PREFKEY_SESSION_LAST_STOP_APP = "com.whitefly.plutocrat.prefs.session.last_stop_app";
 
     private static final String INSTANCE_STATE_ACTIVE_USER = "com.whitefly.plutocrat.instance.active_user";
     private static final String INSTANCE_STATE_ACTIVE_USER_INITIATING_BUYOUT = "com.whitefly.plutocrat.instance.active_user_initiating_buyout";
@@ -37,6 +42,8 @@ public class SessionManager {
     public long expiry = 0L;
     public String uid;
     public int user_id = 0;
+
+    private transient Date mLastStopAppTime;
 
     private transient UserModel mActiveUser = null;
 
@@ -224,6 +231,25 @@ public class SessionManager {
         }
     }
 
+    public void saveLastStopTime(@Nullable Date date) {
+        mLastStopAppTime = date;
+        if(mLastStopAppTime == null) {
+            AppPreference.getInstance().getSharedPreference().edit().remove(PREFKEY_SESSION_LAST_STOP_APP).commit();
+        } else {
+            AppPreference.getInstance().savePrefs(PREFKEY_SESSION_LAST_STOP_APP, mLastStopAppTime, Date.class);
+        }
+    }
+
+    public boolean isSessionExpired() {
+        if(AppPreference.getInstance().getSharedPreference().contains(PREFKEY_SESSION_LAST_STOP_APP)) {
+            mLastStopAppTime = AppPreference.getInstance().loadPrefs(PREFKEY_SESSION_LAST_STOP_APP, Date.class);
+        }
+
+        if(mLastStopAppTime == null) return false;
+        long stopPeriod = new Date().getTime() - mLastStopAppTime.getTime();
+        return stopPeriod >= SESSION_TIME;
+    }
+
     public Headers getHeaders() {
         Headers result = null;
 
@@ -254,6 +280,7 @@ public class SessionManager {
         // Destroy shared preference
         AppPreference.getInstance().getSharedPreference().edit().remove(PREFKEY_SESSION).commit();
         AppPreference.getInstance().saveLastLoginId(user_id);
+        saveLastStopTime(null);
 
         // Clear value
         access_token = "";

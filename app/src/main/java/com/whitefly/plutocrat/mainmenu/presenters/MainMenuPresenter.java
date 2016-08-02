@@ -69,6 +69,7 @@ public class MainMenuPresenter {
     // Attributes
     private Context mContext;
     private HttpClient mHttp;
+    private boolean mIsSigningOut;
 
     // Views
     private IMainMenuView mMainMenuView;
@@ -80,6 +81,7 @@ public class MainMenuPresenter {
         mHttp = new HttpClient(context);
         mMainMenuView = mmView;
         mHomeView = homeView;
+        mIsSigningOut = false;
     }
 
     // Methods
@@ -135,11 +137,13 @@ public class MainMenuPresenter {
 
     @Subscribe
     public void onLoadTargets(LoadTargetsEvent event) {
+        if(mIsSigningOut) return;
         AsyncTaskCompat.executeParallel(new LoadTargetBuyoutCallBack(), event);
     }
 
     @Subscribe
     public void onLoadBuyouts(LoadBuyoutsEvent event) {
+        if(mIsSigningOut) return;
         AsyncTaskCompat.executeParallel(new LoadBuyoutsCallBack(), event);
     }
 
@@ -204,6 +208,7 @@ public class MainMenuPresenter {
 
     @Subscribe
     public void onLoadHome(LoadHomeEvent event) {
+        if(mIsSigningOut) return;
         AsyncTaskCompat.executeParallel(new LoadHomeCallBack());
     }
 
@@ -216,6 +221,7 @@ public class MainMenuPresenter {
         @Override
         protected void onPreExecute() {
             mMainMenuView.handleLoadingDialog(true);
+            mIsSigningOut = true;
         }
 
         @Override
@@ -239,9 +245,10 @@ public class MainMenuPresenter {
         }
 
         @Override
-        protected void onPostExecute(Boolean b) {
+        protected void onPostExecute(Boolean isSuccess) {
+            mIsSigningOut = false;
             mMainMenuView.handleLoadingDialog(false);
-            if(b) {
+            if(isSuccess) {
                 AppPreference.getInstance().getSession().destroy();
                 mMainMenuView.goToLogin();
             } else {
@@ -254,6 +261,7 @@ public class MainMenuPresenter {
     private class LoadTargetBuyoutCallBack extends AsyncTask<LoadTargetsEvent, Void, ArrayList<TargetModel>> {
         private MetaModel mMetaModel;
         private String mErrorMessage;
+        private boolean mIsAuthorizationError = false;
 
         @Override
         protected ArrayList<TargetModel> doInBackground(LoadTargetsEvent... params) {
@@ -285,8 +293,12 @@ public class MainMenuPresenter {
                 mErrorMessage = mContext.getString(R.string.error_connection);
             } catch (APIConnectionException e) {
                 e.printStackTrace();
-                mMetaModel = new MetaModel(e.getMessage());
-                mErrorMessage = mMetaModel.getErrors();
+
+                mIsAuthorizationError = mHttp.getResponseCode() == HttpClient.HTTP_CODE_UNAUTHORIZED;
+                if(!mIsAuthorizationError) {
+                    mMetaModel = new MetaModel(e.getMessage());
+                    mErrorMessage = mMetaModel.getErrors();
+                }
             }
 
             return result;
@@ -294,19 +306,21 @@ public class MainMenuPresenter {
 
         @Override
         protected void onPostExecute(ArrayList<TargetModel> targetModels) {
+            if(mIsAuthorizationError) return;
+
             if(targetModels.size() > 0) {
                 targetModels.add(null);
             }
 
-            if(mMetaModel != null && mMetaModel.getInt("current_page") == FIRST_PAGE) {
+            if(mErrorMessage != null) {
+                mMainMenuView.handleError(mContext.getString(R.string.error_title_cannot_load_targets),
+                        mErrorMessage, null);
+            } else if(mMetaModel != null && mMetaModel.getInt("current_page") == FIRST_PAGE) {
                 TargetModel plutocrat = AppPreference.getInstance().getSession().getPlutocrat();
                 if(plutocrat != null && targetModels.size() > 0) {
                     targetModels.remove(0);
                 }
                 EventBus.getInstance().post(new LoadPlutocratCompletedEvent(plutocrat));
-            } else if(mErrorMessage != null) {
-                mMainMenuView.handleError(mContext.getString(R.string.error_title_cannot_load_targets),
-                        mErrorMessage, null);
             }
 
             EventBus.getInstance().post(new LoadTargetCompletedEvent(targetModels, mMetaModel));
@@ -316,6 +330,7 @@ public class MainMenuPresenter {
     private class LoadBuyoutsCallBack extends AsyncTask<LoadBuyoutsEvent, Void, ArrayList<BuyoutModel>> {
         private MetaModel mMetaModel;
         private String mErrorMessage;
+        private boolean mIsAuthorizationError = false;
 
         @Override
         protected ArrayList<BuyoutModel> doInBackground(LoadBuyoutsEvent... params) {
@@ -349,8 +364,12 @@ public class MainMenuPresenter {
                 mErrorMessage = mContext.getString(R.string.error_connection);
             } catch (APIConnectionException e) {
                 e.printStackTrace();
-                mMetaModel = new MetaModel(e.getMessage());
-                mErrorMessage = mMetaModel.getErrors();
+
+                mIsAuthorizationError = mHttp.getResponseCode() == HttpClient.HTTP_CODE_UNAUTHORIZED;
+                if(!mIsAuthorizationError) {
+                    mMetaModel = new MetaModel(e.getMessage());
+                    mErrorMessage = mMetaModel.getErrors();
+                }
             }
 
             return result;
@@ -358,6 +377,8 @@ public class MainMenuPresenter {
 
         @Override
         protected void onPostExecute(ArrayList<BuyoutModel> buyoutModels) {
+            if(mIsAuthorizationError) return;
+
             if(buyoutModels.size() > 0) {
                 buyoutModels.add(null);
             }
@@ -941,6 +962,7 @@ public class MainMenuPresenter {
         private MetaModel mMetaError = null;
         private IAccountSettingView mResponseView;
         private TargetModel mPlutocrat = null;
+        private boolean mIsAuthorizationError = false;
 
         @Override
         protected Boolean doInBackground(Void... params) {
@@ -972,12 +994,16 @@ public class MainMenuPresenter {
             } catch (IOException e) {
                 e.printStackTrace();
                 mErrorMessage = mContext.getString(R.string.error_connection);
-            } catch (APIConnectionException e) {
-                e.printStackTrace();
-                mMetaError = new MetaModel(e.getMessage());
-                mErrorMessage = mMetaError.getErrors();
             } catch (JSONException e) {
                 mErrorMessage = mContext.getString(R.string.error_connection);
+            } catch (APIConnectionException e) {
+                e.printStackTrace();
+
+                mIsAuthorizationError = mHttp.getResponseCode() == HttpClient.HTTP_CODE_UNAUTHORIZED;
+                if(!mIsAuthorizationError) {
+                    mMetaError = new MetaModel(e.getMessage());
+                    mErrorMessage = mMetaError.getErrors();
+                }
             }
 
             return result;
@@ -985,6 +1011,8 @@ public class MainMenuPresenter {
 
         @Override
         protected void onPostExecute(Boolean b) {
+            if(mIsAuthorizationError) return;
+
             if (mMetaError != null) {
                 mResponseView.handleError(mMetaError);
             } else if(mErrorMessage != null) {
