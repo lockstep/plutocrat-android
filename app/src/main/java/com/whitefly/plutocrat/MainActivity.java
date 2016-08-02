@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
@@ -14,6 +15,8 @@ import com.whitefly.plutocrat.login.LoginActivity;
 import com.whitefly.plutocrat.splash.events.LoadUserDataEvent;
 import com.whitefly.plutocrat.splash.presenters.SplashPresenter;
 import com.whitefly.plutocrat.splash.views.ISplashView;
+
+import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity implements ISplashView {
     private static final int TIME_SHOW_SPLASH_SCREEN = 2000;
@@ -25,6 +28,8 @@ public class MainActivity extends AppCompatActivity implements ISplashView {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Fabric.with(this, new Crashlytics());
 
         // Initialize
         AppPreference.getInstance().loadFonts(this);
