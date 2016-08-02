@@ -300,21 +300,21 @@ public class InitiateFragment extends DialogFragment {
                         @Override
                         public boolean onException(Exception e, String model,
                                                    Target<GlideDrawable> target, boolean isFirstResource) {
-                            mImvPlutocrat.setVisibility(View.GONE);
-                            mTvPlutocratProfile.setVisibility(View.VISIBLE);
+                            mImvTarget.setVisibility(View.GONE);
+                            mTvTargetProfile.setVisibility(View.VISIBLE);
                             return false;
                         }
 
                         @Override
                         public boolean onResourceReady(GlideDrawable resource,
                                                        String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            mImvPlutocrat.setVisibility(View.VISIBLE);
-                            mTvPlutocratProfile.setVisibility(View.GONE);
+                            mImvTarget.setVisibility(View.VISIBLE);
+                            mTvTargetProfile.setVisibility(View.GONE);
                             return false;
                         }
                     })
                     .bitmapTransform(new CropCircleTransformation(getActivity()))
-                    .into(mImvPlutocrat);
+                    .into(mImvTarget);
             mTvTargetProfile.setText(mTarget.getNickName());
             mTvTargetName.setText(mTarget.name);
             mTvTargetBuyout.setText(String.format(getActivity().getString(R.string.value_buyouts), mTarget.numSuccessfulBuyout));
