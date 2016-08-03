@@ -213,7 +213,9 @@ public class HomeFragment extends Fragment implements ITabView, IHomeView {
                         mLloNote.setVisibility(View.VISIBLE);
 
                         // Set value
-                        Spanned spannedText = Html.fromHtml(String.format(mNoteDefault, activeUser.numBuyoutUntilPlutocrat));
+                        String moreBuyOutString = getResources().getQuantityString(R.plurals.more_buyout,
+                                activeUser.numBuyoutUntilPlutocrat, activeUser.numBuyoutUntilPlutocrat);
+                        Spanned spannedText = Html.fromHtml(String.format(mNoteDefault, moreBuyOutString));
                         Spannable spanningText = SpannableString.valueOf(spannedText);
                         ClickableSpan[] clickSpans = spanningText.getSpans(0, spannedText.length(), ClickableSpan.class);
 

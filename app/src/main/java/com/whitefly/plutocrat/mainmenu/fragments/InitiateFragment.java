@@ -289,7 +289,8 @@ public class InitiateFragment extends DialogFragment {
                     .into(mImvPlutocrat);
             mTvPlutocratProfile.setText(mTarget.getNickName());
             mTvPlutocratName.setText(mTarget.name);
-            mTvPlutocratBuyouts.setText(String.format(getActivity().getString(R.string.value_plutocrat_buyouts), mTarget.numSuccessfulBuyout));
+            mTvPlutocratBuyouts.setText(getActivity().getResources().getQuantityString(R.plurals.value_buyouts, mTarget.numSuccessfulBuyout,
+                    mTarget.numSuccessfulBuyout));
         } else {
             mLloPlutocrat.setVisibility(View.GONE);
             mLloTarget.setVisibility(View.VISIBLE);

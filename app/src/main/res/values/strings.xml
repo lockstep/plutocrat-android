@@ -47,7 +47,7 @@
     <string name="caption_new_password">New Password</string>
     <string name="caption_reset">Reset</string>
     <string name="caption_manage_account">Manage Account</string>
-    <string name="home_default_content"><![CDATA[You need <a href="">%1$d more buyouts</a> to become<br />the Plutocrat.<br /><br />Swipe right for more controls.]]></string>
+    <string name="home_default_content"><![CDATA[You need <a href="">%1$s</a> to become<br />the Plutocrat.<br /><br />Swipe right for more controls.]]></string>
     <string name="home_threat_content"><![CDATA[WARNING: Your response to this buyout threat is not reversible. You must match the buyout shares to maintain your account.<br /><br />Failure to match the buyout will result in permanent account suspension. Any shares remaining in your account will transfer to the victor.]]></string>
     <string name="home_suspend_content"><![CDATA[You were bought out by <i>%1$s</i> for<br />%2$s %3$s ago.<br /><br />Your account is now inactive.]]></string>
     <string name="caption_success_buyout">Successful\nBuyouts</string>
@@ -71,7 +71,7 @@
     <string name="value_plutocrat_buyouts">%1$d Buyouts</string>
     <string name="value_buyouts">Buyouts: %1$d</string>
     <string name="value_threats">Threats: %1$d</string>
-    <string name="value_daysurvived">Day survived: %1$d</string>
+    <string name="value_daysurvived">Days survived: %1$d</string>
     <string name="value_period">\n%1$s %2$s ago</string>
     <string name="status_pending">Outcome Pending</string>
     <string name="status_succeed">Buyout Succeeded</string>
@@ -85,8 +85,6 @@
     <string name="caption_abort">ABORT</string>
     <string name="caption_execute">EXECUTE</string>
     <string name="caption_moreshares">BUY MORE SHARES...</string>
-    <string name="title_unused_shares">%1$d Unused Shares</string>
-    <string name="title_success_buyout">%1$d Successful Buyouts</string>
     <string name="caption_quantity">Quantity:</string>
     <string name="caption_per_share">Per Share:</string>
     <string name="caption_enter_quantity">Enter Quantity</string>
@@ -113,8 +111,8 @@
     <string name="note_getting_started">Buy out other players to become the Plutocrat. You may target any player who is not already under threat.</string>
     <string name="note_enable_push_notice"><![CDATA[We’ll notify you when your buyouts\nsucceed or fail.]]></string>
     <string name="caption_find_target">FIND TARGET</string>
-    <string name="caption_enable_push_notice">Enable notification</string>
-    <string name="dialog_note_enable_push_notice">Are you sure to enable notification?</string>
+    <string name="caption_enable_push_notice">Enable Notifications</string>
+    <string name="dialog_note_enable_push_notice">Are you sure you want to enable notifications?</string>
     <string name="caption_enable">ENABLE</string>
     <string name="caption_dismiss">DISMISS</string>
     <string name="dialog_title_moreshare">You do not have enough shares</string>

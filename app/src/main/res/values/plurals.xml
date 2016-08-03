@@ -20,4 +20,8 @@
         <item quantity="one">%d share</item>
         <item quantity="other">%d shares</item>
     </plurals>
+    <plurals name="more_buyout">
+        <item quantity="one">%d more buyout</item>
+        <item quantity="other">%d more buyouts</item>
+    </plurals>
 </resources>
