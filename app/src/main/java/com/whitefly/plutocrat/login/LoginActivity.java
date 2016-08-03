@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.whitefly.plutocrat.R;
 import com.whitefly.plutocrat.helpers.AppPreference;
 import com.whitefly.plutocrat.helpers.EventBus;
@@ -28,6 +29,8 @@ import com.whitefly.plutocrat.login.fragments.ResetPassword2Fragment;
 import com.whitefly.plutocrat.login.presenters.LoginPresenter;
 import com.whitefly.plutocrat.login.views.ILoginMainView;
 import com.whitefly.plutocrat.login.views.ILoginView;
+
+import io.fabric.sdk.android.Fabric;
 
 public class LoginActivity extends AppCompatActivity implements ILoginMainView {
     public static final String BUNDLE_INITIATE_LOGIN_STATE = "com.whitefly.plutocrat.bundle.initiateLogin";
@@ -58,6 +61,8 @@ public class LoginActivity extends AppCompatActivity implements ILoginMainView {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        Fabric.with(this, new Crashlytics());
 
         ILoginView.ViewState loginState =
                 (ILoginView.ViewState) getIntent().getSerializableExtra(BUNDLE_INITIATE_LOGIN_STATE);

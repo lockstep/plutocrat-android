@@ -33,6 +33,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.otto.Subscribe;
 import com.whitefly.plutocrat.R;
@@ -70,6 +71,8 @@ import com.whitefly.plutocrat.models.TargetModel;
 
 import java.util.ArrayList;
 import java.util.Set;
+
+import io.fabric.sdk.android.Fabric;
 
 public class MainMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, IMainMenuView {
@@ -158,6 +161,8 @@ public class MainMenuActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+
+        Fabric.with(this, new Crashlytics());
 
         AppPreference.getInstance().getSession().loadPlutocrat();
         AppPreference.getInstance().onLoadInstanceState(savedInstanceState);
