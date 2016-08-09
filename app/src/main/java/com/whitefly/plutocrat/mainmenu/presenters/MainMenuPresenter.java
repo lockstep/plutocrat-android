@@ -272,7 +272,7 @@ public class MainMenuPresenter {
             String requestParam = String.format("{page:%d}", page);
 
             try {
-                String jsonBody = mHttp.header(headers).request(requestParam).get(R.string.api_targets);
+                String jsonBody = mHttp.newInstance().header(headers).request(requestParam).get(R.string.api_targets);
                 JSONObject root = new JSONObject(jsonBody);
                 mMetaModel = new MetaModel(root.getJSONObject("meta"));
                 JSONArray users = root.getJSONArray("users");
@@ -343,7 +343,7 @@ public class MainMenuPresenter {
                     AppPreference.getInstance().getSession().getActiveUser().id);
 
             try {
-                String jsonBody = mHttp.header(headers).request(requestParam).get(url);
+                String jsonBody = mHttp.newInstance().header(headers).request(requestParam).get(url);
                 JSONObject root = new JSONObject(jsonBody);
                 mMetaModel = new MetaModel(root.getJSONObject("meta"));
                 JSONArray buyouts = root.getJSONArray("buyouts");
@@ -974,7 +974,7 @@ public class MainMenuPresenter {
             String url = String.format(mContext.getString(R.string.api_profile), activeUser.id);
 
             try {
-                mHttp.header(headers);
+                mHttp.newInstance().header(headers);
 
                 String response = mHttp.header(headers).get(url);
 

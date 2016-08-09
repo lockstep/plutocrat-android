@@ -177,6 +177,10 @@ public class HttpClient {
         return result;
     }
 
+    public HttpClient newInstance() {
+        return new HttpClient(mContext);
+    }
+
     public HttpClient request(String jsonRequest) {
         mRequestString = jsonRequest;
 
